@@ -76,6 +76,10 @@ class Config:
     def personas_path(self) -> Path:
         return self.work_dir / "personas_1290.jsonl"
 
+    @property
+    def prompt_log_dir(self) -> Path:
+        return self.work_dir / "prompt_log"
+
 # ===== STANDALONE PRODUCTION HELPERS =====
 # Các hàm dưới đây được đặt trực tiếp trong notebook; không import code từ project.
 ASSIGNMENT_TYPES = {"direct", "structured_claim", "summary_inference", "unsupported"}
@@ -725,6 +729,20 @@ def call_llm(prompt: str, config: Config) -> str:
         raise ValueError(f"Unexpected LLM response structure: {result}") from error
 
 
+def reset_prompt_log(config: Config) -> None:
+    """Keep prompt logs for the currently processed user only."""
+    config.prompt_log_dir.mkdir(parents=True, exist_ok=True)
+    for path in config.prompt_log_dir.glob("*.txt"):
+        if path.is_file():
+            path.unlink()
+
+
+def save_prompt_log(config: Config, chunk_index: int, prompt: str) -> Path:
+    path = config.prompt_log_dir / f"prompt-{chunk_index:04d}.txt"
+    path.write_text(prompt, encoding="utf-8")
+    return path
+
+
 def extract_personas(config: Config) -> None:
     require_file(config.compact_profiles_path, "Run the compact stage first")
     schema = load_schema(config)
@@ -747,10 +765,13 @@ def extract_personas(config: Config) -> None:
                 continue
             if config.max_llm_users and processed >= config.max_llm_users:
                 break
+            reset_prompt_log(config)
             fields = []
             for chunk_index, dimensions in enumerate(chunks, start=1):
                 started_at = time.perf_counter()
-                response = call_llm(build_amazon_prompt(record["profile_text"], dimensions), config)
+                prompt = build_amazon_prompt(record["profile_text"], dimensions)
+                prompt_path = save_prompt_log(config, chunk_index, prompt)
+                response = call_llm(prompt, config)
                 chunk_fields = sanitize_fields(parse_fields(response), dimensions, record["profile_text"])
                 fields.extend(chunk_fields)
                 categories = sorted({str(dimension.get("category") or "Uncategorized") for dimension in dimensions})
@@ -759,7 +780,8 @@ def extract_personas(config: Config) -> None:
                 tqdm.write(
                     f"user={user_id} chunk={chunk_index}/{len(chunks)} "
                     f"category={','.join(categories)} dimensions={len(dimensions)} "
-                    f"supported={supported_count} elapsed={elapsed_seconds:.2f}s"
+                    f"supported={supported_count} elapsed={elapsed_seconds:.2f}s "
+                    f"prompt_log={prompt_path.name}"
                 )
             if len(fields) != len(schema):
                 raise RuntimeError(f"Expected {len(schema)} fields, got {len(fields)} for {user_id}")

@@ -39,6 +39,8 @@ Intermediate data is file-only; SQLite is not used:
 - `user_histories.prepared.jsonl`: filtered construction/validation histories.
 - `compact_profiles.jsonl`: bounded profiles sent to the model.
 - `personas_1290.jsonl`: final persona records.
+- `prompt_log/prompt-*.txt`: exact prompts for the user currently being
+  extracted; logs from the previous user are removed when the next user starts.
 
 The extraction endpoint is configured through `AMAZON_LLM_ENDPOINT`,
 `AMAZON_LLM_MODEL`, and optionally `AMAZON_LLM_AUTHORIZATION`. Existing user IDs
