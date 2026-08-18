@@ -43,3 +43,13 @@ Intermediate data is file-only; SQLite is not used:
 The extraction endpoint is configured through `AMAZON_LLM_ENDPOINT`,
 `AMAZON_LLM_MODEL`, and optionally `AMAZON_LLM_AUTHORIZATION`. Existing user IDs
 in `personas_1290.jsonl` are skipped, so extraction can resume safely.
+
+The default endpoint is
+`http://203.113.152.4:7777/llm/v1/chat/completions` with model `Qwen3-14B`.
+Set the Basic authorization value in PowerShell before extraction; keep the
+credential outside source control:
+
+```powershell
+$env:AMAZON_LLM_AUTHORIZATION = "Basic <base64-credential>"
+python amazon_extractor.py extract --max-llm-users 1
+```

@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 import re
+import time
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -47,8 +48,11 @@ class Config:
     max_dims_per_chunk: int = 50
     max_llm_users: int = 0
     review_shards: int = 256
-    model: str = os.environ.get("AMAZON_LLM_MODEL", "Qwen/Qwen3.6-35B-A3B")
-    llm_endpoint: str = os.environ.get("AMAZON_LLM_ENDPOINT", "http://localhost:8000/v1/chat/completions")
+    model: str = os.environ.get("AMAZON_LLM_MODEL", "Qwen3-14B")
+    llm_endpoint: str = os.environ.get(
+        "AMAZON_LLM_ENDPOINT",
+        "http://203.113.152.4:7777/llm/v1/chat/completions",
+    )
     llm_authorization: str = os.environ.get("AMAZON_LLM_AUTHORIZATION", "")
     llm_timeout_seconds: int = 300
 
@@ -306,37 +310,102 @@ def assemble_profile(row: dict[str, Any], max_chars: int, max_review_text_chars:
     return "\n\n".join(parts)[:max_chars]
 
 def build_amazon_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> str:
+    """Amazon-reviewer persona-extraction prompt (see extract_personas_amazon.ipynb)."""
     lines = [
-        "You are mapping observable Amazon review evidence to schema-constrained persona fields for one reviewer. Fill attributes that are well supported by the review history, and leave unsupported or identity-like claims null.",
+        "You are mapping observable Amazon review evidence to schema-constrained "
+        "persona fields for one reviewer. Fill attributes that are well supported "
+        "by the review history, and leave unsupported or identity-like claims null.",
         "",
-        "Important: emitting one field object is bookkeeping, not permission to fill the attribute. For every dimension, start from value=null and assignment_type=\"unsupported\". Change value only when the evidence passes the rules below.",
-        "", "Return ONLY JSON with this shape (no markdown, no commentary):",
-        '{"fields": [{"field_id": "<one id from DIMENSIONS below>", "value": "<one allowed value, copied verbatim, or null>", "confidence": 0.0, "evidence": "<one short exact quote copied from REVIEWER HISTORY, or empty string>", "description": "<1-2 concrete sentences, or empty string>", "assignment_type": "direct|structured_claim|summary_inference|unsupported"}]}',
-        "", "Allowed support:",
-        "- direct: use when the reviewer explicitly states the fact about themselves in review text.",
-        "- structured_claim: use for repeated owned/use-context statements or concrete non-sensitive purchase/review facts supported by at least 2 distinct reviews, products, or category clusters.",
-        "- summary_inference: use for non-sensitive interests, shopping behavior, preferences, review style, communication style, or expertise when a repeated pattern is visible across the review history.",
-        "- Overall writing style may support communication/cognitive-style dimensions only when the pattern is visible across at least 5 reviews.",
-        "- unsupported: use when evidence is absent, one-off, ambiguous, generic, gift-related, or mainly about someone other than the reviewer.",
-        "", "Hard limits:",
-        "- For age, gender, health, disability, ethnicity, religion, politics, income, family/household status, occupation, location, employment, and parenthood: assign a non-null value only from an explicit self-statement. Do not use product category alone.",
-        "- Do not attribute traits of gift recipients or other product users to the reviewer. A gift may support shopping behavior, not the reviewer's own identity, household, or hobbies.",
-        "- Generic praise like 'great product' or product titles alone is not diagnostic evidence for persona attributes.",
-        "- Do not infer personality inventories, values, worldview, MBTI, Big Five, HEXACO, clinical attributes, or mental-state attributes from ordinary shopping reviews unless the reviewer explicitly states the trait or belief.",
-        "", "Output rules:",
-        "- Emit exactly one object per dimension listed below. Do not output unknown or duplicate field_id.",
-        "- value MUST be exactly one allowed value, or null. Most dimensions can be unsupported.",
-        "- If unsupported, set value=null, confidence=0.0, evidence='', assignment_type='unsupported', description=''.",
-        "- Every non-null value MUST include one short exact evidence quote copied verbatim from REVIEWER HISTORY. A paraphrase or reasoning is invalid.",
-        "- description: 1-2 concrete sentences describing THIS shopper for this attribute; do not justify the label.",
-        "- Sensitive/high-risk fields require explicit self-statements. Do not infer them from purchases, writing style, tone, vocabulary, price level, or household items.",
+        "Important: emitting one field object is bookkeeping, not permission to "
+        "fill the attribute. For every dimension, start from value=null and "
+        'assignment_type="unsupported". Change value only when the evidence '
+        "passes the rules below.",
+        "",
+        "Return ONLY JSON with this shape (no markdown, no commentary):",
+        '{"fields": [{"field_id": "<one id from DIMENSIONS below>", '
+        '"value": "<one allowed value, copied verbatim, or null>", '
+        '"confidence": <float between 0.0 and 1.0>, '
+        '"evidence": "<one short exact quote copied from REVIEWER HISTORY, or empty string>", '
+        '"description": "<1-2 concrete sentences, or empty string>", '
+        '"assignment_type": "direct|structured_claim|summary_inference|unsupported"}]}',
+        "",
+        "Allowed support:",
+        "- direct: use when the reviewer explicitly states the fact about "
+        "themselves in review text.",
+        "- structured_claim: use for repeated owned/use-context statements or "
+        "concrete non-sensitive purchase/review facts supported by at least 2 "
+        "distinct reviews, products, or category clusters.",
+        "- summary_inference: use for non-sensitive interests, shopping behavior, "
+        "preferences, review style, communication style, or expertise when a "
+        "repeated pattern is visible across the review history.",
+        "- Overall writing style may support communication/cognitive-style "
+        "dimensions only when the pattern is visible across at least 5 reviews.",
+        "- unsupported: use when evidence is absent, one-off, ambiguous, generic, "
+        "gift-related, or mainly about someone other than the reviewer.",
+        "",
+        "Hard limits:",
+        "- For age, gender, health, disability, ethnicity, religion, politics, "
+        "income, family/household status, occupation, location, employment, and "
+        "parenthood: assign a non-null value only from an explicit self-statement. "
+        "Do not use product category alone.",
+        "- Do not attribute traits of gift recipients or other product users to "
+        "the reviewer. A gift may support shopping behavior, not the reviewer's "
+        "own identity, household, or hobbies.",
+        "- Generic praise like \"great product\" or product titles alone is not "
+        "diagnostic evidence for persona attributes.",
+        "- Do not infer personality inventories, values, worldview, MBTI, Big "
+        "Five, HEXACO, clinical attributes, or mental-state attributes from "
+        "ordinary shopping reviews unless the reviewer explicitly states the "
+        "trait or belief.",
+        "",
+        "Output rules:",
+        "- Emit exactly one object per dimension listed below.",
+        "- Do not output any field_id that is not listed in DIMENSIONS.",
+        "- Do not duplicate field_id. Each listed field_id appears exactly once.",
+        "- Do not omit assignment_type. Every object must include one of the four "
+        "assignment_type strings above.",
+        "- value MUST be exactly one of that dimension's allowed values (copied "
+        "verbatim), OR null.",
+        '- Never use "Unsupported", "unsupported", "Not applicable", "N/A", '
+        '"unknown", or "" as value unless that exact string appears in that '
+        "field's allowed values.",
+        "- Judge the history as a whole; prefer attributes backed by MULTIPLE "
+        "reviews over a single purchase (one-off items may be gifts for others).",
+        "- For supported attributes, estimate confidence as a float between 0.5 and 1.0 based on the strength and frequency of evidence.",
+        "- If the reviews do not support a dimension, set value to null, "
+        'confidence to 0.0, evidence to "", assignment_type to "unsupported", '
+        'and description to "".',
+        "- Every non-null value MUST include a short evidence quote copied "
+        "verbatim from one of the reviews.",
+        "- Evidence must be an exact quote from REVIEWER HISTORY, not your reasoning, "
+        "a paraphrase, or a summary. If you cannot copy an exact quote, return "
+        "unsupported.",
+        "- If you cannot copy an exact quote, return unsupported.",
+        "- Do not append support counts, explanations, or labels to evidence. "
+        "Evidence must be only text that appears in REVIEWER HISTORY.",
+        "- description: 1-2 concrete sentences describing THIS shopper for this "
+        "attribute using details from their reviews (categories, products, "
+        "statements). Describe the person; do not justify the label.",
+        "- Sensitive / high-risk fields require explicit self-statements: age, "
+        "gender, income, marital status, children count, religion, politics, "
+        "ethnicity, health, disability, mental health, neurotype, MBTI, Big Five, "
+        "personality traits, attachment style, and relationship style.",
+        "- Do not infer these fields from product category, product size, possible "
+        "gift purchases, cooking tools, romance books, writing style, tone, "
+        "vocabulary, price level, or household items.",
         "- Return valid JSON only, with no markdown.",
-        "", "DIMENSIONS (field_id — label — description — allowed values):",
+        "- Most dimensions can be unsupported. Do not make the persona complete.",
+        "",
+        "DIMENSIONS (field_id — label — description — allowed values):",
     ]
-    for dimension in dimensions:
-        allowed = " | ".join(str(value) for value in dimension.get("values", [])) or "(free value)"
-        lines.append(f"- {dimension['id']} — {dimension.get('label', dimension['id'])} — {dimension.get('description', '')} — [{allowed}]")
-    lines.extend(["", "REVIEWER HISTORY:", profile_text])
+    
+    for d in dimensions:
+        allowed = " | ".join(str(v) for v in d.get("values", [])) or "(free value)"
+        desc = str(d.get("description", "")).strip()
+        lines.append(f"- {d['id']} — {d.get('label', d['id'])} — {desc} — [{allowed}]")
+        
+    lines += ["", "REVIEWER HISTORY:", profile_text]
+    
     return "\n".join(lines)
 
 def parse_fields(text: str) -> list[dict[str, Any]]:
@@ -633,11 +702,27 @@ def call_llm(prompt: str, config: Config) -> str:
     headers = {"Content-Type": "application/json"}
     if config.llm_authorization:
         headers["Authorization"] = config.llm_authorization
-    response = requests.post(config.llm_endpoint, headers=headers, json={"model": config.model,
-        "messages": [{"role": "user", "content": prompt}], "max_tokens": 8192, "temperature": 0.0,
-        "top_p": 1.0, "chat_template_kwargs": {"enable_thinking": False}}, timeout=config.llm_timeout_seconds)
+    payload = {
+        "model": config.model,
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 8192,
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 30,
+        "chat_template_kwargs": {"enable_thinking": False},
+    }
+    response = requests.post(
+        config.llm_endpoint,
+        headers=headers,
+        json=payload,
+        timeout=config.llm_timeout_seconds,
+    )
     response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"]
+    result = response.json()
+    try:
+        return str(result["choices"][0]["message"]["content"])
+    except (KeyError, IndexError, TypeError) as error:
+        raise ValueError(f"Unexpected LLM response structure: {result}") from error
 
 
 def extract_personas(config: Config) -> None:
@@ -663,9 +748,19 @@ def extract_personas(config: Config) -> None:
             if config.max_llm_users and processed >= config.max_llm_users:
                 break
             fields = []
-            for dimensions in chunks:
+            for chunk_index, dimensions in enumerate(chunks, start=1):
+                started_at = time.perf_counter()
                 response = call_llm(build_amazon_prompt(record["profile_text"], dimensions), config)
-                fields.extend(sanitize_fields(parse_fields(response), dimensions, record["profile_text"]))
+                chunk_fields = sanitize_fields(parse_fields(response), dimensions, record["profile_text"])
+                fields.extend(chunk_fields)
+                categories = sorted({str(dimension.get("category") or "Uncategorized") for dimension in dimensions})
+                supported_count = sum(field["value"] is not None for field in chunk_fields)
+                elapsed_seconds = time.perf_counter() - started_at
+                tqdm.write(
+                    f"user={user_id} chunk={chunk_index}/{len(chunks)} "
+                    f"category={','.join(categories)} dimensions={len(dimensions)} "
+                    f"supported={supported_count} elapsed={elapsed_seconds:.2f}s"
+                )
             if len(fields) != len(schema):
                 raise RuntimeError(f"Expected {len(schema)} fields, got {len(fields)} for {user_id}")
             result = {key: record[key] for key in ("user_id", "source", "review_count", "validation_review_count",
@@ -687,7 +782,7 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--review-dir", type=Path, default=Path("data/amazon/reviews"))
     parser.add_argument("--metadata-dir", type=Path, default=Path("data/amazon/metadata"))
     parser.add_argument("--work-dir", type=Path, default=Path("amazon_persona_fresh"))
-    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimensions.json"))
+    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimension.json"))
     parser.add_argument("--start-year", type=int, default=2018)
     parser.add_argument("--end-year", type=int, default=2023)
     parser.add_argument("--top-k", type=int, default=100_000)

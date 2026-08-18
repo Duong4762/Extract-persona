@@ -1,0 +1,885 @@
+{
+  "schemaVersion": "vn-social-0.1",
+  "name": "Vietnam Social Media Persona Schema",
+  "dimensions": [
+    {
+      "id": "age_bracket",
+      "label": "Age bracket",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographic: Core",
+      "description": "Life-age band of the persona.",
+      "values": [
+        "Under 5",
+        "5-12",
+        "13-17",
+        "18-24",
+        "25-34",
+        "35-44",
+        "45-54",
+        "55-64",
+        "65-74",
+        "75-84",
+        "85+"
+      ],
+      "index": 1
+    },
+    {
+      "id": "gender_identity",
+      "label": "Gender identity",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographic: Core",
+      "description": "Self-identified gender. Statistical priors may only support male/female counts.",
+      "values": [
+        "Woman",
+        "Man",
+        "Non-binary",
+        "Self-described",
+        "Prefer not to say"
+      ],
+      "index": 2,
+      "defaultValue": "Prefer not to say"
+    },
+    {
+      "id": "province",
+      "label": "Province or municipality",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographic: Place",
+      "description": "Current provincial-level home location after the 2025 administrative reorganization.",
+      "values": [
+        "An Giang",
+        "Bắc Ninh",
+        "Cà Mau",
+        "Cần Thơ",
+        "Cao Bằng",
+        "Đà Nẵng",
+        "Đắk Lắk",
+        "Điện Biên",
+        "Đồng Nai",
+        "Đồng Tháp",
+        "Gia Lai",
+        "Hà Nội",
+        "Hà Tĩnh",
+        "Hải Phòng",
+        "Huế",
+        "Hưng Yên",
+        "Khánh Hòa",
+        "Lai Châu",
+        "Lâm Đồng",
+        "Lạng Sơn",
+        "Lào Cai",
+        "Nghệ An",
+        "Ninh Bình",
+        "Phú Thọ",
+        "Quảng Ngãi",
+        "Quảng Ninh",
+        "Quảng Trị",
+        "Sơn La",
+        "Tây Ninh",
+        "Thái Nguyên",
+        "Thanh Hóa",
+        "Thành phố Hồ Chí Minh",
+        "Tuyên Quang",
+        "Vĩnh Long"
+      ],
+      "index": 3
+    },
+    {
+      "id": "macro_region",
+      "label": "Macro region",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographic: Place",
+      "description": "Coarse Vietnamese region for robust sampling and reporting.",
+      "values": [
+        "North",
+        "Central",
+        "South"
+      ],
+      "index": 4
+    },
+    {
+      "id": "urbanicity",
+      "label": "Urbanicity",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographic: Place",
+      "description": "Urban-rural settlement type.",
+      "values": [
+        "Urban core",
+        "Peri-urban",
+        "Town",
+        "Rural",
+        "Mountainous or remote"
+      ],
+      "index": 5
+    },
+    {
+      "id": "household_life_stage",
+      "label": "Household life stage",
+      "group": "Background",
+      "subgroup": "Household",
+      "category": "Demographic: Household",
+      "description": "Household role and family stage.",
+      "values": [
+        "Child dependent",
+        "Student away from home",
+        "Single adult",
+        "Married no children",
+        "Parent with young children",
+        "Parent with teen children",
+        "Multi-generation household",
+        "Older adult household"
+      ],
+      "index": 6
+    },
+    {
+      "id": "highest_education",
+      "label": "Highest education",
+      "group": "Background",
+      "subgroup": "Socioeconomic and Career",
+      "category": "Education",
+      "description": "Highest education level reached in the Vietnamese system.",
+      "values": [
+        "Not applicable",
+        "Primary",
+        "Lower secondary",
+        "Upper secondary",
+        "Vocational",
+        "College",
+        "University",
+        "Master",
+        "Doctorate"
+      ],
+      "index": 7
+    },
+    {
+      "id": "occupation_status",
+      "label": "Occupation status",
+      "group": "Background",
+      "subgroup": "Socioeconomic and Career",
+      "category": "Work",
+      "description": "Primary work or study status.",
+      "values": [
+        "Student",
+        "Office worker",
+        "Factory worker",
+        "Service worker",
+        "Small business owner",
+        "Freelancer",
+        "Farmer or fisher",
+        "Homemaker",
+        "Unemployed",
+        "Retired"
+      ],
+      "index": 8
+    },
+    {
+      "id": "industry",
+      "label": "Industry",
+      "group": "Background",
+      "subgroup": "Socioeconomic and Career",
+      "category": "Work",
+      "description": "Industry or activity sector.",
+      "values": [
+        "Not working",
+        "Agriculture",
+        "Manufacturing",
+        "Construction",
+        "Retail and services",
+        "Transportation",
+        "Education",
+        "Healthcare",
+        "Government",
+        "Finance",
+        "Technology",
+        "Content and media"
+      ],
+      "index": 9
+    },
+    {
+      "id": "income_band_vnd_month",
+      "label": "Monthly income band",
+      "group": "Background",
+      "subgroup": "Socioeconomic and Career",
+      "category": "Income",
+      "description": "Approximate individual monthly income in VND.",
+      "values": [
+        "No personal income",
+        "Under 5m",
+        "5m-10m",
+        "10m-20m",
+        "20m-40m",
+        "40m-80m",
+        "80m+"
+      ],
+      "index": 10
+    },
+    {
+      "id": "financial_security",
+      "label": "Financial security",
+      "group": "Background",
+      "subgroup": "Socioeconomic and Career",
+      "category": "Income",
+      "description": "Subjective financial buffer.",
+      "values": [
+        "Precarious",
+        "Tight",
+        "Stable",
+        "Comfortable",
+        "Affluent"
+      ],
+      "index": 11
+    },
+    {
+      "id": "ethnic_language_context",
+      "label": "Ethnic language context",
+      "group": "Background",
+      "subgroup": "Culture and Language",
+      "category": "Language",
+      "description": "Language context relevant to online expression.",
+      "values": [
+        "Vietnamese dominant",
+        "Vietnamese plus local minority language",
+        "Vietnamese plus Chinese",
+        "Vietnamese plus Khmer",
+        "Vietnamese plus English-heavy",
+        "Other"
+      ],
+      "index": 12
+    },
+    {
+      "id": "english_proficiency",
+      "label": "English proficiency",
+      "group": "Capability",
+      "subgroup": "Language",
+      "category": "Language",
+      "description": "Functional English ability for reading and posting online.",
+      "values": [
+        "None",
+        "Basic",
+        "Intermediate",
+        "Advanced",
+        "Professional"
+      ],
+      "index": 13
+    },
+    {
+      "id": "big5_extraversion",
+      "label": "Big Five extraversion",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Big Five",
+      "description": "Social expressiveness online and offline.",
+      "values": [
+        "Very low",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 14
+    },
+    {
+      "id": "big5_agreeableness",
+      "label": "Big Five agreeableness",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Big Five",
+      "description": "Interpersonal warmth and conflict tendency.",
+      "values": [
+        "Very low",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 15
+    },
+    {
+      "id": "big5_conscientiousness",
+      "label": "Big Five conscientiousness",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Big Five",
+      "description": "Planning and self-control relevant to posting and buying behavior.",
+      "values": [
+        "Very low",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 16
+    },
+    {
+      "id": "social_trust",
+      "label": "Social trust",
+      "group": "Psychology",
+      "subgroup": "Social Attitudes",
+      "category": "Trust",
+      "description": "General trust toward people and institutions.",
+      "values": [
+        "Very low",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 17
+    },
+    {
+      "id": "risk_tolerance",
+      "label": "Risk tolerance",
+      "group": "Psychology",
+      "subgroup": "Social Attitudes",
+      "category": "Decision Style",
+      "description": "Willingness to try new apps, shops, and claims.",
+      "values": [
+        "Avoidant",
+        "Cautious",
+        "Balanced",
+        "Adventurous",
+        "Speculative"
+      ],
+      "index": 18
+    },
+    {
+      "id": "fake_news_susceptibility",
+      "label": "Fake news susceptibility",
+      "group": "Psychology",
+      "subgroup": "Social Attitudes",
+      "category": "Information Behavior",
+      "description": "Likelihood of believing or sharing low-quality claims.",
+      "values": [
+        "Very low",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 19
+    },
+    {
+      "id": "online_conflict_style",
+      "label": "Online conflict style",
+      "group": "Psychology",
+      "subgroup": "Social Attitudes",
+      "category": "Interaction Style",
+      "description": "Typical response to disagreement online.",
+      "values": [
+        "Avoids conflict",
+        "Polite debate",
+        "Sarcastic",
+        "Direct challenge",
+        "Aggressive"
+      ],
+      "index": 20
+    },
+    {
+      "id": "privacy_sensitivity",
+      "label": "Privacy sensitivity",
+      "group": "Psychology",
+      "subgroup": "Digital Attitudes",
+      "category": "Privacy",
+      "description": "Concern about revealing personal details online.",
+      "values": [
+        "Very low",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 21
+    },
+    {
+      "id": "tech_savviness",
+      "label": "Tech savviness",
+      "group": "Capability",
+      "subgroup": "Digital Literacy",
+      "category": "Digital Skill",
+      "description": "General comfort with consumer technology.",
+      "values": [
+        "Avoidant",
+        "Basic",
+        "Comfortable",
+        "Advanced",
+        "Power user"
+      ],
+      "index": 22
+    },
+    {
+      "id": "device_primary",
+      "label": "Primary device",
+      "group": "Capability",
+      "subgroup": "Digital Access",
+      "category": "Device",
+      "description": "Main device for online activity.",
+      "values": [
+        "Shared family phone",
+        "Personal budget smartphone",
+        "Personal midrange smartphone",
+        "Premium smartphone",
+        "Laptop or desktop first"
+      ],
+      "index": 23
+    },
+    {
+      "id": "internet_access_quality",
+      "label": "Internet access quality",
+      "group": "Capability",
+      "subgroup": "Digital Access",
+      "category": "Connectivity",
+      "description": "Reliability and speed of internet access.",
+      "values": [
+        "Intermittent",
+        "Mobile data constrained",
+        "Adequate mobile",
+        "Home broadband",
+        "High quality multi-device"
+      ],
+      "index": 24
+    },
+    {
+      "id": "content_creation_skill",
+      "label": "Content creation skill",
+      "group": "Capability",
+      "subgroup": "Digital Literacy",
+      "category": "Creator Skill",
+      "description": "Ability to create posts, short videos, livestreams, and edits.",
+      "values": [
+        "None",
+        "Basic posting",
+        "Photo editing",
+        "Short video editing",
+        "Livestream or pro creator"
+      ],
+      "index": 25
+    },
+    {
+      "id": "ai_tool_usage",
+      "label": "AI tool usage",
+      "group": "Capability",
+      "subgroup": "Digital Literacy",
+      "category": "AI Usage",
+      "description": "Frequency of consumer AI tool use.",
+      "values": [
+        "Never",
+        "Tried",
+        "Occasional",
+        "Weekly",
+        "Daily"
+      ],
+      "index": 26
+    },
+    {
+      "id": "vehicle_access",
+      "label": "Vehicle access",
+      "group": "Capability",
+      "subgroup": "Mobility",
+      "category": "Mobility",
+      "description": "Everyday vehicle access relevant to commerce and local content.",
+      "values": [
+        "None",
+        "Bicycle or e-bike",
+        "Motorbike passenger",
+        "Motorbike rider",
+        "Car access",
+        "Ride-hailing dependent"
+      ],
+      "index": 27
+    },
+    {
+      "id": "primary_social_network",
+      "label": "Primary social network",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Usage",
+      "category": "Platform",
+      "description": "Main platform for social attention.",
+      "values": [
+        "Facebook",
+        "Zalo",
+        "TikTok",
+        "YouTube",
+        "Instagram",
+        "Threads",
+        "LinkedIn",
+        "Forums",
+        "None"
+      ],
+      "index": 28
+    },
+    {
+      "id": "secondary_social_network",
+      "label": "Secondary social network",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Usage",
+      "category": "Platform",
+      "description": "Second most relevant platform.",
+      "values": [
+        "Facebook",
+        "Zalo",
+        "TikTok",
+        "YouTube",
+        "Instagram",
+        "Threads",
+        "LinkedIn",
+        "Forums",
+        "None"
+      ],
+      "index": 29
+    },
+    {
+      "id": "daily_social_screen_time",
+      "label": "Daily social screen time",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Usage",
+      "category": "Usage Intensity",
+      "description": "Approximate daily time spent on social platforms.",
+      "values": [
+        "Under 30m",
+        "30m-1h",
+        "1h-2h",
+        "2h-4h",
+        "4h-6h",
+        "6h+"
+      ],
+      "index": 30
+    },
+    {
+      "id": "social_media_role",
+      "label": "Social media role",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Usage",
+      "category": "Participation",
+      "description": "Dominant participation style online.",
+      "values": [
+        "Lurker",
+        "Reactor",
+        "Commenter",
+        "Sharer",
+        "Group participant",
+        "Creator",
+        "Seller or affiliate"
+      ],
+      "index": 31
+    },
+    {
+      "id": "posting_frequency",
+      "label": "Posting frequency",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Usage",
+      "category": "Participation",
+      "description": "How often the persona posts original content.",
+      "values": [
+        "Never",
+        "Rarely",
+        "Monthly",
+        "Weekly",
+        "Daily",
+        "Multiple daily"
+      ],
+      "index": 32
+    },
+    {
+      "id": "commenting_frequency",
+      "label": "Commenting frequency",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Usage",
+      "category": "Participation",
+      "description": "How often the persona comments publicly.",
+      "values": [
+        "Never",
+        "Rarely",
+        "Monthly",
+        "Weekly",
+        "Daily",
+        "Multiple daily"
+      ],
+      "index": 33
+    },
+    {
+      "id": "messaging_intensity",
+      "label": "Messaging intensity",
+      "group": "Behavior and Interaction",
+      "subgroup": "Messaging",
+      "category": "Private Communication",
+      "description": "Use of private messaging apps and inboxes.",
+      "values": [
+        "Minimal",
+        "Family only",
+        "Friends and family",
+        "Work and commerce",
+        "Always-on messaging"
+      ],
+      "index": 34
+    },
+    {
+      "id": "group_community_participation",
+      "label": "Group community participation",
+      "group": "Behavior and Interaction",
+      "subgroup": "Communities",
+      "category": "Groups",
+      "description": "Participation in Facebook/Zalo/forum groups.",
+      "values": [
+        "None",
+        "Reads only",
+        "Occasional questions",
+        "Frequent commenter",
+        "Moderator or organizer",
+        "Seller in groups"
+      ],
+      "index": 35
+    },
+    {
+      "id": "content_tone",
+      "label": "Content tone",
+      "group": "Behavior and Interaction",
+      "subgroup": "Expression",
+      "category": "Tone",
+      "description": "Default tone in posts and comments.",
+      "values": [
+        "Reserved",
+        "Warm",
+        "Humorous",
+        "Informational",
+        "Promotional",
+        "Argumentative"
+      ],
+      "index": 36
+    },
+    {
+      "id": "slang_usage",
+      "label": "Slang usage",
+      "group": "Behavior and Interaction",
+      "subgroup": "Expression",
+      "category": "Language Style",
+      "description": "Use of Vietnamese internet slang, abbreviations, and memes.",
+      "values": [
+        "None",
+        "Light",
+        "Moderate",
+        "Heavy",
+        "Community-specific"
+      ],
+      "index": 37
+    },
+    {
+      "id": "emoji_sticker_usage",
+      "label": "Emoji and sticker usage",
+      "group": "Behavior and Interaction",
+      "subgroup": "Expression",
+      "category": "Language Style",
+      "description": "Use of emoji, stickers, GIFs, and reaction images.",
+      "values": [
+        "None",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 38
+    },
+    {
+      "id": "news_consumption_channel",
+      "label": "News consumption channel",
+      "group": "Behavior and Interaction",
+      "subgroup": "Information Behavior",
+      "category": "News",
+      "description": "Primary source of news and public information.",
+      "values": [
+        "TV or official news",
+        "Online newspapers",
+        "Facebook feed",
+        "TikTok or short video",
+        "YouTube",
+        "Group chats",
+        "Rarely follows news"
+      ],
+      "index": 39
+    },
+    {
+      "id": "fact_checking_habit",
+      "label": "Fact checking habit",
+      "group": "Behavior and Interaction",
+      "subgroup": "Information Behavior",
+      "category": "News",
+      "description": "Habit of checking claims before sharing.",
+      "values": [
+        "Never",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Systematic"
+      ],
+      "index": 40
+    },
+    {
+      "id": "ad_sensitivity",
+      "label": "Ad sensitivity",
+      "group": "Behavior and Interaction",
+      "subgroup": "Commerce",
+      "category": "Advertising",
+      "description": "Responsiveness to ads, influencer recommendations, and livestream deals.",
+      "values": [
+        "Avoids ads",
+        "Skeptical",
+        "Deal-aware",
+        "Influencer-influenced",
+        "Impulse-prone"
+      ],
+      "index": 41
+    },
+    {
+      "id": "ecommerce_platform",
+      "label": "E-commerce platform",
+      "group": "Behavior and Interaction",
+      "subgroup": "Commerce",
+      "category": "Shopping",
+      "description": "Main online shopping platform.",
+      "values": [
+        "None",
+        "Shopee",
+        "TikTok Shop",
+        "Lazada",
+        "Tiki",
+        "Facebook or Zalo seller",
+        "Brand website"
+      ],
+      "index": 42
+    },
+    {
+      "id": "online_purchase_frequency",
+      "label": "Online purchase frequency",
+      "group": "Behavior and Interaction",
+      "subgroup": "Commerce",
+      "category": "Shopping",
+      "description": "How often the persona buys online.",
+      "values": [
+        "Never",
+        "Few times per year",
+        "Monthly",
+        "Several times monthly",
+        "Weekly",
+        "Multiple weekly"
+      ],
+      "index": 43
+    },
+    {
+      "id": "payment_method",
+      "label": "Payment method",
+      "group": "Behavior and Interaction",
+      "subgroup": "Commerce",
+      "category": "Payment",
+      "description": "Preferred payment method for online purchases.",
+      "values": [
+        "COD",
+        "Bank transfer",
+        "Domestic card",
+        "E-wallet",
+        "QR payment",
+        "Buy now pay later",
+        "Not applicable"
+      ],
+      "index": 44
+    },
+    {
+      "id": "livestream_shopping_affinity",
+      "label": "Livestream shopping affinity",
+      "group": "Behavior and Interaction",
+      "subgroup": "Commerce",
+      "category": "Shopping",
+      "description": "Interest in livestream commerce.",
+      "values": [
+        "Avoids",
+        "Rare viewer",
+        "Deal watcher",
+        "Frequent buyer",
+        "Host or affiliate"
+      ],
+      "index": 45
+    },
+    {
+      "id": "health_insurance_status",
+      "label": "Health insurance status",
+      "group": "Background",
+      "subgroup": "Safety Net",
+      "category": "Insurance",
+      "description": "Health insurance coverage status as a socioeconomic and institution-touchpoint signal.",
+      "values": [
+        "Unknown",
+        "No insurance",
+        "Public health insurance",
+        "Employer-provided",
+        "Private supplemental"
+      ],
+      "index": 46
+    },
+    {
+      "id": "interest_showbiz",
+      "label": "Interest in showbiz",
+      "group": "Lifestyle",
+      "subgroup": "Interests",
+      "category": "Entertainment",
+      "description": "Interest in entertainment celebrities and gossip.",
+      "values": [
+        "None",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 47
+    },
+    {
+      "id": "interest_tech_gaming",
+      "label": "Interest in tech and gaming",
+      "group": "Lifestyle",
+      "subgroup": "Interests",
+      "category": "Technology",
+      "description": "Interest in tech products, games, and esports.",
+      "values": [
+        "None",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 48
+    },
+    {
+      "id": "interest_beauty_fashion",
+      "label": "Interest in beauty and fashion",
+      "group": "Lifestyle",
+      "subgroup": "Interests",
+      "category": "Shopping",
+      "description": "Interest in beauty, fashion, and personal style.",
+      "values": [
+        "None",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 49
+    },
+    {
+      "id": "interest_news_politics",
+      "label": "Interest in news and public affairs",
+      "group": "Lifestyle",
+      "subgroup": "Interests",
+      "category": "News",
+      "description": "Interest in news, social issues, and public affairs.",
+      "values": [
+        "None",
+        "Low",
+        "Medium",
+        "High",
+        "Very high"
+      ],
+      "index": 50
+    }
+  ]
+}
