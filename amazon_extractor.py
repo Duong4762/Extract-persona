@@ -48,12 +48,12 @@ class Config:
     max_dims_per_chunk: int = 50
     max_llm_users: int = 0
     review_shards: int = 256
-    model: str = os.environ.get("AMAZON_LLM_MODEL", "Qwen3-14B")
+    model: str = os.environ.get("LLM_MODEL", "Qwen3-14B")
     llm_endpoint: str = os.environ.get(
-        "AMAZON_LLM_ENDPOINT",
+        "LLM_ENDPOINT",
         "http://203.113.152.4:7777/llm/v1/chat/completions",
     )
-    llm_authorization: str = os.environ.get("AMAZON_LLM_AUTHORIZATION", "")
+    llm_authorization: str = os.environ.get("LLM_AUTHORIZATION", "")
     llm_timeout_seconds: int = 300
 
     @property
