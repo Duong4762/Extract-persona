@@ -12,7 +12,7 @@ import re
 import time
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterable, Iterator
 
@@ -20,6 +20,7 @@ import requests
 from tqdm.auto import tqdm
 
 PROJECT_ROOT = Path(__file__).resolve().parent
+VIETNAM_TIMEZONE = timezone(timedelta(hours=7))
 
 
 def project_path(value: Path) -> Path:
@@ -34,9 +35,8 @@ class Config:
     schema_path: Path
     max_rows_per_file: int = 0
     top_k: int = 100_000
-    min_reviews: int = 30
+    min_reviews: int = 10
     min_text_chars: int = 2_000
-    train_fraction: float = 0.8
     min_review_text_chars: int = 20
     max_profile_chars: int = 48_000
     max_review_text_chars: int = 2_000
@@ -108,6 +108,11 @@ def parse_comment_date(value: Any) -> int | None:
         parsed = parsed.replace(tzinfo=timezone.utc)
     return int(parsed.timestamp() * 1000)
 
+
+def format_vietnam_datetime(timestamp_ms: int) -> str:
+    """Format epoch milliseconds as ISO-8601 in Vietnam time (UTC+07:00)."""
+    return datetime.fromtimestamp(timestamp_ms / 1000, tz=VIETNAM_TIMEZONE).isoformat(timespec="seconds")
+
 def review_text(review: dict[str, Any]) -> str:
     return compact_text(review.get("text") or review.get("review_text"))
 
@@ -147,7 +152,11 @@ def product_category_path(review: dict[str, Any]) -> list[str]:
 
 def normalize_review_record(review: dict[str, Any]) -> dict[str, Any]:
     row = dict(review)
-    row["timestamp"] = parse_comment_date(row.get("comment_date")) if not isinstance(row.get("timestamp"), int) else row["timestamp"]
+    timestamp_ms = row.get("timestamp_ms")
+    if not isinstance(timestamp_ms, int):
+        timestamp_ms = parse_comment_date(row.get("timestamp") or row.get("comment_date"))
+    row["timestamp_ms"] = timestamp_ms
+    row["timestamp"] = format_vietnam_datetime(timestamp_ms) if timestamp_ms is not None else ""
     if valid_rating(row.get("rating")):
         row["rating"] = float(row["rating"])
     row["text"] = review_text(row)
@@ -166,7 +175,7 @@ def fulfillment_match(review: dict[str, Any]) -> str | None:
 def review_key(review: dict[str, Any]) -> tuple[str, ...]:
     return (
         str(review.get("category") or ""), str(review.get("rating") or ""),
-        str(review.get("timestamp") or ""), review_text(review).lower(), product_title(review).lower(),
+        str(review.get("timestamp_ms") or ""), review_text(review).lower(), product_title(review).lower(),
     )
 
 def filter_reviews(reviews: list[dict[str, Any]], *, min_review_text_chars: int, filter_fulfillment_reviews: bool) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -177,7 +186,7 @@ def filter_reviews(reviews: list[dict[str, Any]], *, min_review_text_chars: int,
         review = normalize_review_record(raw_review)
         category = str(review.get("category") or "Unknown")
         reason = None
-        if review.get("timestamp") is None:
+        if review.get("timestamp_ms") is None:
             reason = "missing_or_invalid_timestamp"
         elif not valid_rating(review.get("rating")):
             reason = "missing_or_invalid_rating"
@@ -193,29 +202,12 @@ def filter_reviews(reviews: list[dict[str, Any]], *, min_review_text_chars: int,
             continue
         seen.add(review_key(review))
         kept.append(review)
-    kept.sort(key=lambda row: (int(row.get("timestamp") or 0), int(row.get("source_index") or 0)))
+    kept.sort(key=lambda row: (int(row.get("timestamp_ms") or 0), int(row.get("source_index") or 0)))
     return kept, {
         "input_reviews": len(reviews), "kept_reviews": len(kept),
         "removed_reviews": len(reviews) - len(kept),
         "removed_by_reason": dict(sorted(removed_by_reason.items())),
         "removed_by_category": dict(sorted(removed_by_category.items())),
-    }
-
-def temporal_train_validation_split(reviews: list[dict[str, Any]], train_fraction: float) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
-    if not 0 < train_fraction < 1:
-        raise ValueError("TRAIN_FRACTION must be in (0, 1)")
-    split_index = max(1, min(int(len(reviews) * train_fraction), len(reviews) - 1))
-    construction, validation = reviews[:split_index], reviews[split_index:]
-    return construction, validation, {
-        "method": "per_user_temporal", "unit": "review_row",
-        "train_fraction": train_fraction,
-        "construction_row_count": len(construction), "validation_row_count": len(validation),
-        "construction_text_review_count": sum(bool(review_text(row)) for row in construction),
-        "validation_text_review_count": sum(bool(review_text(row)) for row in validation),
-        "construction_rating_count": sum(valid_rating(row.get("rating")) for row in construction),
-        "validation_rating_count": sum(valid_rating(row.get("rating")) for row in validation),
-        "construction_last_timestamp": construction[-1].get("timestamp") if construction else None,
-        "validation_first_timestamp": validation[0].get("timestamp") if validation else None,
     }
 
 def category_review_stats(reviews: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -257,13 +249,7 @@ def format_counts(counts: Any, limit: int) -> str:
 
 def render_summary_stats(row: dict[str, Any], max_chars: int = 4_000) -> str:
     stats = row.get("category_review_stats") or {}
-    split = row.get("temporal_split") or {}
-    lines = ["=== Summary Stats ===", (
-        f"construction_rows: {split.get('construction_row_count', 0)}; "
-        f"validation_rows: {split.get('validation_row_count', 0)}; "
-        f"construction_text_reviews: {split.get('construction_text_review_count', 0)}; "
-        f"construction_ratings: {split.get('construction_rating_count', 0)}"
-    )]
+    lines = ["=== Category Summary ==="]
     for category, item in sorted(stats.items(), key=lambda pair: (-pair[1].get("review_count", 0), pair[0]))[:12]:
         parts = [
             f"category={category}", f"rows={item.get('review_count', 0)}",
@@ -290,8 +276,7 @@ def render_review(review: dict[str, Any], index: int, max_review_text_chars: int
 
 def assemble_profile(row: dict[str, Any], max_chars: int, max_review_text_chars: int) -> str:
     reviews = row.get("reviews") or []
-    categories = {review.get("category") or "Unknown" for review in reviews}
-    parts = [f"Vietnamese e-commerce reviewer profile - construction split: {len(reviews)} reviews across {len(categories)} categories."]
+    parts = ["Vietnamese e-commerce reviewer profile."]
     summary = render_summary_stats(row)
     if summary: parts.append(summary)
     parts.extend(render_review(review, index, max_review_text_chars) for index, review in enumerate(reviews, 1))
@@ -568,7 +553,8 @@ def ingest_reviews(config: Config) -> None:
                 record = {"review_id": review_id, "user_id": user_id, "category": category,
                     "rating": row.get("Rating"), "text": str(row.get("Comment") or ""),
                     "product_title": str(row.get("ProductName") or ""),
-                    "product_category_path": [category] if category else [], "timestamp": timestamp,
+                    "product_category_path": [category] if category else [],
+                    "timestamp": format_vietnam_datetime(timestamp), "timestamp_ms": timestamp,
                     "source_index": source_index}
                 handle = handles[user_shard(user_id, config.review_shards)]
                 handle.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -610,12 +596,12 @@ def select_users(config: Config) -> None:
             seen_review_ids.add(review_id)
             user_id = row["user_id"]
             item = aggregate.setdefault(user_id, {"count": 0, "categories": set(), "text_reviews": 0,
-                "text_chars": 0, "min_ts": row["timestamp"], "max_ts": row["timestamp"]})
+                "text_chars": 0, "min_ts": row["timestamp_ms"], "max_ts": row["timestamp_ms"]})
             text = str(row.get("text") or "")
             item["count"] += 1; item["categories"].add(row.get("category") or "Unknown")
             item["text_reviews"] += int(bool(text.strip())); item["text_chars"] += len(text)
-            item["min_ts"] = min(item["min_ts"], row["timestamp"])
-            item["max_ts"] = max(item["max_ts"], row["timestamp"])
+            item["min_ts"] = min(item["min_ts"], row["timestamp_ms"])
+            item["max_ts"] = max(item["max_ts"], row["timestamp_ms"])
     eligible = []
     for user_id, item in aggregate.items():
         if item["count"] >= config.min_reviews and item["text_chars"] >= config.min_text_chars:
@@ -651,15 +637,15 @@ def prepare_histories(config: Config) -> None:
                     reviews_by_user[user_id].append(review)
             for user_id, raw_reviews in reviews_by_user.items():
                 reviews, filter_summary = filter_reviews(raw_reviews, min_review_text_chars=config.min_review_text_chars,
-                                                           filter_fulfillment_reviews=True)
+                                                           filter_fulfillment_reviews=False)
                 if len(reviews) < 2:
                     continue
-                construction, validation, split = temporal_train_validation_split(reviews, config.train_fraction)
+                for review in reviews:
+                    review.pop("timestamp_ms", None)
+                    review.pop("source_index", None)
                 record = {"source": "vietnamese_ecommerce_reviews", "user_id": user_id, "rank": selected[user_id]["rank"],
-                    "review_count": len(reviews), "validation_review_count": len(validation), "temporal_split": split,
-                    "review_filter_summary": filter_summary, "reviews": construction, "validation_reviews": validation,
-                    "category_review_stats": category_review_stats(construction),
-                    "validation_category_review_stats": category_review_stats(validation)}
+                    "review_count": len(reviews), "review_filter_summary": filter_summary, "reviews": reviews,
+                    "category_review_stats": category_review_stats(reviews)}
                 output.write(json.dumps(record, ensure_ascii=False) + "\n")
     print("Prepared histories:", config.histories_path)
 
@@ -673,8 +659,7 @@ def compact_profiles(config: Config) -> None:
                 continue
             user = json.loads(line)
             profile = assemble_profile(user, config.max_profile_chars, config.max_review_text_chars)
-            record = {key: user[key] for key in ("user_id", "source", "review_count", "validation_review_count",
-                                                   "temporal_split", "review_filter_summary")}
+            record = {key: user[key] for key in ("user_id", "source", "review_count", "review_filter_summary")}
             record.update({"compact_profile_chars": len(profile), "max_profile_chars": config.max_profile_chars,
                            "max_review_text_chars": config.max_review_text_chars, "profile_text": profile})
             output.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -756,8 +741,8 @@ def extract_personas(config: Config) -> None:
                 )
             if len(fields) != len(schema):
                 raise RuntimeError(f"Expected {len(schema)} fields, got {len(fields)} for {user_id}")
-            result = {key: record[key] for key in ("user_id", "source", "review_count", "validation_review_count",
-                                                    "temporal_split", "review_filter_summary", "compact_profile_chars")}
+            result = {key: record[key] for key in ("user_id", "source", "review_count",
+                                                    "review_filter_summary", "compact_profile_chars")}
             result["fields"] = fields
             output.write(json.dumps(result, ensure_ascii=False) + "\n"); output.flush(); os.fsync(output.fileno())
             done.add(user_id); processed += 1
@@ -774,7 +759,7 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument("stage", choices=("all", "ingest", "prepare", "compact", "extract"), nargs="?", default="all")
     parser.add_argument("--review-dir", type=Path, default=Path("data/vietnamese_reviews"))
     parser.add_argument("--work-dir", type=Path, default=Path("vietnamese_persona_fresh"))
-    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimensions.json"))
+    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimension.json"))
     parser.add_argument("--top-k", type=int, default=100_000)
     parser.add_argument("--max-rows-per-file", type=int, default=0)
     parser.add_argument("--max-llm-users", type=int, default=0)
