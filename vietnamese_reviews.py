@@ -1,7 +1,7 @@
 """Build schema-constrained personas from Vietnamese e-commerce reviews.
 
-The pipeline is split into four resumable stages: ingest, prepare, compact and
-extract. Run ``python vietnamese_reviews.py --help`` for usage.
+The pipeline is split into five resumable stages: ingest, prepare, compact,
+extract and stats. Run ``python vietnamese_reviews.py --help`` for usage.
 """
 
 import argparse
@@ -36,7 +36,7 @@ class Config:
     max_rows_per_file: int = 0
     top_k: int = 100_000
     min_reviews: int = 5
-    min_text_chars: int = 2_000
+    min_text_chars: int = 500
     min_review_text_chars: int = 20
     max_profile_chars: int = 48_000
     max_review_text_chars: int = 2_000
@@ -70,6 +70,10 @@ class Config:
     @property
     def personas_path(self) -> Path:
         return self.work_dir / "personas_1290.jsonl"
+
+    @property
+    def persona_stats_path(self) -> Path:
+        return self.work_dir / "persona_stats.json"
 
     @property
     def prompt_log_dir(self) -> Path:
@@ -720,6 +724,66 @@ def extract_personas(config: Config) -> None:
     print(f"New personas={processed}; output={config.personas_path}")
 
 
+def generate_persona_stats(config: Config) -> None:
+    """Summarize supported persona dimensions overall and by schema category."""
+    require_file(config.personas_path, "Run the extract stage first")
+    schema = load_schema(config)
+    field_categories = {
+        str(dimension["id"]): str(dimension.get("category") or "Uncategorized")
+        for dimension in schema
+    }
+    seen_users: set[str] = set()
+    supported_dimensions_total = 0
+    supported_by_category: dict[str, int] = defaultdict(int)
+    with config.personas_path.open(encoding="utf-8") as source:
+        for line_number, line in enumerate(source, start=1):
+            if not line.strip():
+                continue
+            try:
+                persona = json.loads(line)
+            except json.JSONDecodeError as error:
+                raise ValueError(f"Invalid JSON at {config.personas_path}:{line_number}") from error
+            user_id = str(persona.get("user_id") or "").strip()
+            if not user_id or user_id in seen_users:
+                continue
+            seen_users.add(user_id)
+            fields = persona.get("fields") or []
+            for field in fields:
+                if not isinstance(field, dict) or field.get("value") is None:
+                    continue
+                supported_dimensions_total += 1
+                field_id = str(field.get("field_id") or "")
+                supported_by_category[field_categories.get(field_id, "Unknown field category")] += 1
+
+    persona_count = len(seen_users)
+    category_stats = [
+        {"category": category, "supported_dimension_count": count}
+        for category, count in sorted(
+            supported_by_category.items(),
+            key=lambda item: (-item[1], item[0]),
+        )
+    ]
+
+    stats = {
+        "persona_count": persona_count,
+        "schema_dimension_count": len(schema),
+        "supported_dimension_count": supported_dimensions_total,
+        "average_supported_dimensions_per_persona": round(
+            supported_dimensions_total / persona_count, 4
+        ) if persona_count else 0.0,
+        "categories": category_stats,
+    }
+    config.persona_stats_path.write_text(
+        json.dumps(stats, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(f"Extracted personas: {persona_count:,}")
+    print(f"Average supported dimensions/persona: {stats['average_supported_dimensions_per_persona']:.4f}")
+    for item in category_stats:
+        print(f"{item['category']}: {item['supported_dimension_count']:,}")
+    print("Persona stats:", config.persona_stats_path)
+
+
 def require_file(path: Path, hint: str) -> None:
     if not path.is_file():
         raise FileNotFoundError(f"Missing file: {path}. {hint}.")
@@ -727,7 +791,7 @@ def require_file(path: Path, hint: str) -> None:
 
 def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("stage", choices=("all", "ingest", "prepare", "compact", "extract"), nargs="?", default="all")
+    parser.add_argument("stage", choices=("all", "ingest", "prepare", "compact", "extract", "stats"), nargs="?", default="all")
     parser.add_argument("--review-dir", type=Path, default=Path("data/vietnamese_reviews"))
     parser.add_argument("--work-dir", type=Path, default=Path("vietnamese_persona_fresh"))
     parser.add_argument("--schema-path", type=Path, default=Path("schema/dimension.json"))
@@ -757,6 +821,8 @@ def main(argv: Iterable[str] | None = None) -> None:
         compact_profiles(config)
     if args.stage in {"all", "extract"}:
         extract_personas(config)
+    if args.stage in {"all", "stats"}:
+        generate_persona_stats(config)
 
 
 if __name__ == "__main__":

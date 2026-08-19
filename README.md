@@ -24,4 +24,5 @@ python vietnamese_reviews.py ingest
 python vietnamese_reviews.py prepare
 python vietnamese_reviews.py compact
 python vietnamese_reviews.py extract
+python vietnamese_reviews.py stats
 ```
