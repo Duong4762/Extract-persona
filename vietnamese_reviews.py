@@ -1,11 +1,10 @@
-"""Build schema-constrained personas from local Amazon review data.
+"""Build schema-constrained personas from Vietnamese e-commerce reviews.
 
 The pipeline is split into four resumable stages: ingest, prepare, compact and
-extract. Run ``python amazon_extractor.py --help`` for usage.
+extract. Run ``python vietnamese_reviews.py --help`` for usage.
 """
 
 import argparse
-import gzip
 import hashlib
 import json
 import os
@@ -31,16 +30,12 @@ def project_path(value: Path) -> Path:
 @dataclass(frozen=True)
 class Config:
     review_dir: Path
-    metadata_dir: Path
     work_dir: Path
     schema_path: Path
-    start_year: int = 2018
-    end_year: int = 2023
     max_rows_per_file: int = 0
     top_k: int = 100_000
     min_reviews: int = 30
     min_text_chars: int = 2_000
-    min_verified_share: float = 0.70
     train_fraction: float = 0.8
     min_review_text_chars: int = 20
     max_profile_chars: int = 48_000
@@ -48,12 +43,12 @@ class Config:
     max_dims_per_chunk: int = 50
     max_llm_users: int = 0
     review_shards: int = 256
-    model: str = os.environ.get("AMAZON_LLM_MODEL", "Qwen3-14B")
+    model: str = os.environ.get("VIETNAMESE_REVIEW_LLM_MODEL", "Qwen3-14B")
     llm_endpoint: str = os.environ.get(
-        "AMAZON_LLM_ENDPOINT",
+        "VIETNAMESE_REVIEW_LLM_ENDPOINT",
         "http://203.113.152.4:7777/llm/v1/chat/completions",
     )
-    llm_authorization: str = os.environ.get("AMAZON_LLM_AUTHORIZATION", "")
+    llm_authorization: str = os.environ.get("VIETNAMESE_REVIEW_LLM_AUTHORIZATION", "")
     llm_timeout_seconds: int = 300
 
     @property
@@ -76,18 +71,14 @@ class Config:
     def personas_path(self) -> Path:
         return self.work_dir / "personas_1290.jsonl"
 
-# ===== STANDALONE PRODUCTION HELPERS =====
-# Các hàm dưới đây được đặt trực tiếp trong notebook; không import code từ project.
 ASSIGNMENT_TYPES = {"direct", "structured_claim", "summary_inference", "unsupported"}
 NULLISH_VALUES = {"", "null", "none", "n/a", "na", "unknown", "unsupported", "not applicable"}
 FULFILLMENT_PATTERNS = [
     re.compile(pattern, re.I) for pattern in (
-        r"\b(as expected|works as expected|just as described)\b",
-        r"\b(fast shipping|quick shipping|arrived (on time|quickly|early))\b",
-        r"\b(great product|good product|nice product|excellent product)\b",
-        r"\b(would buy again|will buy again|recommend this product)\b",
-        r"\b(five stars|four stars|three stars|two stars|one star)\b",
-        r"^\s*(good|great|excellent|perfect|nice|ok|okay|love it|liked it)[.!]?\s*$",
+        r"\b(giao hàng nhanh|ship nhanh|đóng gói (cẩn thận|chắc chắn)|giao đúng hàng)\b",
+        r"\b(hàng (đẹp|tốt|ổn|chất lượng)|sản phẩm (đẹp|tốt|ổn|chất lượng))\b",
+        r"\b(sẽ ủng hộ|ủng hộ shop|nên mua|đáng mua)\b",
+        r"^\s*(tốt|đẹp|ổn|ok|oke|ưng|rất tốt|rất đẹp|hài lòng)[.!]?\s*$",
     )
 ]
 
@@ -97,20 +88,25 @@ def compact_text(value: Any, max_chars: int | None = None) -> str:
         return text[:max_chars - 15].rstrip() + " ... [truncated]"
     return text
 
-def normalize_timestamp(value: Any) -> int | None:
-    try:
-        timestamp = int(value)
-    except (TypeError, ValueError):
-        return None
-    if timestamp < 0:
-        return None
-    return timestamp * 1000 if timestamp < 10_000_000_000 else timestamp
-
 def valid_rating(value: Any) -> bool:
     try:
         return 1 <= float(value) <= 5
     except (TypeError, ValueError):
         return False
+
+
+def parse_comment_date(value: Any) -> int | None:
+    """Parse an ISO-8601 CommentDate and return UTC epoch milliseconds."""
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return int(parsed.timestamp() * 1000)
 
 def review_text(review: dict[str, Any]) -> str:
     return compact_text(review.get("text") or review.get("review_text"))
@@ -151,11 +147,10 @@ def product_category_path(review: dict[str, Any]) -> list[str]:
 
 def normalize_review_record(review: dict[str, Any]) -> dict[str, Any]:
     row = dict(review)
-    row["timestamp"] = normalize_timestamp(row.get("timestamp", row.get("sort_timestamp")))
+    row["timestamp"] = parse_comment_date(row.get("comment_date")) if not isinstance(row.get("timestamp"), int) else row["timestamp"]
     if valid_rating(row.get("rating")):
         row["rating"] = float(row["rating"])
     row["text"] = review_text(row)
-    row["title"] = review_title(row)
     row["product_category_path"] = product_category_path(row)
     return row
 
@@ -170,9 +165,8 @@ def fulfillment_match(review: dict[str, Any]) -> str | None:
 
 def review_key(review: dict[str, Any]) -> tuple[str, ...]:
     return (
-        str(review.get("category") or ""), str(review.get("parent_asin") or ""),
-        str(review.get("asin") or ""), str(normalize_timestamp(review.get("timestamp")) or ""),
-        review_title(review).lower(), review_text(review).lower(), product_title(review).lower(),
+        str(review.get("category") or ""), str(review.get("rating") or ""),
+        str(review.get("timestamp") or ""), review_text(review).lower(), product_title(review).lower(),
     )
 
 def filter_reviews(reviews: list[dict[str, Any]], *, min_review_text_chars: int, filter_fulfillment_reviews: bool) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -183,11 +177,11 @@ def filter_reviews(reviews: list[dict[str, Any]], *, min_review_text_chars: int,
         review = normalize_review_record(raw_review)
         category = str(review.get("category") or "Unknown")
         reason = None
-        if review["timestamp"] is None:
+        if review.get("timestamp") is None:
             reason = "missing_or_invalid_timestamp"
         elif not valid_rating(review.get("rating")):
             reason = "missing_or_invalid_rating"
-        elif not (product_title(review) or product_main_category(review) or product_category_path(review)) and not review_title(review) and len(review_text(review)) < min_review_text_chars:
+        elif not (product_title(review) or product_category_path(review)) and len(review_text(review)) < min_review_text_chars:
             reason = "insufficient_text_evidence"
         elif review_key(review) in seen:
             reason = "duplicate_review"
@@ -199,7 +193,7 @@ def filter_reviews(reviews: list[dict[str, Any]], *, min_review_text_chars: int,
             continue
         seen.add(review_key(review))
         kept.append(review)
-    kept.sort(key=lambda row: (row.get("timestamp") or 0, str(row.get("asin") or "")))
+    kept.sort(key=lambda row: (int(row.get("timestamp") or 0), int(row.get("source_index") or 0)))
     return kept, {
         "input_reviews": len(reviews), "kept_reviews": len(kept),
         "removed_reviews": len(reviews) - len(kept),
@@ -213,7 +207,7 @@ def temporal_train_validation_split(reviews: list[dict[str, Any]], train_fractio
     split_index = max(1, min(int(len(reviews) * train_fraction), len(reviews) - 1))
     construction, validation = reviews[:split_index], reviews[split_index:]
     return construction, validation, {
-        "method": "per_user_temporal", "unit": "review_or_rating_row",
+        "method": "per_user_temporal", "unit": "review_row",
         "train_fraction": train_fraction,
         "construction_row_count": len(construction), "validation_row_count": len(validation),
         "construction_text_review_count": sum(bool(review_text(row)) for row in construction),
@@ -286,33 +280,27 @@ def render_summary_stats(row: dict[str, Any], max_chars: int = 4_000) -> str:
 
 def render_review(review: dict[str, Any], index: int, max_review_text_chars: int) -> str:
     lines = [
-        f"[review {index}]", f"date: {review.get('date') or review.get('timestamp') or 'unknown'}", f"category: {review.get('category') or 'Unknown'}",
-        f"parent_asin: {review.get('parent_asin') or review.get('asin') or ''}",
-        f"rating: {review.get('rating', 'unknown')}", f"review_title: {review_title(review) or '(untitled)'}",
+        f"[review {index}]", f"timestamp: {review.get('timestamp') or 'unknown'}", f"category: {review.get('category') or 'Unknown'}",
+        f"rating: {review.get('rating', 'unknown')}",
     ]
     if product_title(review): lines.append(f"product_title: {compact_text(product_title(review), 220)}")
-    if product_main_category(review): lines.append(f"product_main_category: {compact_text(product_main_category(review), 120)}")
     if product_category_path(review): lines.append("product_category_path: " + " > ".join(compact_text(item, 80) for item in product_category_path(review)))
-    lines.extend([
-        f"verified: {review.get('verified_purchase', 'unknown')}",
-        f"helpful_vote: {review.get('helpful_vote', 0)}",
-        f"text: {compact_text(review_text(review), max_review_text_chars)}",
-    ])
+    lines.append(f"text: {compact_text(review_text(review), max_review_text_chars)}")
     return "\n".join(lines)
 
 def assemble_profile(row: dict[str, Any], max_chars: int, max_review_text_chars: int) -> str:
     reviews = row.get("reviews") or []
     categories = {review.get("category") or "Unknown" for review in reviews}
-    parts = [f"Amazon reviewer profile - construction split: {len(reviews)} reviews across {len(categories)} categories."]
+    parts = [f"Vietnamese e-commerce reviewer profile - construction split: {len(reviews)} reviews across {len(categories)} categories."]
     summary = render_summary_stats(row)
     if summary: parts.append(summary)
     parts.extend(render_review(review, index, max_review_text_chars) for index, review in enumerate(reviews, 1))
     return "\n\n".join(parts)[:max_chars]
 
-def build_amazon_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> str:
-    """Amazon-reviewer persona-extraction prompt (see extract_personas_amazon.ipynb)."""
+def build_review_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> str:
+    """Build a schema-constrained prompt for Vietnamese e-commerce reviews."""
     lines = [
-        "You are mapping observable Amazon review evidence to schema-constrained "
+        "You are mapping observable Vietnamese e-commerce review evidence to schema-constrained "
         "persona fields for one reviewer. Fill attributes that are well supported "
         "by the review history, and leave unsupported or identity-like claims null.",
         "",
@@ -461,20 +449,59 @@ def cat_chunks(by_category: dict[str, list[dict[str, Any]]], per_chunk: int) -> 
     return chunks
 
 def iter_local_jsonl(path: Path) -> Iterator[dict[str, Any]]:
-    opener = gzip.open if path.suffix == ".gz" else open
-    with opener(path, "rt", encoding="utf-8") as handle:
+    with path.open("r", encoding="utf-8") as handle:
         for line in handle:
             if line.strip():
                 yield json.loads(line)
 
 
-def local_jsonl_files(root: Path) -> list[Path]:
+def iter_json_array(path: Path, chunk_size: int = 1_048_576) -> Iterator[dict[str, Any]]:
+    """Stream objects from a top-level JSON array without loading the whole file."""
+    decoder = json.JSONDecoder()
+    buffer = ""
+    position = 0
+    eof = False
+    with path.open("r", encoding="utf-8-sig") as handle:
+        while True:
+            while position < len(buffer) and (buffer[position].isspace() or buffer[position] in "[,\n\r"):
+                position += 1
+            if position < len(buffer) and buffer[position] == "]":
+                return
+            if position >= len(buffer) or len(buffer) - position < chunk_size // 4:
+                chunk = handle.read(chunk_size)
+                buffer = buffer[position:] + chunk
+                position = 0
+                eof = not chunk
+                while position < len(buffer) and (buffer[position].isspace() or buffer[position] in "[,\n\r"):
+                    position += 1
+                if position < len(buffer) and buffer[position] == "]":
+                    return
+                if position >= len(buffer) and eof:
+                    return
+            try:
+                value, end = decoder.raw_decode(buffer, position)
+            except json.JSONDecodeError:
+                if eof:
+                    raise ValueError(f"Invalid JSON array in {path}")
+                chunk = handle.read(chunk_size)
+                buffer = buffer[position:] + chunk
+                position = 0
+                eof = not chunk
+                continue
+            position = end
+            if isinstance(value, dict):
+                yield value
+
+
+def local_json_files(root: Path) -> list[Path]:
     if not root.exists():
         return []
-    return sorted({*root.rglob("*.jsonl"), *root.rglob("*.jsonl.gz")})
+    return sorted(root.rglob("*.json"))
 
 
 def category_from_path(path: Path, metadata: bool = False) -> str:
+    if not metadata:
+        return path.stem
     name = path.name
     for suffix in (".jsonl.gz", ".jsonl"):
         if name.endswith(suffix):
@@ -488,23 +515,9 @@ def category_from_path(path: Path, metadata: bool = False) -> str:
     return name
 
 
-def timestamp_ms(value: Any) -> int | None:
-    try:
-        number = int(value)
-    except (TypeError, ValueError):
-        return None
-    return number * 1000 if number < 10_000_000_000 else number
-
-
-def year_of(timestamp: int) -> int:
-    return datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc).year
-
-
 def stable_review_id(row: dict[str, Any], category: str) -> str:
-    if row.get("review_id"):
-        return str(row["review_id"])
     identity = "|".join(str(row.get(key) or "") for key in (
-        "user_id", "parent_asin", "asin", "timestamp", "rating", "text"
+        "user_id", "timestamp", "rating", "text", "product_title", "category"
     ))
     return hashlib.sha1(f"{category}|{identity}".encode()).hexdigest()
 
@@ -527,31 +540,36 @@ def iter_review_shards(config: Config) -> Iterator[Path]:
 
 
 def ingest_reviews(config: Config) -> None:
-    files = local_jsonl_files(config.review_dir)
+    files = local_json_files(config.review_dir)
     if not files:
-        raise FileNotFoundError(f"No .jsonl/.jsonl.gz files found in {config.review_dir}")
+        raise FileNotFoundError(f"No .json files found in {config.review_dir}")
     config.review_shards_dir.mkdir(parents=True, exist_ok=True)
     handles = [shard_path(config, index).open("w", encoding="utf-8") for index in range(config.review_shards)]
     total_kept = 0
+    source_index = 0
     try:
         for path in files:
             fallback_category = category_from_path(path)
             scanned = kept = 0
-            for row in tqdm(iter_local_jsonl(path), desc=f"ingest:{path.name}"):
+            for row in tqdm(iter_json_array(path), desc=f"ingest:{path.name}"):
                 scanned += 1
+                source_index += 1
                 if config.max_rows_per_file and scanned > config.max_rows_per_file:
                     break
-                user_id = str(row.get("user_id") or "").strip()
-                timestamp = timestamp_ms(row.get("timestamp", row.get("sort_timestamp")))
-                if not user_id or timestamp is None or not config.start_year <= year_of(timestamp) <= config.end_year:
+                user_id = str(row.get("UserId") or "").strip()
+                timestamp = parse_comment_date(row.get("CommentDate"))
+                if not user_id or timestamp is None:
                     continue
-                category = str(row.get("category") or fallback_category or "Unknown")
-                review_id = stable_review_id(row, category)
+                category = compact_text(row.get("SubCategory") or fallback_category or "Unknown")
+                normalized = {"user_id": user_id, "rating": row.get("Rating"),
+                    "text": str(row.get("Comment") or ""), "product_title": str(row.get("ProductName") or ""),
+                    "category": category, "timestamp": timestamp}
+                review_id = stable_review_id(normalized, category)
                 record = {"review_id": review_id, "user_id": user_id, "category": category,
-                    "parent_asin": str(row.get("parent_asin") or ""), "asin": str(row.get("asin") or ""),
-                    "timestamp": timestamp, "rating": row.get("rating"), "title": str(row.get("title") or ""),
-                    "text": str(row.get("text") or ""), "verified_purchase": row.get("verified_purchase") is True,
-                    "helpful_vote": int(row.get("helpful_vote", row.get("helpful_votes", 0)) or 0)}
+                    "rating": row.get("Rating"), "text": str(row.get("Comment") or ""),
+                    "product_title": str(row.get("ProductName") or ""),
+                    "product_category_path": [category] if category else [], "timestamp": timestamp,
+                    "source_index": source_index}
                 handle = handles[user_shard(user_id, config.review_shards)]
                 handle.write(json.dumps(record, ensure_ascii=False) + "\n")
                 kept += 1; total_kept += 1
@@ -592,47 +610,30 @@ def select_users(config: Config) -> None:
             seen_review_ids.add(review_id)
             user_id = row["user_id"]
             item = aggregate.setdefault(user_id, {"count": 0, "categories": set(), "text_reviews": 0,
-                "text_chars": 0, "min_ts": row["timestamp"], "max_ts": row["timestamp"], "verified": 0})
+                "text_chars": 0, "min_ts": row["timestamp"], "max_ts": row["timestamp"]})
             text = str(row.get("text") or "")
             item["count"] += 1; item["categories"].add(row.get("category") or "Unknown")
             item["text_reviews"] += int(bool(text.strip())); item["text_chars"] += len(text)
-            item["min_ts"] = min(item["min_ts"], row["timestamp"]); item["max_ts"] = max(item["max_ts"], row["timestamp"])
-            item["verified"] += int(row.get("verified_purchase") is True)
+            item["min_ts"] = min(item["min_ts"], row["timestamp"])
+            item["max_ts"] = max(item["max_ts"], row["timestamp"])
     eligible = []
     for user_id, item in aggregate.items():
-        verified_share = item["verified"] / item["count"]
-        if item["count"] >= config.min_reviews and item["text_chars"] >= config.min_text_chars and verified_share >= config.min_verified_share:
+        if item["count"] >= config.min_reviews and item["text_chars"] >= config.min_text_chars:
             eligible.append((user_id, item["count"], len(item["categories"]), item["text_reviews"], item["text_chars"],
-                             (item["max_ts"] - item["min_ts"]) / 86_400_000, verified_share))
-    metric_columns = (4, 3, 2, 5, 1, 6)
-    weights = (0.35, 0.20, 0.20, 0.15, 0.05, 0.05)
+                             (item["max_ts"] - item["min_ts"]) / 86_400_000))
+    metric_columns = (4, 3, 2, 5, 1)
+    weights = (0.35, 0.20, 0.20, 0.15, 0.10)
     ranks = [percentile_ranks([float(row[column] or 0) for row in eligible]) for column in metric_columns]
     scored = [(sum(weight * vector[index] for weight, vector in zip(weights, ranks)), row)
               for index, row in enumerate(eligible)]
-    scored.sort(key=lambda item: (-item[0], -item[1][4], -item[1][2], -item[1][5], item[1][0]))
+    scored.sort(key=lambda item: (-item[0], -item[1][4], -item[1][2], -item[1][3], item[1][0]))
     with config.selected_users_path.open("w", encoding="utf-8") as output:
         for rank, (score, row) in enumerate(scored[:config.top_k], 1):
-            keys = ("user_id", "review_count", "category_count", "text_reviews", "text_chars", "history_days", "verified_share")
+            keys = ("user_id", "review_count", "category_count", "text_reviews", "text_chars", "history_days")
             record = {key: value for key, value in zip(keys, row)}
             record.update({"rank": rank, "score": score})
             output.write(json.dumps(record, ensure_ascii=False) + "\n")
     print(f"Eligible users={len(eligible):,}; selected={min(config.top_k, len(scored)):,}")
-
-
-def load_metadata(config: Config, wanted: set[tuple[str, str]]) -> dict[tuple[str, str], dict[str, Any]]:
-    metadata: dict[tuple[str, str], dict[str, Any]] = {}
-    for path in local_jsonl_files(config.metadata_dir):
-        fallback_category = category_from_path(path, metadata=True)
-        for meta in tqdm(iter_local_jsonl(path), desc=f"metadata:{path.name}"):
-            category = str(meta.get("category") or fallback_category or "Unknown")
-            parent_asin = str(meta.get("parent_asin") or "")
-            if (category, parent_asin) not in wanted:
-                continue
-            metadata[(category, parent_asin)] = {"product_title": str(meta.get("title") or "")[:500],
-                "product_main_category": str(meta.get("main_category") or "")[:200],
-                "product_category_path": meta.get("categories") or []}
-    print(f"Metadata matches loaded: {len(metadata):,}")
-    return metadata
 
 
 def prepare_histories(config: Config) -> None:
@@ -640,21 +641,13 @@ def prepare_histories(config: Config) -> None:
     with config.selected_users_path.open(encoding="utf-8") as source:
         selected_records = [json.loads(line) for line in source if line.strip()]
     selected = {str(row["user_id"]): row for row in selected_records}
-    wanted: set[tuple[str, str]] = set()
     shard_files = list(iter_review_shards(config))
-    for path in tqdm(shard_files, desc="find selected products"):
-        for row in iter_local_jsonl(path):
-            if str(row["user_id"]) in selected and row.get("parent_asin"):
-                wanted.add((str(row.get("category") or "Unknown"), str(row["parent_asin"])))
-    metadata = load_metadata(config, wanted)
     with config.histories_path.open("w", encoding="utf-8") as output:
         for path in tqdm(shard_files, desc="prepare histories"):
             reviews_by_user: dict[str, list[dict[str, Any]]] = defaultdict(list)
             for review in iter_local_jsonl(path):
                 user_id = str(review["user_id"])
                 if user_id in selected:
-                    product = metadata.get((str(review.get("category") or "Unknown"), str(review.get("parent_asin") or "")), {})
-                    review.update(product)
                     reviews_by_user[user_id].append(review)
             for user_id, raw_reviews in reviews_by_user.items():
                 reviews, filter_summary = filter_reviews(raw_reviews, min_review_text_chars=config.min_review_text_chars,
@@ -662,7 +655,7 @@ def prepare_histories(config: Config) -> None:
                 if len(reviews) < 2:
                     continue
                 construction, validation, split = temporal_train_validation_split(reviews, config.train_fraction)
-                record = {"source": "amazon_reviews_2023", "user_id": user_id, "rank": selected[user_id]["rank"],
+                record = {"source": "vietnamese_ecommerce_reviews", "user_id": user_id, "rank": selected[user_id]["rank"],
                     "review_count": len(reviews), "validation_review_count": len(validation), "temporal_split": split,
                     "review_filter_summary": filter_summary, "reviews": construction, "validation_reviews": validation,
                     "category_review_stats": category_review_stats(construction),
@@ -750,7 +743,7 @@ def extract_personas(config: Config) -> None:
             fields = []
             for chunk_index, dimensions in enumerate(chunks, start=1):
                 started_at = time.perf_counter()
-                response = call_llm(build_amazon_prompt(record["profile_text"], dimensions), config)
+                response = call_llm(build_review_prompt(record["profile_text"], dimensions), config)
                 chunk_fields = sanitize_fields(parse_fields(response), dimensions, record["profile_text"])
                 fields.extend(chunk_fields)
                 categories = sorted({str(dimension.get("category") or "Uncategorized") for dimension in dimensions})
@@ -779,12 +772,9 @@ def require_file(path: Path, hint: str) -> None:
 def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("stage", choices=("all", "ingest", "prepare", "compact", "extract"), nargs="?", default="all")
-    parser.add_argument("--review-dir", type=Path, default=Path("data/amazon/reviews"))
-    parser.add_argument("--metadata-dir", type=Path, default=Path("data/amazon/metadata"))
-    parser.add_argument("--work-dir", type=Path, default=Path("amazon_persona_fresh"))
-    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimension.json"))
-    parser.add_argument("--start-year", type=int, default=2018)
-    parser.add_argument("--end-year", type=int, default=2023)
+    parser.add_argument("--review-dir", type=Path, default=Path("data/vietnamese_reviews"))
+    parser.add_argument("--work-dir", type=Path, default=Path("vietnamese_persona_fresh"))
+    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimensions.json"))
     parser.add_argument("--top-k", type=int, default=100_000)
     parser.add_argument("--max-rows-per-file", type=int, default=0)
     parser.add_argument("--max-llm-users", type=int, default=0)
@@ -794,13 +784,10 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
 
 def main(argv: Iterable[str] | None = None) -> None:
     args = parse_args(argv)
-    config = Config(review_dir=project_path(args.review_dir), metadata_dir=project_path(args.metadata_dir),
-                    work_dir=project_path(args.work_dir), schema_path=project_path(args.schema_path),
-                    start_year=args.start_year, end_year=args.end_year,
+    config = Config(review_dir=project_path(args.review_dir), work_dir=project_path(args.work_dir),
+                    schema_path=project_path(args.schema_path),
                     top_k=args.top_k, max_rows_per_file=args.max_rows_per_file,
                     max_llm_users=args.max_llm_users, review_shards=args.review_shards)
-    if config.start_year > config.end_year:
-        raise ValueError("start-year must not be greater than end-year")
     if config.review_shards < 1:
         raise ValueError("review-shards must be at least 1")
     print("Work directory:", config.work_dir.resolve())
