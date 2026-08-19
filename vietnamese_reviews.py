@@ -35,7 +35,7 @@ class Config:
     schema_path: Path
     max_rows_per_file: int = 0
     top_k: int = 100_000
-    min_reviews: int = 10
+    min_reviews: int = 5
     min_text_chars: int = 2_000
     min_review_text_chars: int = 20
     max_profile_chars: int = 48_000
@@ -193,50 +193,29 @@ def category_review_stats(reviews: list[dict[str, Any]]) -> dict[str, dict[str, 
     for review in reviews:
         category = str(review.get("category") or "Unknown")
         item = stats.setdefault(category, {
-            "review_count": 0, "text_review_count": 0, "rating_only_count": 0,
-            "text_chars": 0, "rating_sum": 0.0, "rating_count": 0,
-            "rating_counts": defaultdict(int),
-            "rating_only_product_title_counts": defaultdict(int),
+            "review_count": 0, "text_chars": 0, "rating_sum": 0.0, "rating_count": 0,
         })
         text = review_text(review)
         item["review_count"] += 1
-        item["text_review_count"] += int(bool(text))
-        is_rating_only = not (review_title(review) or text)
-        item["rating_only_count"] += int(is_rating_only)
         item["text_chars"] += len(text)
         if valid_rating(review.get("rating")):
             rating = float(review["rating"])
             item["rating_sum"] += rating; item["rating_count"] += 1
-            item["rating_counts"][str(int(rating) if rating.is_integer() else rating)] += 1
-        if is_rating_only and product_title(review):
-            item["rating_only_product_title_counts"][product_title(review)] += 1
     for item in stats.values():
         item["mean_rating"] = round(item["rating_sum"] / item["rating_count"], 3) if item["rating_count"] else None
         item.pop("rating_sum")
-        for key in ("rating_counts", "rating_only_product_title_counts"):
-            item[key] = dict(item[key])
     return stats
-
-def format_counts(counts: Any, limit: int) -> str:
-    if not isinstance(counts, dict):
-        return ""
-    items = sorted(counts.items(), key=lambda pair: (-int(pair[1] or 0), str(pair[0])))[:limit]
-    return ", ".join(f"{key}={value}" for key, value in items)
 
 def render_summary_stats(row: dict[str, Any], max_chars: int = 4_000) -> str:
     stats = row.get("category_review_stats") or {}
     lines = ["=== Category Summary ==="]
     for category, item in sorted(stats.items(), key=lambda pair: (-pair[1].get("review_count", 0), pair[0]))[:12]:
         parts = [
-            f"category={category}", f"rows={item.get('review_count', 0)}",
-            f"text_reviews={item.get('text_review_count', 0)}",
-            f"rating_only={item.get('rating_only_count', 0)}",
+            f"category={category}", f"review_count={item.get('review_count', 0)}",
+            f"text_chars={item.get('text_chars', 0)}",
+            f"rating_count={item.get('rating_count', 0)}",
             f"mean_rating={item.get('mean_rating'):.2f}" if isinstance(item.get('mean_rating'), (int, float)) else "mean_rating=unknown",
         ]
-        for label, key, limit in (("ratings", "rating_counts", 5), ("rating_only_products", "rating_only_product_title_counts", 3)):
-            rendered = format_counts(item.get(key), limit)
-            if rendered:
-                parts.append(f"{label}={rendered}")
         lines.append("; ".join(parts))
     return compact_text("\n".join(lines), max_chars)
 
@@ -751,7 +730,7 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument("stage", choices=("all", "ingest", "prepare", "compact", "extract"), nargs="?", default="all")
     parser.add_argument("--review-dir", type=Path, default=Path("data/vietnamese_reviews"))
     parser.add_argument("--work-dir", type=Path, default=Path("vietnamese_persona_fresh"))
-    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimensions.json"))
+    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimension.json"))
     parser.add_argument("--top-k", type=int, default=100_000)
     parser.add_argument("--max-rows-per-file", type=int, default=0)
     parser.add_argument("--max-llm-users", type=int, default=0)
