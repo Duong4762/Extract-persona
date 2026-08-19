@@ -36,7 +36,7 @@ class Config:
     max_rows_per_file: int = 0
     top_k: int = 100_000
     min_reviews: int = 5
-    min_text_chars: int = 500
+    min_text_chars: int = 1000
     min_review_text_chars: int = 20
     max_profile_chars: int = 48_000
     max_review_text_chars: int = 2_000
@@ -130,6 +130,9 @@ def review_title(review: dict[str, Any]) -> str:
 def product_title(review: dict[str, Any]) -> str:
     return compact_text(review.get("product_title"))
 
+def product_url(review: dict[str, Any]) -> str:
+    return compact_text(review.get("product_url"))
+
 def product_main_category(review: dict[str, Any]) -> str:
     return compact_text(review.get("product_main_category"))
 
@@ -157,7 +160,8 @@ def fulfillment_match(review: dict[str, Any]) -> str | None:
 def review_key(review: dict[str, Any]) -> tuple[str, ...]:
     return (
         str(review.get("category") or ""), str(review.get("rating") or ""),
-        str(review.get("timestamp_ms") or ""), review_text(review).lower(), product_title(review).lower(),
+        str(review.get("timestamp_ms") or ""), review_text(review).lower(),
+        product_title(review).lower(), product_url(review).lower(),
     )
 
 def filter_reviews(reviews: list[dict[str, Any]], *, min_review_text_chars: int, filter_fulfillment_reviews: bool) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -229,6 +233,7 @@ def render_review(review: dict[str, Any], index: int, max_review_text_chars: int
         f"rating: {review.get('rating', 'unknown')}",
     ]
     if product_title(review): lines.append(f"product_title: {compact_text(product_title(review), 220)}")
+    if product_url(review): lines.append(f"product_url: {product_url(review)}")
     lines.append(f"text: {compact_text(review_text(review), max_review_text_chars)}")
     return "\n".join(lines)
 
@@ -460,7 +465,7 @@ def category_from_path(path: Path, metadata: bool = False) -> str:
 
 def stable_review_id(row: dict[str, Any], category: str) -> str:
     identity = "|".join(str(row.get(key) or "") for key in (
-        "user_id", "timestamp", "rating", "text", "product_title", "category"
+        "user_id", "timestamp", "rating", "text", "product_title", "product_url", "category"
     ))
     return hashlib.sha1(f"{category}|{identity}".encode()).hexdigest()
 
@@ -506,11 +511,12 @@ def ingest_reviews(config: Config) -> None:
                 category = compact_text(row.get("SubCategory") or fallback_category or "Unknown")
                 normalized = {"user_id": user_id, "rating": row.get("Rating"),
                     "text": str(row.get("Comment") or ""), "product_title": str(row.get("ProductName") or ""),
-                    "category": category, "timestamp": timestamp}
+                    "product_url": str(row.get("ProductUrl") or ""), "category": category, "timestamp": timestamp}
                 review_id = stable_review_id(normalized, category)
                 record = {"review_id": review_id, "user_id": user_id, "category": category,
                     "rating": row.get("Rating"), "text": str(row.get("Comment") or ""),
                     "product_title": str(row.get("ProductName") or ""),
+                    "product_url": str(row.get("ProductUrl") or ""),
                     "timestamp": format_vietnam_datetime(timestamp), "timestamp_ms": timestamp,
                     "source_index": source_index}
                 handle = handles[user_shard(user_id, config.review_shards)]
