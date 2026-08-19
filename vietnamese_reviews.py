@@ -71,6 +71,10 @@ class Config:
     def personas_path(self) -> Path:
         return self.work_dir / "personas_1290.jsonl"
 
+    @property
+    def prompt_log_dir(self) -> Path:
+        return self.work_dir / "prompt_log"
+
 ASSIGNMENT_TYPES = {"direct", "structured_claim", "summary_inference", "unsupported"}
 NULLISH_VALUES = {"", "null", "none", "n/a", "na", "unknown", "unsupported", "not applicable"}
 FULFILLMENT_PATTERNS = [
@@ -125,31 +129,6 @@ def product_title(review: dict[str, Any]) -> str:
 def product_main_category(review: dict[str, Any]) -> str:
     return compact_text(review.get("product_main_category"))
 
-def product_category_path(review: dict[str, Any]) -> list[str]:
-    value = review.get("product_category_path") or []
-    if isinstance(value, str):
-        try:
-            value = json.loads(value)
-        except json.JSONDecodeError:
-            value = [value]
-    if not isinstance(value, list):
-        return []
-    result, seen = [], set()
-    for item in value:
-        if isinstance(item, list):
-            candidates = item
-        elif item:
-            candidates = [item]
-        else:
-            candidates = []
-        for candidate in candidates:
-            text = compact_text(candidate)
-            if text and text not in seen:
-                seen.add(text); result.append(text)
-            if len(result) >= 6:
-                return result
-    return result
-
 def normalize_review_record(review: dict[str, Any]) -> dict[str, Any]:
     row = dict(review)
     timestamp_ms = row.get("timestamp_ms")
@@ -160,7 +139,6 @@ def normalize_review_record(review: dict[str, Any]) -> dict[str, Any]:
     if valid_rating(row.get("rating")):
         row["rating"] = float(row["rating"])
     row["text"] = review_text(row)
-    row["product_category_path"] = product_category_path(row)
     return row
 
 def fulfillment_match(review: dict[str, Any]) -> str | None:
@@ -190,7 +168,7 @@ def filter_reviews(reviews: list[dict[str, Any]], *, min_review_text_chars: int,
             reason = "missing_or_invalid_timestamp"
         elif not valid_rating(review.get("rating")):
             reason = "missing_or_invalid_rating"
-        elif not (product_title(review) or product_category_path(review)) and len(review_text(review)) < min_review_text_chars:
+        elif not product_title(review) and len(review_text(review)) < min_review_text_chars:
             reason = "insufficient_text_evidence"
         elif review_key(review) in seen:
             reason = "duplicate_review"
@@ -217,7 +195,7 @@ def category_review_stats(reviews: list[dict[str, Any]]) -> dict[str, dict[str, 
         item = stats.setdefault(category, {
             "review_count": 0, "text_review_count": 0, "rating_only_count": 0,
             "text_chars": 0, "rating_sum": 0.0, "rating_count": 0,
-            "rating_counts": defaultdict(int), "product_category_counts": defaultdict(int),
+            "rating_counts": defaultdict(int),
             "rating_only_product_title_counts": defaultdict(int),
         })
         text = review_text(review)
@@ -230,14 +208,12 @@ def category_review_stats(reviews: list[dict[str, Any]]) -> dict[str, dict[str, 
             rating = float(review["rating"])
             item["rating_sum"] += rating; item["rating_count"] += 1
             item["rating_counts"][str(int(rating) if rating.is_integer() else rating)] += 1
-        for product_category in product_category_path(review):
-            item["product_category_counts"][product_category] += 1
         if is_rating_only and product_title(review):
             item["rating_only_product_title_counts"][product_title(review)] += 1
     for item in stats.values():
         item["mean_rating"] = round(item["rating_sum"] / item["rating_count"], 3) if item["rating_count"] else None
         item.pop("rating_sum")
-        for key in ("rating_counts", "product_category_counts", "rating_only_product_title_counts"):
+        for key in ("rating_counts", "rating_only_product_title_counts"):
             item[key] = dict(item[key])
     return stats
 
@@ -257,7 +233,7 @@ def render_summary_stats(row: dict[str, Any], max_chars: int = 4_000) -> str:
             f"rating_only={item.get('rating_only_count', 0)}",
             f"mean_rating={item.get('mean_rating'):.2f}" if isinstance(item.get('mean_rating'), (int, float)) else "mean_rating=unknown",
         ]
-        for label, key, limit in (("ratings", "rating_counts", 5), ("product_categories", "product_category_counts", 4), ("rating_only_products", "rating_only_product_title_counts", 3)):
+        for label, key, limit in (("ratings", "rating_counts", 5), ("rating_only_products", "rating_only_product_title_counts", 3)):
             rendered = format_counts(item.get(key), limit)
             if rendered:
                 parts.append(f"{label}={rendered}")
@@ -270,7 +246,6 @@ def render_review(review: dict[str, Any], index: int, max_review_text_chars: int
         f"rating: {review.get('rating', 'unknown')}",
     ]
     if product_title(review): lines.append(f"product_title: {compact_text(product_title(review), 220)}")
-    if product_category_path(review): lines.append("product_category_path: " + " > ".join(compact_text(item, 80) for item in product_category_path(review)))
     lines.append(f"text: {compact_text(review_text(review), max_review_text_chars)}")
     return "\n".join(lines)
 
@@ -553,7 +528,6 @@ def ingest_reviews(config: Config) -> None:
                 record = {"review_id": review_id, "user_id": user_id, "category": category,
                     "rating": row.get("Rating"), "text": str(row.get("Comment") or ""),
                     "product_title": str(row.get("ProductName") or ""),
-                    "product_category_path": [category] if category else [],
                     "timestamp": format_vietnam_datetime(timestamp), "timestamp_ms": timestamp,
                     "source_index": source_index}
                 handle = handles[user_shard(user_id, config.review_shards)]
@@ -703,6 +677,20 @@ def call_llm(prompt: str, config: Config) -> str:
         raise ValueError(f"Unexpected LLM response structure: {result}") from error
 
 
+def reset_prompt_log(config: Config) -> None:
+    """Keep prompt logs for the currently processed user only."""
+    config.prompt_log_dir.mkdir(parents=True, exist_ok=True)
+    for path in config.prompt_log_dir.glob("*.txt"):
+        if path.is_file():
+            path.unlink()
+
+
+def save_prompt_log(config: Config, chunk_index: int, prompt: str) -> Path:
+    path = config.prompt_log_dir / f"prompt-{chunk_index:04d}.txt"
+    path.write_text(prompt, encoding="utf-8")
+    return path
+
+
 def extract_personas(config: Config) -> None:
     require_file(config.compact_profiles_path, "Run the compact stage first")
     schema = load_schema(config)
@@ -725,10 +713,13 @@ def extract_personas(config: Config) -> None:
                 continue
             if config.max_llm_users and processed >= config.max_llm_users:
                 break
+            reset_prompt_log(config)
             fields = []
             for chunk_index, dimensions in enumerate(chunks, start=1):
                 started_at = time.perf_counter()
-                response = call_llm(build_review_prompt(record["profile_text"], dimensions), config)
+                prompt = build_review_prompt(record["profile_text"], dimensions)
+                prompt_path = save_prompt_log(config, chunk_index, prompt)
+                response = call_llm(prompt, config)
                 chunk_fields = sanitize_fields(parse_fields(response), dimensions, record["profile_text"])
                 fields.extend(chunk_fields)
                 categories = sorted({str(dimension.get("category") or "Uncategorized") for dimension in dimensions})
@@ -737,7 +728,8 @@ def extract_personas(config: Config) -> None:
                 tqdm.write(
                     f"user={user_id} chunk={chunk_index}/{len(chunks)} "
                     f"category={','.join(categories)} dimensions={len(dimensions)} "
-                    f"supported={supported_count} elapsed={elapsed_seconds:.2f}s"
+                    f"supported={supported_count} elapsed={elapsed_seconds:.2f}s "
+                    f"prompt_log={prompt_path.name}"
                 )
             if len(fields) != len(schema):
                 raise RuntimeError(f"Expected {len(schema)} fields, got {len(fields)} for {user_id}")
@@ -759,7 +751,7 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument("stage", choices=("all", "ingest", "prepare", "compact", "extract"), nargs="?", default="all")
     parser.add_argument("--review-dir", type=Path, default=Path("data/vietnamese_reviews"))
     parser.add_argument("--work-dir", type=Path, default=Path("vietnamese_persona_fresh"))
-    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimension.json"))
+    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimensions.json"))
     parser.add_argument("--top-k", type=int, default=100_000)
     parser.add_argument("--max-rows-per-file", type=int, default=0)
     parser.add_argument("--max-llm-users", type=int, default=0)
