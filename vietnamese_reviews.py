@@ -18,6 +18,7 @@ from typing import Any, Iterable, Iterator
 
 import requests
 from tqdm.auto import tqdm
+from persona_coverage_chart import render_category_coverage_chart
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 VIETNAM_TIMEZONE = timezone(timedelta(hours=7))
@@ -74,6 +75,10 @@ class Config:
     @property
     def persona_stats_path(self) -> Path:
         return self.work_dir / "persona_stats.json"
+
+    @property
+    def persona_coverage_chart_path(self) -> Path:
+        return self.work_dir / "persona_category_coverage.png"
 
     @property
     def prompt_log_dir(self) -> Path:
@@ -322,6 +327,8 @@ def build_review_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> 
         "- description: 1-2 concrete sentences describing THIS shopper for this "
         "attribute using details from their reviews (categories, products, "
         "statements). Describe the person; do not justify the label.",
+        "- Every non-empty description MUST be written in Vietnamese. Do not "
+        "write the description in English or any other language.",
         "- Sensitive / high-risk fields require explicit self-statements: age, "
         "gender, income, marital status, children count, religion, politics, "
         "ethnicity, health, disability, mental health, neurotype, MBTI, Big Five, "
@@ -738,6 +745,9 @@ def generate_persona_stats(config: Config) -> None:
         str(dimension["id"]): str(dimension.get("category") or "Uncategorized")
         for dimension in schema
     }
+    schema_dimensions_by_category: dict[str, int] = defaultdict(int)
+    for category in field_categories.values():
+        schema_dimensions_by_category[category] += 1
     seen_users: set[str] = set()
     supported_dimensions_total = 0
     supported_by_category: dict[str, int] = defaultdict(int)
@@ -759,7 +769,8 @@ def generate_persona_stats(config: Config) -> None:
                     continue
                 supported_dimensions_total += 1
                 field_id = str(field.get("field_id") or "")
-                supported_by_category[field_categories.get(field_id, "Unknown field category")] += 1
+                category = field_categories.get(field_id, "Unknown field category")
+                supported_by_category[category] += 1
 
     persona_count = len(seen_users)
     category_stats = [
@@ -783,11 +794,26 @@ def generate_persona_stats(config: Config) -> None:
         json.dumps(stats, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    chart_rows = []
+    for category, schema_dimension_count in schema_dimensions_by_category.items():
+        supported_count = supported_by_category.get(category, 0)
+        denominator = persona_count * schema_dimension_count
+        chart_rows.append({
+            "category": category,
+            "coverage_percentage": 100.0 * supported_count / denominator if denominator else 0.0,
+        })
+    chart_rows.sort(key=lambda row: (-row["coverage_percentage"], row["category"]))
+    render_category_coverage_chart(
+        chart_rows,
+        config.persona_coverage_chart_path,
+        f"Category Coverage Analysis (Vietnamese Personas: {persona_count})",
+    )
     print(f"Extracted personas: {persona_count:,}")
     print(f"Average supported dimensions/persona: {stats['average_supported_dimensions_per_persona']:.4f}")
     for item in category_stats:
         print(f"{item['category']}: {item['supported_dimension_count']:,}")
     print("Persona stats:", config.persona_stats_path)
+    print("Persona coverage chart:", config.persona_coverage_chart_path)
 
 
 def require_file(path: Path, hint: str) -> None:
