@@ -1,10 +1,11 @@
-"""Build schema-constrained personas from Vietnamese e-commerce reviews.
+"""Build schema-constrained personas from Vietnamese VOZ forum posts.
 
 The pipeline is split into five resumable stages: ingest, prepare, compact,
-extract and stats. Run ``python vietnamese_reviews.py --help`` for usage.
+extract and stats. Run ``python voz_extractor.py --help`` for usage.
 """
 
 import argparse
+import csv
 import hashlib
 import json
 import os
@@ -22,6 +23,7 @@ from persona_coverage_chart import render_category_coverage_chart
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 VIETNAM_TIMEZONE = timezone(timedelta(hours=7))
+csv.field_size_limit(100_000_000)
 
 
 def project_path(value: Path) -> Path:
@@ -31,19 +33,19 @@ def project_path(value: Path) -> Path:
 
 @dataclass(frozen=True)
 class Config:
-    review_dir: Path
+    post_dir: Path
     work_dir: Path
     schema_path: Path
     max_rows_per_file: int = 0
-    top_k: int = 100_000
-    min_reviews: int = 5
+    top_k: int = 100
+    min_posts: int = 5
     min_text_chars: int = 1000
-    min_review_text_chars: int = 20
+    min_post_text_chars: int = 20
     max_profile_chars: int = 48_000
-    max_review_text_chars: int = 2_000
+    max_post_text_chars: int = 2_000
     max_dims_per_chunk: int = 50
     max_llm_users: int = 0
-    review_shards: int = 256
+    post_shards: int = 50
     llm_provider: str = os.environ.get("LLM_PROVIDER", "local")
     model: str = os.environ.get("LLM_MODEL", "Qwen3-14B")
     llm_endpoint: str = os.environ.get(
@@ -56,8 +58,8 @@ class Config:
     llm_timeout_seconds: int = 300
 
     @property
-    def review_shards_dir(self) -> Path:
-        return self.work_dir / "review_shards"
+    def post_shards_dir(self) -> Path:
+        return self.work_dir / "post_shards"
 
     @property
     def selected_users_path(self) -> Path:
@@ -89,35 +91,22 @@ class Config:
 
 ASSIGNMENT_TYPES = {"direct", "structured_claim", "summary_inference", "unsupported"}
 NULLISH_VALUES = {"", "null", "none", "n/a", "na", "unknown", "unsupported", "not applicable"}
-FULFILLMENT_PATTERNS = [
-    re.compile(pattern, re.I) for pattern in (
-        r"\b(giao hàng nhanh|ship nhanh|đóng gói (cẩn thận|chắc chắn)|giao đúng hàng)\b",
-        r"\b(hàng (đẹp|tốt|ổn|chất lượng)|sản phẩm (đẹp|tốt|ổn|chất lượng))\b",
-        r"\b(sẽ ủng hộ|ủng hộ shop|nên mua|đáng mua)\b",
-        r"^\s*(tốt|đẹp|ổn|ok|oke|ưng|rất tốt|rất đẹp|hài lòng)[.!]?\s*$",
-    )
-]
-
 def compact_text(value: Any, max_chars: int | None = None) -> str:
     text = " ".join(str(value or "").split())
     if max_chars is not None and len(text) > max_chars:
         return text[:max_chars - 15].rstrip() + " ... [truncated]"
     return text
 
-def valid_rating(value: Any) -> bool:
-    try:
-        return 1 <= float(value) <= 5
-    except (TypeError, ValueError):
-        return False
-
-
 def parse_comment_date(value: Any) -> int | None:
-    """Parse an ISO-8601 CommentDate and return UTC epoch milliseconds."""
+    """Parse ISO-8601 timestamps, including VOZ offsets such as +0700."""
     text = str(value or "").strip()
     if not text:
         return None
+    text = text.replace("Z", "+00:00")
+    if re.search(r"[+-]\d{4}$", text):
+        text = f"{text[:-2]}:{text[-2:]}"
     try:
-        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(text)
     except ValueError:
         return None
     if parsed.tzinfo is None:
@@ -129,136 +118,62 @@ def format_vietnam_datetime(timestamp_ms: int) -> str:
     """Format epoch milliseconds as ISO-8601 in Vietnam time (UTC+07:00)."""
     return datetime.fromtimestamp(timestamp_ms / 1000, tz=VIETNAM_TIMEZONE).isoformat(timespec="seconds")
 
-def review_text(review: dict[str, Any]) -> str:
-    return compact_text(review.get("text") or review.get("review_text"))
+def post_text(post: dict[str, Any]) -> str:
+    return compact_text(post.get("text"))
 
-def review_title(review: dict[str, Any]) -> str:
-    return compact_text(review.get("title") or review.get("review_title"))
 
-def product_title(review: dict[str, Any]) -> str:
-    return compact_text(review.get("product_title"))
-
-def product_url(review: dict[str, Any]) -> str:
-    return compact_text(review.get("product_url"))
-
-def product_main_category(review: dict[str, Any]) -> str:
-    return compact_text(review.get("product_main_category"))
-
-def normalize_review_record(review: dict[str, Any]) -> dict[str, Any]:
-    row = dict(review)
+def normalize_post_record(post: dict[str, Any]) -> dict[str, Any]:
+    row = dict(post)
     timestamp_ms = row.get("timestamp_ms")
     if not isinstance(timestamp_ms, int):
         timestamp_ms = parse_comment_date(row.get("timestamp") or row.get("comment_date"))
     row["timestamp_ms"] = timestamp_ms
     row["timestamp"] = format_vietnam_datetime(timestamp_ms) if timestamp_ms is not None else ""
-    if valid_rating(row.get("rating")):
-        row["rating"] = float(row["rating"])
-    row["text"] = review_text(row)
+    row["text"] = post_text(row)
     return row
 
-def fulfillment_match(review: dict[str, Any]) -> str | None:
-    text = " ".join(part for part in (review_title(review), review_text(review)) if part)
-    if not text or len(text) > 220:
-        return None
-    for pattern in FULFILLMENT_PATTERNS:
-        if pattern.search(text):
-            return pattern.pattern
-    return None
-
-def review_key(review: dict[str, Any]) -> tuple[str, ...]:
+def post_key(post: dict[str, Any]) -> tuple[str, ...]:
     return (
-        str(review.get("category") or ""), str(review.get("rating") or ""),
-        str(review.get("timestamp_ms") or ""), review_text(review).lower(),
-        product_title(review).lower(), product_url(review).lower(),
+        str(post.get("post_id") or ""), str(post.get("text_hash") or ""),
+        str(post.get("thread_id") or ""), str(post.get("timestamp_ms") or ""),
+        post_text(post).lower(),
     )
 
-def filter_reviews(reviews: list[dict[str, Any]], *, min_review_text_chars: int, filter_fulfillment_reviews: bool) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def filter_posts(posts: list[dict[str, Any]], *, min_post_text_chars: int) -> list[dict[str, Any]]:
     kept, seen = [], set()
-    removed_by_reason: dict[str, int] = defaultdict(int)
-    removed_by_category: dict[str, int] = defaultdict(int)
-    for raw_review in reviews:
-        review = normalize_review_record(raw_review)
-        category = str(review.get("category") or "Unknown")
-        reason = None
-        if review.get("timestamp_ms") is None:
-            reason = "missing_or_invalid_timestamp"
-        elif not valid_rating(review.get("rating")):
-            reason = "missing_or_invalid_rating"
-        elif not product_title(review) and len(review_text(review)) < min_review_text_chars:
-            reason = "insufficient_text_evidence"
-        elif review_key(review) in seen:
-            reason = "duplicate_review"
-        elif filter_fulfillment_reviews and fulfillment_match(review):
-            reason = f"fulfillment_or_template:{fulfillment_match(review)}"
-        if reason:
-            removed_by_reason[reason] += 1
-            removed_by_category[category] += 1
+    for raw_post in posts:
+        post = normalize_post_record(raw_post)
+        if post.get("timestamp_ms") is None:
             continue
-        seen.add(review_key(review))
-        kept.append(review)
+        elif len(post_text(post)) < min_post_text_chars:
+            continue
+        elif post_key(post) in seen:
+            continue
+        seen.add(post_key(post))
+        kept.append(post)
     kept.sort(key=lambda row: (int(row.get("timestamp_ms") or 0), int(row.get("source_index") or 0)))
-    return kept, {
-        "input_reviews": len(reviews), "kept_reviews": len(kept),
-        "removed_reviews": len(reviews) - len(kept),
-        "removed_by_reason": dict(sorted(removed_by_reason.items())),
-        "removed_by_category": dict(sorted(removed_by_category.items())),
-    }
+    return kept
 
-def category_review_stats(reviews: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    stats: dict[str, dict[str, Any]] = {}
-    for review in reviews:
-        category = str(review.get("category") or "Unknown")
-        item = stats.setdefault(category, {
-            "review_count": 0, "text_chars": 0, "rating_sum": 0.0, "rating_count": 0,
-        })
-        text = review_text(review)
-        item["review_count"] += 1
-        item["text_chars"] += len(text)
-        if valid_rating(review.get("rating")):
-            rating = float(review["rating"])
-            item["rating_sum"] += rating; item["rating_count"] += 1
-    for item in stats.values():
-        item["mean_rating"] = round(item["rating_sum"] / item["rating_count"], 3) if item["rating_count"] else None
-        item.pop("rating_sum")
-    return stats
-
-def render_summary_stats(row: dict[str, Any], max_chars: int = 4_000) -> str:
-    stats = row.get("category_review_stats") or {}
-    lines = ["=== Category Summary ==="]
-    for category, item in sorted(stats.items(), key=lambda pair: (-pair[1].get("review_count", 0), pair[0]))[:12]:
-        parts = [
-            f"category={category}", f"review_count={item.get('review_count', 0)}",
-            f"text_chars={item.get('text_chars', 0)}",
-            f"rating_count={item.get('rating_count', 0)}",
-            f"mean_rating={item.get('mean_rating'):.2f}" if isinstance(item.get('mean_rating'), (int, float)) else "mean_rating=unknown",
-        ]
-        lines.append("; ".join(parts))
-    return compact_text("\n".join(lines), max_chars)
-
-def render_review(review: dict[str, Any], index: int, max_review_text_chars: int) -> str:
+def render_post(post: dict[str, Any], index: int, max_post_text_chars: int) -> str:
     lines = [
-        f"[review {index}]", f"timestamp: {review.get('timestamp') or 'unknown'}", f"category: {review.get('category') or 'Unknown'}",
-        f"rating: {review.get('rating', 'unknown')}",
+        f"[post {index}]", f"timestamp: {post.get('timestamp') or 'unknown'}",
+        f"thread_id: {post.get('thread_id') or 'unknown'}",
     ]
-    if product_title(review): lines.append(f"product_title: {compact_text(product_title(review), 220)}")
-    if product_url(review): lines.append(f"product_url: {product_url(review)}")
-    lines.append(f"text: {compact_text(review_text(review), max_review_text_chars)}")
+    lines.append(f"text: {compact_text(post_text(post), max_post_text_chars)}")
     return "\n".join(lines)
 
-def assemble_profile(row: dict[str, Any], max_chars: int, max_review_text_chars: int) -> str:
-    reviews = row.get("reviews") or []
-    parts = ["Vietnamese e-commerce reviewer profile."]
-    summary = render_summary_stats(row)
-    if summary: parts.append(summary)
-    parts.extend(render_review(review, index, max_review_text_chars) for index, review in enumerate(reviews, 1))
+def assemble_profile(row: dict[str, Any], max_chars: int, max_post_text_chars: int) -> str:
+    posts = row.get("posts") or []
+    parts = ["Vietnamese VOZ forum member profile."]
+    parts.extend(render_post(post, index, max_post_text_chars) for index, post in enumerate(posts, 1))
     return "\n\n".join(parts)[:max_chars]
 
-def build_review_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> str:
-    """Build a schema-constrained prompt for Vietnamese e-commerce reviews."""
+def build_post_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> str:
+    """Build a schema-constrained prompt for Vietnamese VOZ forum posts."""
     lines = [
-        "You are mapping observable Vietnamese e-commerce review evidence to schema-constrained "
-        "persona fields for one reviewer. Fill attributes that are well supported "
-        "by the review history, and leave unsupported or identity-like claims null.",
+        "You are mapping observable Vietnamese VOZ forum-post evidence to schema-constrained "
+        "persona fields for one forum member. Fill attributes that are well supported "
+        "by the posting history, and leave unsupported or identity-like claims null.",
         "",
         "Important: emitting one field object is bookkeeping, not permission to "
         "fill the attribute. For every dimension, start from value=null and "
@@ -269,37 +184,28 @@ def build_review_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> 
         '{"fields": [{"field_id": "<one id from DIMENSIONS below>", '
         '"value": "<one allowed value, copied verbatim, or null>", '
         '"confidence": <float between 0.0 and 1.0>, '
-        '"evidence": "<one short exact quote copied from REVIEWER HISTORY, or empty string>", '
+        '"evidence": "<one short exact quote copied from POSTING HISTORY, or empty string>", '
         '"description": "<1-2 concrete sentences, or empty string>", '
         '"assignment_type": "direct|structured_claim|summary_inference|unsupported"}]}',
         "",
         "Allowed support:",
-        "- direct: use when the reviewer explicitly states the fact about "
-        "themselves in review text.",
-        "- structured_claim: use for repeated owned/use-context statements or "
-        "concrete non-sensitive purchase/review facts supported by at least 2 "
-        "distinct reviews, products, or category clusters.",
-        "- summary_inference: use for non-sensitive interests, shopping behavior, "
-        "preferences, review style, communication style, or expertise when a "
-        "repeated pattern is visible across the review history.",
+        "- direct: use when the member explicitly states the fact about themselves in post text.",
+        "- structured_claim: use for repeated concrete non-sensitive claims supported by at least 2 distinct posts or threads.",
+        "- summary_inference: use for non-sensitive interests, participation behavior, communication style, or expertise when a repeated pattern is visible across the posting history.",
         "- Overall writing style may support communication/cognitive-style "
-        "dimensions only when the pattern is visible across at least 5 reviews.",
+        "dimensions only when the pattern is visible across at least 5 posts.",
         "- unsupported: use when evidence is absent, one-off, ambiguous, generic, "
-        "gift-related, or mainly about someone other than the reviewer.",
+        "or mainly about someone other than the forum member.",
         "",
         "Hard limits:",
         "- For age, gender, health, disability, ethnicity, religion, politics, "
         "income, family/household status, occupation, location, employment, and "
         "parenthood: assign a non-null value only from an explicit self-statement. "
-        "Do not use product category alone.",
-        "- Do not attribute traits of gift recipients or other product users to "
-        "the reviewer. A gift may support shopping behavior, not the reviewer's "
-        "own identity, household, or hobbies.",
-        "- Generic praise like \"great product\" or product titles alone is not "
-        "diagnostic evidence for persona attributes.",
+        "Do not infer them from thread topic, quoted news, or other participants.",
+        "- Do not attribute claims from quoted material or another participant to the member.",
         "- Do not infer personality inventories, values, worldview, MBTI, Big "
         "Five, HEXACO, clinical attributes, or mental-state attributes from "
-        "ordinary shopping reviews unless the reviewer explicitly states the "
+        "ordinary forum posts unless the member explicitly states the "
         "trait or belief.",
         "",
         "Output rules:",
@@ -314,43 +220,39 @@ def build_review_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> 
         '"unknown", or "" as value unless that exact string appears in that '
         "field's allowed values.",
         "- Judge the history as a whole; prefer attributes backed by MULTIPLE "
-        "reviews over a single purchase (one-off items may be gifts for others).",
+        "posts over one isolated comment.",
         "- For supported attributes, estimate confidence as a float between 0.5 and 1.0 based on the strength and frequency of evidence.",
-        "- If the reviews do not support a dimension, set value to null, "
+        "- If the posts do not support a dimension, set value to null, "
         'confidence to 0.0, evidence to "", assignment_type to "unsupported", '
         'and description to "".',
         "- Every non-null value MUST include a short evidence quote copied "
-        "verbatim from one of the reviews.",
-        "- Evidence must be an exact quote from REVIEWER HISTORY, not your reasoning, "
+        "verbatim from one of the posts.",
+        "- Evidence must be an exact quote from POSTING HISTORY, not your reasoning, "
         "a paraphrase, or a summary. If you cannot copy an exact quote, return "
         "unsupported.",
         "- If you cannot copy an exact quote, return unsupported.",
         "- Do not append support counts, explanations, or labels to evidence. "
-        "Evidence must be only text that appears in REVIEWER HISTORY.",
-        "- description: 1-2 concrete sentences describing THIS shopper for this "
-        "attribute using details from their reviews (categories, products, "
-        "statements). Describe the person; do not justify the label.",
+        "Evidence must be only text that appears in POSTING HISTORY.",
+        "- description: 1-2 concrete Vietnamese sentences describing THIS forum member using details from their posts and threads. Describe the person; do not justify the label.",
         "- Every non-empty description MUST be written in Vietnamese. Do not "
         "write the description in English or any other language.",
         "- Sensitive / high-risk fields require explicit self-statements: age, "
         "gender, income, marital status, children count, religion, politics, "
         "ethnicity, health, disability, mental health, neurotype, MBTI, Big Five, "
         "personality traits, attachment style, and relationship style.",
-        "- Do not infer these fields from product category, product size, possible "
-        "gift purchases, cooking tools, romance books, writing style, tone, "
-        "vocabulary, price level, or household items.",
+        "- Do not infer these fields from thread topic, quoted content, writing style, tone, or vocabulary.",
         "- Return valid JSON only, with no markdown.",
         "- Most dimensions can be unsupported. Do not make the persona complete.",
         "",
-        "DIMENSIONS (field_id — label — description — allowed values):",
+        "DIMENSIONS (field_id | label | description | allowed values):",
     ]
     
     for d in dimensions:
         allowed = " | ".join(str(v) for v in d.get("values", [])) or "(free value)"
         desc = str(d.get("description", "")).strip()
-        lines.append(f"- {d['id']} — {d.get('label', d['id'])} — {desc} — [{allowed}]")
+        lines.append(f"- {d['id']} | {d.get('label', d['id'])} | {desc} | [{allowed}]")
         
-    lines += ["", "REVIEWER HISTORY:", profile_text]
+    lines += ["", "POSTING HISTORY:", profile_text]
     
     return "\n".join(lines)
 
@@ -366,7 +268,7 @@ def unsupported_field(dimension: dict[str, Any]) -> dict[str, Any]:
     return {"field_id": str(dimension["id"]), "value": None, "confidence": 0.0, "evidence": "", "description": "", "assignment_type": "unsupported"}
 
 def normalized_key(value: str) -> str:
-    return " ".join(str(value).replace("-", "–").split()).casefold()
+    return " ".join(str(value).replace("–", "-").replace("—", "-").split()).casefold()
 
 def coerce_value(value: Any, dimension: dict[str, Any]) -> str | None:
     if value is None or str(value).strip().casefold() in NULLISH_VALUES: return None
@@ -451,10 +353,15 @@ def iter_json_array(path: Path, chunk_size: int = 1_048_576) -> Iterator[dict[st
                 yield value
 
 
-def local_json_files(root: Path) -> list[Path]:
+def local_csv_files(root: Path) -> list[Path]:
     if not root.exists():
         return []
-    return sorted(root.rglob("*.json"))
+    return sorted(root.rglob("*.csv"))
+
+
+def iter_csv_rows(path: Path) -> Iterator[dict[str, Any]]:
+    with path.open("r", encoding="utf-8-sig", newline="") as handle:
+        yield from csv.DictReader(handle)
 
 
 def category_from_path(path: Path, metadata: bool = False) -> str:
@@ -473,16 +380,19 @@ def category_from_path(path: Path, metadata: bool = False) -> str:
     return name
 
 
-def stable_review_id(row: dict[str, Any], category: str) -> str:
+def stable_post_id(row: dict[str, Any], category: str) -> str:
+    explicit = compact_text(row.get("post_id"))
+    if explicit:
+        return explicit
     identity = "|".join(str(row.get(key) or "") for key in (
-        "user_id", "timestamp", "rating", "text", "product_title", "product_url", "category"
+        "user_id", "timestamp", "thread_id", "text_hash", "text"
     ))
     return hashlib.sha1(f"{category}|{identity}".encode()).hexdigest()
 
 
 
 def shard_path(config: Config, shard_index: int) -> Path:
-    return config.review_shards_dir / f"reviews-{shard_index:04d}.jsonl"
+    return config.post_shards_dir / f"posts-{shard_index:04d}.jsonl"
 
 
 def user_shard(user_id: str, shard_count: int) -> int:
@@ -490,53 +400,55 @@ def user_shard(user_id: str, shard_count: int) -> int:
     return int.from_bytes(digest[:4], "big") % shard_count
 
 
-def iter_review_shards(config: Config) -> Iterator[Path]:
-    for index in range(config.review_shards):
+def iter_post_shards(config: Config) -> Iterator[Path]:
+    for index in range(config.post_shards):
         path = shard_path(config, index)
         if path.is_file():
             yield path
 
 
-def ingest_reviews(config: Config) -> None:
-    files = local_json_files(config.review_dir)
+def ingest_posts(config: Config) -> None:
+    files = local_csv_files(config.post_dir)
     if not files:
-        raise FileNotFoundError(f"No .json files found in {config.review_dir}")
-    config.review_shards_dir.mkdir(parents=True, exist_ok=True)
-    handles = [shard_path(config, index).open("w", encoding="utf-8") for index in range(config.review_shards)]
+        raise FileNotFoundError(f"No .csv files found in {config.post_dir}")
+    config.post_shards_dir.mkdir(parents=True, exist_ok=True)
+    handles = [shard_path(config, index).open("w", encoding="utf-8") for index in range(config.post_shards)]
     total_kept = 0
     source_index = 0
     try:
         for path in files:
-            fallback_category = category_from_path(path)
             scanned = kept = 0
-            for row in tqdm(iter_json_array(path), desc=f"ingest:{path.name}"):
+            for row in tqdm(iter_csv_rows(path), desc=f"ingest:{path.name}"):
                 scanned += 1
                 source_index += 1
                 if config.max_rows_per_file and scanned > config.max_rows_per_file:
                     break
-                user_id = str(row.get("UserId") or "").strip()
-                timestamp = parse_comment_date(row.get("CommentDate"))
+                user_id = compact_text(row.get("author"))
+                timestamp = parse_comment_date(row.get("created_at"))
                 if not user_id or timestamp is None:
                     continue
-                category = compact_text(row.get("SubCategory") or fallback_category or "Unknown")
-                normalized = {"user_id": user_id, "rating": row.get("Rating"),
-                    "text": str(row.get("Comment") or ""), "product_title": str(row.get("ProductName") or ""),
-                    "product_url": str(row.get("ProductUrl") or ""), "category": category, "timestamp": timestamp}
-                review_id = stable_review_id(normalized, category)
-                record = {"review_id": review_id, "user_id": user_id, "category": category,
-                    "rating": row.get("Rating"), "text": str(row.get("Comment") or ""),
-                    "product_title": str(row.get("ProductName") or ""),
-                    "product_url": str(row.get("ProductUrl") or ""),
+                category = compact_text(row.get("label") or row.get("source") or "voz")
+                normalized = {"post_id": row.get("post_id"), "user_id": user_id,
+                    "text": str(row.get("text") or ""), "thread_id": row.get("thread_id"),
+                    "text_hash": row.get("text_hash"), "category": category, "timestamp": timestamp}
+                stable_id = stable_post_id(normalized, category)
+                record = {"post_id": stable_id,
+                    "user_id": user_id, "author": user_id, "category": category,
+                    "label": compact_text(row.get("label") or "voz"),
+                    "source": compact_text(row.get("source") or "voz"),
+                    "thread_id": compact_text(row.get("thread_id")),
+                    "text_hash": compact_text(row.get("text_hash")),
+                    "text": str(row.get("text") or ""),
                     "timestamp": format_vietnam_datetime(timestamp), "timestamp_ms": timestamp,
                     "source_index": source_index}
-                handle = handles[user_shard(user_id, config.review_shards)]
+                handle = handles[user_shard(user_id, config.post_shards)]
                 handle.write(json.dumps(record, ensure_ascii=False) + "\n")
                 kept += 1; total_kept += 1
             print(f"{path.name}: scanned={scanned:,}, kept={kept:,}")
     finally:
         for handle in handles:
             handle.close()
-    print(f"Stored reviews={total_kept:,} in {config.review_shards} JSONL shards")
+    print(f"Stored posts={total_kept:,} in {config.post_shards} JSONL shards")
 
 
 def percentile_ranks(values: list[float]) -> list[float]:
@@ -557,28 +469,28 @@ def percentile_ranks(values: list[float]) -> list[float]:
 
 
 def select_users(config: Config) -> None:
-    if not any(iter_review_shards(config)):
-        raise FileNotFoundError(f"No review shards in {config.review_shards_dir}. Run ingest first.")
+    if not any(iter_post_shards(config)):
+        raise FileNotFoundError(f"No post shards in {config.post_shards_dir}. Run ingest first.")
     aggregate: dict[str, dict[str, Any]] = {}
-    for path in tqdm(list(iter_review_shards(config)), desc="select users"):
-        seen_review_ids: set[str] = set()
+    for path in tqdm(list(iter_post_shards(config)), desc="select users"):
+        seen_post_ids: set[str] = set()
         for row in iter_local_jsonl(path):
-            review_id = str(row.get("review_id") or "")
-            if review_id in seen_review_ids:
+            post_id = str(row.get("post_id") or "")
+            if post_id in seen_post_ids:
                 continue
-            seen_review_ids.add(review_id)
+            seen_post_ids.add(post_id)
             user_id = row["user_id"]
-            item = aggregate.setdefault(user_id, {"count": 0, "categories": set(), "text_reviews": 0,
+            item = aggregate.setdefault(user_id, {"count": 0, "categories": set(), "text_posts": 0,
                 "text_chars": 0, "min_ts": row["timestamp_ms"], "max_ts": row["timestamp_ms"]})
             text = str(row.get("text") or "")
-            item["count"] += 1; item["categories"].add(row.get("category") or "Unknown")
-            item["text_reviews"] += int(bool(text.strip())); item["text_chars"] += len(text)
+            item["count"] += 1; item["categories"].add(row.get("thread_id") or "Unknown thread")
+            item["text_posts"] += int(bool(text.strip())); item["text_chars"] += len(text)
             item["min_ts"] = min(item["min_ts"], row["timestamp_ms"])
             item["max_ts"] = max(item["max_ts"], row["timestamp_ms"])
     eligible = []
     for user_id, item in aggregate.items():
-        if item["count"] >= config.min_reviews and item["text_chars"] >= config.min_text_chars:
-            eligible.append((user_id, item["count"], len(item["categories"]), item["text_reviews"], item["text_chars"],
+        if item["count"] >= config.min_posts and item["text_chars"] >= config.min_text_chars:
+            eligible.append((user_id, item["count"], len(item["categories"]), item["text_posts"], item["text_chars"],
                              (item["max_ts"] - item["min_ts"]) / 86_400_000))
     metric_columns = (4, 3, 2, 5, 1)
     weights = (0.35, 0.20, 0.20, 0.15, 0.10)
@@ -588,7 +500,7 @@ def select_users(config: Config) -> None:
     scored.sort(key=lambda item: (-item[0], -item[1][4], -item[1][2], -item[1][3], item[1][0]))
     with config.selected_users_path.open("w", encoding="utf-8") as output:
         for rank, (score, row) in enumerate(scored[:config.top_k], 1):
-            keys = ("user_id", "review_count", "category_count", "text_reviews", "text_chars", "history_days")
+            keys = ("user_id", "post_count", "thread_count", "text_posts", "text_chars", "history_days")
             record = {key: value for key, value in zip(keys, row)}
             record.update({"rank": rank, "score": score})
             output.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -600,25 +512,25 @@ def prepare_histories(config: Config) -> None:
     with config.selected_users_path.open(encoding="utf-8") as source:
         selected_records = [json.loads(line) for line in source if line.strip()]
     selected = {str(row["user_id"]): row for row in selected_records}
-    shard_files = list(iter_review_shards(config))
+    shard_files = list(iter_post_shards(config))
     with config.histories_path.open("w", encoding="utf-8") as output:
         for path in tqdm(shard_files, desc="prepare histories"):
-            reviews_by_user: dict[str, list[dict[str, Any]]] = defaultdict(list)
-            for review in iter_local_jsonl(path):
-                user_id = str(review["user_id"])
+            posts_by_user: dict[str, list[dict[str, Any]]] = defaultdict(list)
+            for post in iter_local_jsonl(path):
+                user_id = str(post["user_id"])
                 if user_id in selected:
-                    reviews_by_user[user_id].append(review)
-            for user_id, raw_reviews in reviews_by_user.items():
-                reviews, filter_summary = filter_reviews(raw_reviews, min_review_text_chars=config.min_review_text_chars,
-                                                           filter_fulfillment_reviews=False)
-                if len(reviews) < 2:
+                    posts_by_user[user_id].append(post)
+            for user_id, raw_posts in posts_by_user.items():
+                posts = filter_posts(
+                    raw_posts, min_post_text_chars=config.min_post_text_chars
+                )
+                if len(posts) < 2:
                     continue
-                for review in reviews:
-                    review.pop("timestamp_ms", None)
-                    review.pop("source_index", None)
-                record = {"source": "vietnamese_ecommerce_reviews", "user_id": user_id, "rank": selected[user_id]["rank"],
-                    "review_count": len(reviews), "review_filter_summary": filter_summary, "reviews": reviews,
-                    "category_review_stats": category_review_stats(reviews)}
+                for post in posts:
+                    post.pop("timestamp_ms", None)
+                    post.pop("source_index", None)
+                record = {"source": "voz_forum", "user_id": user_id, "rank": selected[user_id]["rank"],
+                    "post_count": len(posts), "posts": posts}
                 output.write(json.dumps(record, ensure_ascii=False) + "\n")
     print("Prepared histories:", config.histories_path)
 
@@ -631,10 +543,10 @@ def compact_profiles(config: Config) -> None:
             if not line.strip():
                 continue
             user = json.loads(line)
-            profile = assemble_profile(user, config.max_profile_chars, config.max_review_text_chars)
-            record = {key: user[key] for key in ("user_id", "source", "review_count", "review_filter_summary")}
+            profile = assemble_profile(user, config.max_profile_chars, config.max_post_text_chars)
+            record = {key: user[key] for key in ("user_id", "source", "post_count")}
             record.update({"compact_profile_chars": len(profile), "max_profile_chars": config.max_profile_chars,
-                           "max_review_text_chars": config.max_review_text_chars, "profile_text": profile})
+                           "max_post_text_chars": config.max_post_text_chars, "profile_text": profile})
             output.write(json.dumps(record, ensure_ascii=False) + "\n")
             count += 1
     print(f"Compact profiles={count:,}; output={config.compact_profiles_path}")
@@ -701,7 +613,7 @@ def extract_personas(config: Config) -> None:
             fields = []
             for chunk_index, dimensions in enumerate(chunks, start=1):
                 started_at = time.perf_counter()
-                prompt = build_review_prompt(record["profile_text"], dimensions)
+                prompt = build_post_prompt(record["profile_text"], dimensions)
                 prompt_path = save_prompt_log(config, chunk_index, prompt)
                 response = call_llm(prompt, config)
                 chunk_fields = sanitize_fields(parse_fields(response), dimensions, record["profile_text"])
@@ -717,8 +629,9 @@ def extract_personas(config: Config) -> None:
                 )
             if len(fields) != len(schema):
                 raise RuntimeError(f"Expected {len(schema)} fields, got {len(fields)} for {user_id}")
-            result = {key: record[key] for key in ("user_id", "source", "review_count",
-                                                    "review_filter_summary", "compact_profile_chars")}
+            result = {key: record[key] for key in (
+                "user_id", "source", "post_count", "compact_profile_chars"
+            )}
             result["fields"] = fields
             output.write(json.dumps(result, ensure_ascii=False) + "\n"); output.flush(); os.fsync(output.fileno())
             done.add(user_id); processed += 1
@@ -812,28 +725,28 @@ def require_file(path: Path, hint: str) -> None:
 def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("stage", choices=("all", "ingest", "prepare", "compact", "extract", "stats"), nargs="?", default="all")
-    parser.add_argument("--review-dir", type=Path, default=Path("data/vietnamese_reviews"))
-    parser.add_argument("--work-dir", type=Path, default=Path("vietnamese_persona_fresh"))
+    parser.add_argument("--post-dir", type=Path, default=Path("data/voz"))
+    parser.add_argument("--work-dir", type=Path, default=Path("voz_persona_fresh"))
     parser.add_argument("--schema-path", type=Path, default=Path("schema/dimension.json"))
-    parser.add_argument("--top-k", type=int, default=100_000)
+    parser.add_argument("--top-k", type=int, default=100)
     parser.add_argument("--max-rows-per-file", type=int, default=0)
     parser.add_argument("--max-llm-users", type=int, default=0)
-    parser.add_argument("--review-shards", type=int, default=256)
+    parser.add_argument("--post-shards", type=int, default=50)
     return parser.parse_args(argv)
 
 
 def main(argv: Iterable[str] | None = None) -> None:
     args = parse_args(argv)
-    config = Config(review_dir=project_path(args.review_dir), work_dir=project_path(args.work_dir),
+    config = Config(post_dir=project_path(args.post_dir), work_dir=project_path(args.work_dir),
                     schema_path=project_path(args.schema_path),
                     top_k=args.top_k, max_rows_per_file=args.max_rows_per_file,
-                    max_llm_users=args.max_llm_users, review_shards=args.review_shards)
-    if config.review_shards < 1:
-        raise ValueError("review-shards must be at least 1")
+                    max_llm_users=args.max_llm_users, post_shards=args.post_shards)
+    if config.post_shards < 1:
+        raise ValueError("post-shards must be at least 1")
     print("Work directory:", config.work_dir.resolve())
     config.work_dir.mkdir(parents=True, exist_ok=True)
     if args.stage in {"all", "ingest"}:
-        ingest_reviews(config)
+        ingest_posts(config)
     if args.stage in {"all", "prepare"}:
         select_users(config)
         prepare_histories(config)

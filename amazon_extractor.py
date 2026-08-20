@@ -17,8 +17,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Iterator
 
-import requests
 from tqdm.auto import tqdm
+from llm_client import LLMSettings, complete_prompt
 from persona_coverage_chart import render_category_coverage_chart
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -44,17 +44,20 @@ class Config:
     min_verified_share: float = 0.70
     train_fraction: float = 0.8
     min_review_text_chars: int = 20
-    max_profile_chars: int = 48_000
-    max_review_text_chars: int = 2_000
-    max_dims_per_chunk: int = 20
-    max_llm_users: int = 0
+    max_profile_chars: int = 25_000
+    max_review_text_chars: int = 1_500
+    max_dims_per_chunk: int = 10
+    max_llm_users: int = 100
     review_shards: int = 256
+    llm_provider: str = os.environ.get("LLM_PROVIDER", "local")
     model: str = os.environ.get("LLM_MODEL", "Qwen3-14B")
     llm_endpoint: str = os.environ.get(
         "LLM_ENDPOINT", 
         "http://203.113.152.4:7777/llm/v1/chat/completions",
     )
     llm_authorization: str = os.environ.get("LLM_AUTHORIZATION", "")
+    openrouter_api_key: str = os.environ.get("OPENROUTER_API_KEY", "")
+    openrouter_model: str = os.environ.get("OPENROUTER_MODEL", "google/gemma-4-31b-it:free")
     llm_timeout_seconds: int = 300
 
     @property
@@ -712,30 +715,15 @@ def load_schema(config: Config) -> list[dict[str, Any]]:
 
 
 def call_llm(prompt: str, config: Config) -> str:
-    headers = {"Content-Type": "application/json"}
-    if config.llm_authorization:
-        headers["Authorization"] = config.llm_authorization
-    payload = {
-        "model": config.model,
-        "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 8192,
-        "temperature": 0.0,
-        "top_p": 1.0,
-        "top_k": 30,
-        "chat_template_kwargs": {"enable_thinking": False},
-    }
-    response = requests.post(
-        config.llm_endpoint,
-        headers=headers,
-        json=payload,
-        timeout=config.llm_timeout_seconds,
-    )
-    response.raise_for_status()
-    result = response.json()
-    try:
-        return str(result["choices"][0]["message"]["content"])
-    except (KeyError, IndexError, TypeError) as error:
-        raise ValueError(f"Unexpected LLM response structure: {result}") from error
+    return complete_prompt(prompt, LLMSettings(
+        provider=config.llm_provider,
+        local_endpoint=config.llm_endpoint,
+        local_model=config.model,
+        local_authorization=config.llm_authorization,
+        openrouter_api_key=config.openrouter_api_key,
+        openrouter_model=config.openrouter_model,
+        timeout_seconds=config.llm_timeout_seconds,
+    ))
 
 
 def reset_prompt_log(config: Config) -> None:
@@ -891,7 +879,7 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--review-dir", type=Path, default=Path("data/amazon/reviews"))
     parser.add_argument("--metadata-dir", type=Path, default=Path("data/amazon/metadata"))
     parser.add_argument("--work-dir", type=Path, default=Path("amazon_persona_fresh"))
-    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimension.json"))
+    parser.add_argument("--schema-path", type=Path, default=Path("schema/dimensions.json"))
     parser.add_argument("--start-year", type=int, default=2018)
     parser.add_argument("--end-year", type=int, default=2023)
     parser.add_argument("--top-k", type=int, default=100_000)
