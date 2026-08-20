@@ -44,7 +44,7 @@ class Config:
     min_verified_share: float = 0.70
     train_fraction: float = 0.8
     min_review_text_chars: int = 20
-    max_profile_chars: int = 25_000
+    max_profile_chars: int = 24_000
     max_review_text_chars: int = 1_500
     max_dims_per_chunk: int = 10
     max_llm_users: int = 100

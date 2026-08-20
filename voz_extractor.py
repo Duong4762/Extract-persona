@@ -41,7 +41,7 @@ class Config:
     min_posts: int = 5
     min_text_chars: int = 1000
     min_post_text_chars: int = 20
-    max_profile_chars: int = 48_000
+    max_profile_chars: int = 35_000
     max_post_text_chars: int = 2_000
     max_dims_per_chunk: int = 50
     max_llm_users: int = 0
