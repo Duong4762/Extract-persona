@@ -15,6 +15,7 @@ python amazon_extractor.py ingest
 python amazon_extractor.py prepare
 python amazon_extractor.py compact
 python amazon_extractor.py extract
+python amazon_extractor.py stats
 ```
 
 ## 3. Chạy Vietnamese Reviews
