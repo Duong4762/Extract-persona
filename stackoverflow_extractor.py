@@ -595,8 +595,16 @@ def extract(config: Config) -> None:
                 prompt_path = config.prompt_log_dir / f"prompt-{chunk_index:04d}.txt"
                 prompt_path.write_text(prompt, encoding="utf-8")
                 started = time.perf_counter()
-                response = call_llm(prompt, config)
-                chunk_fields = sanitize_fields(parse_fields(response), chunk, record["profile_text"])
+                try:
+                    response = call_llm(prompt, config)
+                    chunk_fields = sanitize_fields(parse_fields(response), chunk, record["profile_text"])
+                except Exception as error:
+                    chunk_fields = sanitize_fields([], chunk, record["profile_text"])
+                    tqdm.write(
+                        f"user={user_id} chunk={chunk_index}/{len(chunks)} "
+                        f"LLM retries exhausted; marking {len(chunk)} dimensions "
+                        f"unsupported; error={error}"
+                    )
                 fields.extend(chunk_fields)
                 categories = sorted({str(item.get("category") or "Uncategorized") for item in chunk})
                 tqdm.write(

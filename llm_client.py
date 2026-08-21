@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import time
 from typing import Any
 
 import requests
 
 
 OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
+MAX_RETRIES = 10
+MAX_RETRY_DELAY_SECONDS = 60.0
 
 
 @dataclass(frozen=True)
@@ -67,16 +70,39 @@ def chat_completion(
             "chat_template_kwargs": {"enable_thinking": False},
         }
 
-    response = requests.post(url, headers=headers, json=payload, timeout=settings.timeout_seconds)
-    response.raise_for_status()
-    document = response.json()
-    try:
-        message = document["choices"][0]["message"]
-    except (KeyError, IndexError, TypeError) as error:
-        raise ValueError(f"Unexpected LLM response: {document}") from error
-    if not isinstance(message, dict):
-        raise ValueError(f"Unexpected assistant message: {message}")
-    return message
+    for attempt in range(MAX_RETRIES + 1):
+        response: requests.Response | None = None
+        try:
+            response = requests.post(
+                url, headers=headers, json=payload, timeout=settings.timeout_seconds
+            )
+            response.raise_for_status()
+            document = response.json()
+            try:
+                message = document["choices"][0]["message"]
+            except (KeyError, IndexError, TypeError) as error:
+                raise ValueError(f"Unexpected LLM response: {document}") from error
+            if not isinstance(message, dict):
+                raise ValueError(f"Unexpected assistant message: {message}")
+            return message
+        except (requests.RequestException, ValueError) as error:
+            if attempt >= MAX_RETRIES:
+                raise
+            retry_number = attempt + 1
+            retry_after = response.headers.get("Retry-After") if response is not None else None
+            try:
+                delay = float(retry_after) if retry_after is not None else 2 ** (retry_number - 1)
+            except (TypeError, ValueError):
+                delay = 2 ** (retry_number - 1)
+            delay = max(0.0, min(delay, MAX_RETRY_DELAY_SECONDS))
+            print(
+                f"LLM retry {retry_number}/{MAX_RETRIES} after error: {error}; "
+                f"waiting {delay:g}s",
+                flush=True,
+            )
+            time.sleep(delay)
+
+    raise RuntimeError("Unreachable LLM retry state")
 
 
 def complete_prompt(prompt: str, settings: LLMSettings) -> str:

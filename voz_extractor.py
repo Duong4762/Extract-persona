@@ -615,8 +615,16 @@ def extract_personas(config: Config) -> None:
                 started_at = time.perf_counter()
                 prompt = build_post_prompt(record["profile_text"], dimensions)
                 prompt_path = save_prompt_log(config, chunk_index, prompt)
-                response = call_llm(prompt, config)
-                chunk_fields = sanitize_fields(parse_fields(response), dimensions, record["profile_text"])
+                try:
+                    response = call_llm(prompt, config)
+                    chunk_fields = sanitize_fields(parse_fields(response), dimensions, record["profile_text"])
+                except Exception as error:
+                    chunk_fields = sanitize_fields([], dimensions, record["profile_text"])
+                    tqdm.write(
+                        f"user={user_id} chunk={chunk_index}/{len(chunks)} "
+                        f"LLM retries exhausted; marking {len(dimensions)} dimensions "
+                        f"unsupported; error={error}"
+                    )
                 fields.extend(chunk_fields)
                 categories = sorted({str(dimension.get("category") or "Uncategorized") for dimension in dimensions})
                 supported_count = sum(field["value"] is not None for field in chunk_fields)

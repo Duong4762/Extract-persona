@@ -5,6 +5,7 @@ extract and stats. Run ``python amazon_extractor.py --help`` for usage.
 """
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import gzip
 import hashlib
 import json
@@ -44,10 +45,11 @@ class Config:
     min_verified_share: float = 0.70
     train_fraction: float = 0.8
     min_review_text_chars: int = 20
-    max_profile_chars: int = 24_000
+    max_profile_chars: int = 15_000
     max_review_text_chars: int = 1_500
     max_dims_per_chunk: int = 10
     max_llm_users: int = 100
+    llm_workers: int = 5
     review_shards: int = 256
     llm_provider: str = os.environ.get("LLM_PROVIDER", "local")
     model: str = os.environ.get("LLM_MODEL", "Qwen3-14B")
@@ -763,23 +765,53 @@ def extract_personas(config: Config) -> None:
             if config.max_llm_users and processed >= config.max_llm_users:
                 break
             reset_prompt_log(config)
-            fields = []
+            chunk_results: dict[int, list[dict[str, Any]]] = {}
+            futures = {}
+            executor = ThreadPoolExecutor(max_workers=config.llm_workers)
             for chunk_index, dimensions in enumerate(chunks, start=1):
-                started_at = time.perf_counter()
                 prompt = build_amazon_prompt(record["profile_text"], dimensions)
                 prompt_path = save_prompt_log(config, chunk_index, prompt)
-                response = call_llm(prompt, config)
-                chunk_fields = sanitize_fields(parse_fields(response), dimensions, record["profile_text"])
-                fields.extend(chunk_fields)
-                categories = sorted({str(dimension.get("category") or "Uncategorized") for dimension in dimensions})
-                supported_count = sum(field["value"] is not None for field in chunk_fields)
-                elapsed_seconds = time.perf_counter() - started_at
-                tqdm.write(
-                    f"user={user_id} chunk={chunk_index}/{len(chunks)} "
-                    f"category={','.join(categories)} dimensions={len(dimensions)} "
-                    f"supported={supported_count} elapsed={elapsed_seconds:.2f}s "
-                    f"prompt_log={prompt_path.name}"
+                future = executor.submit(call_llm, prompt, config)
+                futures[future] = (
+                    chunk_index, dimensions, prompt_path, time.perf_counter()
                 )
+            try:
+                for future in as_completed(futures):
+                    chunk_index, dimensions, prompt_path, started_at = futures[future]
+                    try:
+                        response = future.result()
+                        chunk_fields = sanitize_fields(
+                            parse_fields(response), dimensions, record["profile_text"]
+                        )
+                    except Exception as error:
+                        chunk_fields = sanitize_fields([], dimensions, record["profile_text"])
+                        tqdm.write(
+                            f"user={user_id} chunk={chunk_index}/{len(chunks)} "
+                            f"LLM retries exhausted; marking {len(dimensions)} dimensions "
+                            f"unsupported; error={error}"
+                        )
+                    chunk_results[chunk_index] = chunk_fields
+                    categories = sorted({
+                        str(dimension.get("category") or "Uncategorized")
+                        for dimension in dimensions
+                    })
+                    supported_count = sum(
+                        field["value"] is not None for field in chunk_fields
+                    )
+                    elapsed_seconds = time.perf_counter() - started_at
+                    tqdm.write(
+                        f"user={user_id} chunk={chunk_index}/{len(chunks)} "
+                        f"category={','.join(categories)} dimensions={len(dimensions)} "
+                        f"supported={supported_count} elapsed={elapsed_seconds:.2f}s "
+                        f"prompt_log={prompt_path.name}"
+                    )
+            finally:
+                executor.shutdown(wait=True, cancel_futures=True)
+            fields = [
+                field
+                for chunk_index in range(1, len(chunks) + 1)
+                for field in chunk_results[chunk_index]
+            ]
             if len(fields) != len(schema):
                 raise RuntimeError(f"Expected {len(schema)} fields, got {len(fields)} for {user_id}")
             result = {key: record[key] for key in ("user_id", "source", "review_count", "validation_review_count",
@@ -885,6 +917,7 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--top-k", type=int, default=100_000)
     parser.add_argument("--max-rows-per-file", type=int, default=0)
     parser.add_argument("--max-llm-users", type=int, default=0)
+    parser.add_argument("--llm-workers", type=int, default=5)
     parser.add_argument("--review-shards", type=int, default=256)
     return parser.parse_args(argv)
 
@@ -895,11 +928,14 @@ def main(argv: Iterable[str] | None = None) -> None:
                     work_dir=project_path(args.work_dir), schema_path=project_path(args.schema_path),
                     start_year=args.start_year, end_year=args.end_year,
                     top_k=args.top_k, max_rows_per_file=args.max_rows_per_file,
-                    max_llm_users=args.max_llm_users, review_shards=args.review_shards)
+                    max_llm_users=args.max_llm_users, llm_workers=args.llm_workers,
+                    review_shards=args.review_shards)
     if config.start_year > config.end_year:
         raise ValueError("start-year must not be greater than end-year")
     if config.review_shards < 1:
         raise ValueError("review-shards must be at least 1")
+    if config.llm_workers < 1:
+        raise ValueError("llm-workers must be at least 1")
     print("Work directory:", config.work_dir.resolve())
     config.work_dir.mkdir(parents=True, exist_ok=True)
     if args.stage in {"all", "ingest"}:
