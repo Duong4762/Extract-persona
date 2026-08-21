@@ -20,7 +20,7 @@ from typing import Any, Iterable, Iterator
 
 from tqdm.auto import tqdm
 
-from llm_client import LLMSettings, complete_prompt
+from llm_client import LLMCancelledError, LLMSettings, LLMUnauthorizedError, complete_prompt
 from persona_coverage_chart import render_category_coverage_chart
 
 
@@ -598,6 +598,8 @@ def extract(config: Config) -> None:
                 try:
                     response = call_llm(prompt, config)
                     chunk_fields = sanitize_fields(parse_fields(response), chunk, record["profile_text"])
+                except (LLMUnauthorizedError, LLMCancelledError):
+                    raise
                 except Exception as error:
                     chunk_fields = sanitize_fields([], chunk, record["profile_text"])
                     tqdm.write(

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import time
+from threading import Event
 from typing import Any
 
 import requests
@@ -12,6 +12,20 @@ import requests
 OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
 MAX_RETRIES = 10
 MAX_RETRY_DELAY_SECONDS = 60.0
+_cancel_event = Event()
+
+
+class LLMUnauthorizedError(RuntimeError):
+    """Fatal authentication error that must stop every LLM workflow."""
+
+
+class LLMCancelledError(RuntimeError):
+    """An LLM call cancelled because another call was unauthorized."""
+
+
+def _raise_if_cancelled() -> None:
+    if _cancel_event.is_set():
+        raise LLMCancelledError("LLM execution cancelled after an HTTP 401 response")
 
 
 @dataclass(frozen=True)
@@ -71,11 +85,18 @@ def chat_completion(
         }
 
     for attempt in range(MAX_RETRIES + 1):
+        _raise_if_cancelled()
         response: requests.Response | None = None
         try:
             response = requests.post(
                 url, headers=headers, json=payload, timeout=settings.timeout_seconds
             )
+            if response.status_code == 401:
+                _cancel_event.set()
+                raise LLMUnauthorizedError(
+                    f"LLM authentication failed with HTTP 401 for {url}; cancelling all LLM work"
+                )
+            _raise_if_cancelled()
             response.raise_for_status()
             document = response.json()
             try:
@@ -85,6 +106,8 @@ def chat_completion(
             if not isinstance(message, dict):
                 raise ValueError(f"Unexpected assistant message: {message}")
             return message
+        except (LLMUnauthorizedError, LLMCancelledError):
+            raise
         except (requests.RequestException, ValueError) as error:
             if attempt >= MAX_RETRIES:
                 raise
@@ -100,7 +123,8 @@ def chat_completion(
                 f"waiting {delay:g}s",
                 flush=True,
             )
-            time.sleep(delay)
+            if _cancel_event.wait(delay):
+                _raise_if_cancelled()
 
     raise RuntimeError("Unreachable LLM retry state")
 

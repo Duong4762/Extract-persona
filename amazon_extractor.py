@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any, Iterable, Iterator
 
 from tqdm.auto import tqdm
-from llm_client import LLMSettings, complete_prompt
+from llm_client import LLMCancelledError, LLMSettings, LLMUnauthorizedError, complete_prompt
 from persona_coverage_chart import render_category_coverage_chart
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -783,6 +783,10 @@ def extract_personas(config: Config) -> None:
                         chunk_fields = sanitize_fields(
                             parse_fields(response), dimensions, record["profile_text"]
                         )
+                    except (LLMUnauthorizedError, LLMCancelledError):
+                        for pending in futures:
+                            pending.cancel()
+                        raise
                     except Exception as error:
                         chunk_fields = sanitize_fields([], dimensions, record["profile_text"])
                         tqdm.write(
