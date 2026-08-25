@@ -38,10 +38,11 @@ class Config:
     work_dir: Path
     schema_path: Path
     max_rows_per_file: int = 0
-    top_k: int = 100
+    top_k: int = 50000
     min_posts: int = 5
     min_text_chars: int = 1000
     min_post_text_chars: int = 20
+    min_history_days: float = 30
     max_profile_chars: int = 35_000
     max_post_text_chars: int = 2_000
     max_dims_per_chunk: int = 50
@@ -71,8 +72,8 @@ class Config:
         return self.work_dir / "user_profiles.jsonl"
 
     @property
-    def histories_path(self) -> Path:
-        return self.work_dir / "user_histories.prepared.jsonl"
+    def history_shards_dir(self) -> Path:
+        return self.work_dir / "history_shards"
 
     @property
     def compact_profiles_path(self) -> Path:
@@ -96,6 +97,9 @@ class Config:
 
 ASSIGNMENT_TYPES = {"direct", "structured_claim", "summary_inference", "unsupported"}
 NULLISH_VALUES = {"", "null", "none", "n/a", "na", "unknown", "unsupported", "not applicable"}
+IB_PATTERN = re.compile(r"(?i)(?<!\w)ib(?!\w)")
+
+
 def compact_text(value: Any, max_chars: int | None = None) -> str:
     text = " ".join(str(value or "").split())
     if max_chars is not None and len(text) > max_chars:
@@ -152,6 +156,8 @@ def filter_posts(posts: list[dict[str, Any]], *, min_post_text_chars: int) -> li
     for raw_post in posts:
         post = normalize_post_record(raw_post)
         if post.get("timestamp_ms") is None:
+            continue
+        elif IB_PATTERN.search(post_text(post)):
             continue
         elif len(post_text(post)) < min_post_text_chars:
             continue
@@ -439,6 +445,17 @@ def iter_post_shards(config: Config) -> Iterator[Path]:
             yield path
 
 
+def history_shard_path(config: Config, shard_index: int) -> Path:
+    return config.history_shards_dir / f"histories-{shard_index:04d}.jsonl"
+
+
+def iter_history_shards(config: Config) -> Iterator[Path]:
+    for index in range(config.post_shards):
+        path = history_shard_path(config, index)
+        if path.is_file():
+            yield path
+
+
 def ingest_posts(config: Config) -> None:
     user_files = local_json_files(config.user_dir)
     content_files = local_json_files(config.content_dir)
@@ -533,27 +550,32 @@ def select_users(config: Config) -> None:
             timestamp_ms = parse_comment_date(row.get("timestamp"))
             if timestamp_ms is None:
                 continue
-            item = aggregate.setdefault(user_id, {"count": 0, "categories": set(), "text_posts": 0,
+            item = aggregate.setdefault(user_id, {"count": 0, "text_posts": 0,
                 "text_chars": 0, "min_ts": timestamp_ms, "max_ts": timestamp_ms})
             text = str(row.get("text") or "")
-            item["count"] += 1; item["categories"].add(row.get("category") or "Unknown category")
+            if IB_PATTERN.search(text):
+                continue
+            item["count"] += 1
             item["text_posts"] += int(bool(text.strip())); item["text_chars"] += len(text)
             item["min_ts"] = min(item["min_ts"], timestamp_ms)
             item["max_ts"] = max(item["max_ts"], timestamp_ms)
     eligible = []
     for user_id, item in aggregate.items():
-        if item["count"] >= config.min_posts and item["text_chars"] >= config.min_text_chars:
-            eligible.append((user_id, item["count"], len(item["categories"]), item["text_posts"], item["text_chars"],
-                             (item["max_ts"] - item["min_ts"]) / 86_400_000))
-    metric_columns = (4, 3, 2, 5, 1)
-    weights = (0.35, 0.20, 0.20, 0.15, 0.10)
+        history_days = (item["max_ts"] - item["min_ts"]) / 86_400_000
+        if (item["count"] >= config.min_posts
+                and item["text_chars"] >= config.min_text_chars
+                and history_days >= config.min_history_days):
+            eligible.append((user_id, item["count"], item["text_posts"], item["text_chars"],
+                             history_days))
+    metric_columns = (3, 2, 4, 1)
+    weights = (0.4375, 0.25, 0.1875, 0.125)
     ranks = [percentile_ranks([float(row[column] or 0) for row in eligible]) for column in metric_columns]
     scored = [(sum(weight * vector[index] for weight, vector in zip(weights, ranks)), row)
               for index, row in enumerate(eligible)]
-    scored.sort(key=lambda item: (-item[0], -item[1][4], -item[1][2], -item[1][3], item[1][0]))
+    scored.sort(key=lambda item: (-item[0], -item[1][3], -item[1][2], -item[1][1], item[1][0]))
     with config.selected_users_path.open("w", encoding="utf-8") as output:
         for rank, (score, row) in enumerate(scored[:config.top_k], 1):
-            keys = ("user_id", "post_count", "thread_count", "text_posts", "text_chars", "history_days")
+            keys = ("user_id", "post_count", "text_posts", "text_chars", "history_days")
             record = {key: value for key, value in zip(keys, row)}
             record.update({"rank": rank, "score": score})
             output.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -571,8 +593,12 @@ def prepare_histories(config: Config) -> None:
         if str(row.get("id") or "") in selected
     }
     shard_files = list(iter_post_shards(config))
-    with config.histories_path.open("w", encoding="utf-8") as output:
-        for path in tqdm(shard_files, desc="prepare histories"):
+    config.history_shards_dir.mkdir(parents=True, exist_ok=True)
+    total_histories = 0
+    for path in tqdm(shard_files, desc="prepare histories"):
+        shard_index = int(path.stem.rsplit("-", 1)[-1])
+        output_path = history_shard_path(config, shard_index)
+        with output_path.open("w", encoding="utf-8") as output:
             posts_by_user: dict[str, list[dict[str, Any]]] = defaultdict(list)
             for post in iter_local_jsonl(path):
                 user_id = str(post["user_id"])
@@ -591,23 +617,24 @@ def prepare_histories(config: Config) -> None:
                     "rank": selected[user_id]["rank"], "profile": profiles.get(user_id, {}),
                     "post_count": len(posts), "posts": posts}
                 output.write(json.dumps(record, ensure_ascii=False) + "\n")
-    print("Prepared histories:", config.histories_path)
+                total_histories += 1
+    print(f"Prepared histories={total_histories:,} in {config.history_shards_dir}")
 
 
 def compact_profiles(config: Config) -> None:
-    require_file(config.histories_path, "Run the prepare stage first")
+    history_shards = list(iter_history_shards(config))
+    if not history_shards:
+        raise FileNotFoundError(f"No history shards in {config.history_shards_dir}. Run prepare first.")
     count = 0
-    with config.histories_path.open(encoding="utf-8") as source, config.compact_profiles_path.open("w", encoding="utf-8") as output:
-        for line in tqdm(source, desc="compact profiles"):
-            if not line.strip():
-                continue
-            user = json.loads(line)
-            profile = assemble_profile(user, config.max_profile_chars, config.max_post_text_chars)
-            record = {key: user[key] for key in ("user_id", "source", "post_count")}
-            record.update({"compact_profile_chars": len(profile), "max_profile_chars": config.max_profile_chars,
-                           "max_post_text_chars": config.max_post_text_chars, "profile_text": profile})
-            output.write(json.dumps(record, ensure_ascii=False) + "\n")
-            count += 1
+    with config.compact_profiles_path.open("w", encoding="utf-8") as output:
+        for path in tqdm(history_shards, desc="compact history shards"):
+            for user in iter_local_jsonl(path):
+                profile = assemble_profile(user, config.max_profile_chars, config.max_post_text_chars)
+                record = {key: user[key] for key in ("user_id", "source", "post_count")}
+                record.update({"compact_profile_chars": len(profile), "max_profile_chars": config.max_profile_chars,
+                               "max_post_text_chars": config.max_post_text_chars, "profile_text": profile})
+                output.write(json.dumps(record, ensure_ascii=False) + "\n")
+                count += 1
     print(f"Compact profiles={count:,}; output={config.compact_profiles_path}")
 
 
@@ -798,7 +825,8 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--user-dir", type=Path, default=Path("data/facebook/user"))
     parser.add_argument("--work-dir", type=Path, default=Path("facebook_persona_fresh"))
     parser.add_argument("--schema-path", type=Path, default=Path("schema/dimension.json"))
-    parser.add_argument("--top-k", type=int, default=100)
+    parser.add_argument("--top-k", type=int, default=50000)
+    parser.add_argument("--min-history-days", type=float, default=30)
     parser.add_argument("--max-rows-per-file", type=int, default=0)
     parser.add_argument("--max-llm-users", type=int, default=0)
     parser.add_argument("--post-shards", type=int, default=50)
@@ -811,9 +839,12 @@ def main(argv: Iterable[str] | None = None) -> None:
                     work_dir=project_path(args.work_dir),
                     schema_path=project_path(args.schema_path),
                     top_k=args.top_k, max_rows_per_file=args.max_rows_per_file,
+                    min_history_days=args.min_history_days,
                     max_llm_users=args.max_llm_users, post_shards=args.post_shards)
     if config.post_shards < 1:
         raise ValueError("post-shards must be at least 1")
+    if config.min_history_days < 0:
+        raise ValueError("min-history-days must be at least 0")
     print("Work directory:", config.work_dir.resolve())
     config.work_dir.mkdir(parents=True, exist_ok=True)
     if args.stage in {"all", "ingest"}:
