@@ -4,8 +4,9 @@ import re
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
+from .filters import is_advertising
+
 VIETNAM_TIMEZONE = timezone(timedelta(hours=7))
-IB_PATTERN = re.compile(r"(?i)(?<!\w)ib(?!\w)")
 
 
 def compact_text(value: Any, max_chars: int | None = None) -> str:
@@ -74,7 +75,7 @@ def filter_posts(
         post = normalize_post_record(raw_post)
         if post.get("timestamp_ms") is None:
             continue
-        if IB_PATTERN.search(post_text(post)):
+        if is_advertising(post_text(post)):
             continue
         if len(post_text(post)) < min_post_text_chars:
             continue

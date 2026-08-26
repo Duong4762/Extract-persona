@@ -16,8 +16,8 @@ from tqdm.auto import tqdm
 from llm_client import LLMCancelledError, LLMSettings, LLMUnauthorizedError, complete_prompt
 from persona_coverage_chart import render_category_coverage_chart
 from .config import Config
+from .filters import is_advertising
 from .records import (
-    IB_PATTERN,
     assemble_profile,
     compact_text,
     filter_posts,
@@ -390,7 +390,7 @@ def select_users(config: Config) -> None:
             item = aggregate.setdefault(user_id, {"count": 0, "text_posts": 0,
                 "text_chars": 0, "min_ts": timestamp_ms, "max_ts": timestamp_ms})
             text = str(row.get("text") or "")
-            if IB_PATTERN.search(text):
+            if is_advertising(text):
                 continue
             item["count"] += 1
             item["text_posts"] += int(bool(text.strip())); item["text_chars"] += len(text)

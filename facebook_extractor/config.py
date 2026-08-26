@@ -15,10 +15,10 @@ class Config:
     schema_path: Path = PROJECT_ROOT / "schema/dimension.json"
     max_rows_per_file: int = 0
     top_k: int = 100_000
-    min_posts: int = 5
+    min_posts: int = 50
     min_text_chars: int = 1_000
     min_post_text_chars: int = 20
-    min_history_days: float = 30
+    min_history_days: float = 356
     max_profile_chars: int = 35_000
     max_post_text_chars: int = 2_000
     max_dims_per_chunk: int = 50

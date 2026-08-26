@@ -77,5 +77,3 @@ python -m facebook_extractor compact
 python -m facebook_extractor extract
 python -m facebook_extractor stats
 ```
-
-Lenh cu `python facebook_extractor.py <stage>` van duoc ho tro.
