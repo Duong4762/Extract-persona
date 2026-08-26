@@ -22,7 +22,7 @@ class Config:
     max_profile_chars: int = 35_000
     max_post_text_chars: int = 2_000
     max_dims_per_chunk: int = 50
-    max_llm_users: int = 0
+    max_llm_users: int = 20
     post_shards: int = 50
     llm_provider: str = os.environ.get("LLM_PROVIDER", "local")
     model: str = os.environ.get("LLM_MODEL", "Qwen3-14B")
@@ -53,8 +53,8 @@ class Config:
         return self.work_dir / "history_shards"
 
     @property
-    def compact_profiles_path(self) -> Path:
-        return self.work_dir / "compact_profiles.jsonl"
+    def compact_shards_dir(self) -> Path:
+        return self.work_dir / "compact_shards"
 
     @property
     def personas_path(self) -> Path:

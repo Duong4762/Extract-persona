@@ -293,6 +293,22 @@ def iter_history_shards(config: Config) -> Iterator[Path]:
             yield path
 
 
+def compact_shard_path(config: Config, shard_index: int) -> Path:
+    return config.compact_shards_dir / f"compact-{shard_index:04d}.jsonl"
+
+
+def iter_compact_shards(config: Config) -> Iterator[Path]:
+    for index in range(config.post_shards):
+        path = compact_shard_path(config, index)
+        if path.is_file():
+            yield path
+
+
+def iter_compact_profiles(config: Config) -> Iterator[dict[str, Any]]:
+    for path in iter_compact_shards(config):
+        yield from iter_local_jsonl(path)
+
+
 def ingest_posts(config: Config) -> None:
     user_files = local_json_files(config.user_dir)
     content_files = local_json_files(config.content_dir)
@@ -462,9 +478,12 @@ def compact_profiles(config: Config) -> None:
     history_shards = list(iter_history_shards(config))
     if not history_shards:
         raise FileNotFoundError(f"No history shards in {config.history_shards_dir}. Run prepare first.")
+    config.compact_shards_dir.mkdir(parents=True, exist_ok=True)
     count = 0
-    with config.compact_profiles_path.open("w", encoding="utf-8") as output:
-        for path in tqdm(history_shards, desc="compact history shards"):
+    for path in tqdm(history_shards, desc="compact history shards"):
+        shard_index = int(path.stem.rsplit("-", 1)[-1])
+        output_path = compact_shard_path(config, shard_index)
+        with output_path.open("w", encoding="utf-8") as output:
             for user in iter_local_jsonl(path):
                 profile = assemble_profile(user, config.max_profile_chars, config.max_post_text_chars)
                 record = {key: user[key] for key in ("user_id", "source", "post_count")}
@@ -472,7 +491,7 @@ def compact_profiles(config: Config) -> None:
                                "max_post_text_chars": config.max_post_text_chars, "profile_text": profile})
                 output.write(json.dumps(record, ensure_ascii=False) + "\n")
                 count += 1
-    print(f"Compact profiles={count:,}; output={config.compact_profiles_path}")
+    print(f"Compact profiles={count:,} in {config.compact_shards_dir}")
 
 
 def load_schema(config: Config) -> list[dict[str, Any]]:
@@ -511,7 +530,9 @@ def save_prompt_log(config: Config, chunk_index: int, prompt: str) -> Path:
 
 
 def extract_personas(config: Config) -> None:
-    require_file(config.compact_profiles_path, "Run the compact stage first")
+    compact_shards = list(iter_compact_shards(config))
+    if not compact_shards:
+        raise FileNotFoundError(f"No compact shards in {config.compact_shards_dir}. Run compact first.")
     schema = load_schema(config)
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for dimension in schema:
@@ -522,11 +543,8 @@ def extract_personas(config: Config) -> None:
         with config.personas_path.open(encoding="utf-8") as existing:
             done = {str(json.loads(line)["user_id"]) for line in existing if line.strip()}
     processed = 0
-    with config.compact_profiles_path.open(encoding="utf-8") as source, config.personas_path.open("a", encoding="utf-8") as output:
-        for line in tqdm(source, desc="extract personas"):
-            if not line.strip():
-                continue
-            record = json.loads(line)
+    with config.personas_path.open("a", encoding="utf-8") as output:
+        for record in tqdm(iter_compact_profiles(config), desc="extract personas"):
             user_id = str(record["user_id"])
             if user_id in done:
                 continue
