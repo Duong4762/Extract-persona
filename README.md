@@ -64,3 +64,18 @@ python voz_extractor.py compact
 python voz_extractor.py extract
 python voz_extractor.py stats
 ```
+
+## 6. Facebook
+
+Dat profile trong `data/facebook/user` va post/comment trong
+`data/facebook/content`, sau do chay package:
+
+```powershell
+python -m facebook_extractor ingest
+python -m facebook_extractor prepare
+python -m facebook_extractor compact
+python -m facebook_extractor extract
+python -m facebook_extractor stats
+```
+
+Lenh cu `python facebook_extractor.py <stage>` van duoc ho tro.
