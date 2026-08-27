@@ -27,7 +27,7 @@ def emoji_tokens(text: str) -> list[tuple[str, int, int]]:
 def has_promotional_emoji_pattern(text: str) -> bool:
     """Detect repeated emoji types or two emoji graphemes placed consecutively."""
     tokens = emoji_tokens(text)
-    if any(count > 3 for count in Counter(token for token, _, _ in tokens).values()):
+    if any(count > 1 for count in Counter(token for token, _, _ in tokens).values()):
         return True
     return any(left_end == right_start for (_, _, left_end), (_, right_start, _) in zip(tokens, tokens[1:]))
 

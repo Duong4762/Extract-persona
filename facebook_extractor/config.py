@@ -9,9 +9,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 @dataclass(frozen=True)
 class Config:
-    content_dir: Path = PROJECT_ROOT / "data/facebook/batch2/content"
-    user_dir: Path = PROJECT_ROOT / "data/facebook/batch2/user"
-    work_dir: Path = PROJECT_ROOT / "facebook_persona_fresh/batch2"
+    content_dir: Path = PROJECT_ROOT / "data/facebook/batch1/content"
+    user_dir: Path = PROJECT_ROOT / "data/facebook/batch1/user"
+    work_dir: Path = PROJECT_ROOT / "facebook_persona_fresh/batch1"
     schema_path: Path = PROJECT_ROOT / "schema/dimension.json"
     max_rows_per_file: int = 0
     top_k: int = 100

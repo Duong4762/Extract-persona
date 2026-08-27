@@ -5,19 +5,23 @@ from typing import Any
 
 from .filters import normalize_text
 
-# Vietnamese equivalents of high-value persona evidence markers. Markers are
-# stored without accents because ``normalize_text`` removes Vietnamese accents.
 FIRST_PERSON_MARKERS = (
-    "toi", "minh", "tui", "tao", "chung toi", "chung minh", "bon toi",
+    "toi", "minh", "tui", "tao", "t", "chung toi", "chung minh", "bon toi",
     "cua toi", "cua minh", "theo toi", "voi toi", "doi voi toi",
     "toi dung", "toi da dung", "minh dung", "minh da dung",
     "toi mua", "minh mua", "toi can", "minh can", "toi muon", "minh muon",
     "toi thay", "minh thay", "toi nghi", "minh nghi", "toi cam thay",
     "minh cam thay", "toi nhan ra", "minh nhan ra", "toi lam", "minh lam",
+    "t dung", "t da dung", "t mua", "t can", "t muon", "t thay", "t nghi",
+    "t cam thay", "t nhan ra", "t lam", "t doc", "t nau", "t di lam",
+    "t du lich",
     "toi doc", "minh doc", "toi nau", "minh nau", "toi di lam",
     "minh di lam", "toi du lich", "minh du lich",
     "con toi", "con minh", "be nha toi", "be nha minh", "vo toi", "vo minh",
     "chong toi", "chong minh", "nguoi yeu toi", "nguoi yeu minh",
+    "con t", "be nha t", "vo t", "chong t", "nguoi yeu t", "me t", "bo t",
+    "ba t", "gia dinh t", "nha t", "van phong t", "hoc sinh cua t",
+    "cho nha t", "meo nha t", "thu cung nha t",
     "me toi", "me minh", "bo toi", "bo minh", "ba toi", "ba minh",
     "gia dinh toi", "gia dinh minh", "nha toi", "nha minh",
     "van phong toi", "van phong minh", "hoc sinh cua toi", "hoc sinh cua minh",
@@ -43,52 +47,9 @@ PREFERENCE_VALUE_MARKERS = (
     "khong huong lieu", "co mui", "khong mui",
 )
 
-COMPARISON_REASONING_MARKERS = (
-    "tot hon", "kem hon", "te hon", "so voi", "tuong tu", "khac voi",
-    "doi voi", "hay nhat", "tot nhat", "te nhat", "kem nhat", "nhieu nhat",
-    "it nhat", "boi vi", "vi", "do do", "vi vay", "cho nen", "de ma",
-    "ket qua la", "thay vi", "ly do", "uu diem", "nhuoc diem", "mat tot",
-    "mat han che", "tuy nhien", "nhung", "mac du", "tru khi", "ngoai tru",
-    "sau khi thu", "toi da thu", "minh da thu", "chung toi da thu",
-    "thu nhieu loai", "sau khi dung", "sau khi su dung", "sau khi doc",
-    "sau khi mac", "hoat dong tot hon", "dung tot", "chay tot",
-    "khong hoat dong", "khong dung duoc", "khong hieu qua",
-)
-
-DOMAIN_DETAIL_MARKERS = (
-    "cai dat", "lap dat", "da cai", "lap rap", "cau hinh", "thiet lap",
-    "tuong thich", "sua chua", "da sua", "thay the", "dung cu", "oc vit",
-    "gia do", "gan tuong", "kich thuoc", "do dai", "cm", "mm", "met",
-    "gam", "kg", "chat lieu", "vai", "vai cotton", "da", "kim loai",
-    "nhua", "go", "thep khong gi", "kich co", "vua", "rong", "chat",
-    "cong suat", "dien ap", "von", "ampe", "pin", "sac", "bo sac",
-    "bluetooth", "wifi", "usb", "hdmi", "phan mem", "ung dung",
-    "ung dung di dong", "man hinh", "do phan giai", "camera", "ong kinh",
-    "am thanh", "am tram", "am luong", "cong thuc", "nguyen lieu",
-    "tap luyen", "bai tap", "hiep", "km", "calo", "huong dan su dung",
-    "huong dan", "quy trinh", "chuong", "cot truyen", "nhan vat", "tac gia",
-    "nguoi ke", "phien ban",
-)
-
-SENSITIVE_ADJACENT_MARKERS = (
-    "dau", "dau lung", "dau co", "dau khop", "man tinh", "bac si", "y ta",
-    "benh vien", "phong kham", "y te", "thuoc", "suc khoe", "lanh manh",
-    "tri lieu", "nha tri lieu", "vat ly tri lieu", "lo au", "cang thang",
-    "giac ngu", "mat ngu", "di ung", "tieu duong", "huyet ap", "viem khop",
-    "chan thuong", "phau thuat", "phuc hoi", "tu the", "nep", "di chuyen",
-    "xe lan", "khung tap di", "gay chong", "mang thai", "thai ky", "thai san",
-    "cho con bu", "em be", "tre em", "tre nho", "thieu nien", "cha me",
-    "nuoi day con", "ong ba", "ba ngoai", "ba noi", "ong ngoai", "ong noi",
-    "nguoi cham soc", "nguoi cao tuoi", "nha tho", "kinh thanh", "cau nguyen",
-    "ton giao",
-)
-
 MARKER_GROUPS = (
     (FIRST_PERSON_MARKERS, 1.8),
     (PREFERENCE_VALUE_MARKERS, 1.6),
-    (COMPARISON_REASONING_MARKERS, 1.8),
-    (DOMAIN_DETAIL_MARKERS, 1.0),
-    (SENSITIVE_ADJACENT_MARKERS, 1.4),
 )
 
 
