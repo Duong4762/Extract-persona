@@ -34,6 +34,8 @@ def main(argv: Iterable[str] | None = None) -> None:
         raise ValueError("post-shards must be at least 1")
     if config.min_history_days < 0:
         raise ValueError("min-history-days must be at least 0")
+    if config.llm_workers < 1:
+        raise ValueError("llm-workers must be at least 1")
 
     print("Work directory:", config.work_dir.resolve())
     config.work_dir.mkdir(parents=True, exist_ok=True)

@@ -7,8 +7,10 @@ extract and stats. Run ``python facebook_extractor.py --help`` for usage.
 import csv
 import hashlib
 import json
+import os
 import time
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -59,6 +61,16 @@ def build_post_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> st
         "or mainly about someone other than the Facebook user.",
         "",
         "Hard limits:",
+        "- Treat all advertising, promotional, sales, quotation, product-listing, "
+        "lead-generation, and invitations to buy goods or services as unusable noise.",
+        "- Do NOT extract, infer, summarize, or support ANY persona field from such "
+        "commercial content, even when it is repeated or explicitly written by the user.",
+        "- Commercial content must not be used as evidence for occupation, employment, "
+        "income, expertise, interests, preferences, lifestyle, location, personality, "
+        "communication style, or any other dimension.",
+        "- Never quote advertising or sales content in evidence or descriptions. Ignore "
+        "calls to contact/inbox, prices, phone numbers, promotions, ordering, shipping, "
+        "stock availability, shop links, and invitations to purchase goods or services.",
         "- For age, gender, health, disability, ethnicity, religion, politics, "
         "income, family/household status, occupation, location, employment, and "
         "parenthood: assign a non-null value only from an explicit self-statement. "
@@ -551,33 +563,57 @@ def extract_personas(config: Config) -> None:
             if config.max_llm_users and processed >= config.max_llm_users:
                 break
             reset_prompt_log(config)
-            fields = []
+            chunk_results: dict[int, list[dict[str, Any]]] = {}
+            futures = {}
+            executor = ThreadPoolExecutor(max_workers=config.llm_workers)
             for chunk_index, dimensions in enumerate(chunks, start=1):
-                started_at = time.perf_counter()
                 prompt = build_post_prompt(record["profile_text"], dimensions)
                 prompt_path = save_prompt_log(config, chunk_index, prompt)
-                try:
-                    response = call_llm(prompt, config)
-                    chunk_fields = sanitize_fields(parse_fields(response), dimensions, record["profile_text"])
-                except (LLMUnauthorizedError, LLMCancelledError):
-                    raise
-                except Exception as error:
-                    chunk_fields = sanitize_fields([], dimensions, record["profile_text"])
+                future = executor.submit(call_llm, prompt, config)
+                futures[future] = (
+                    chunk_index, dimensions, prompt_path, time.perf_counter()
+                )
+            try:
+                for future in as_completed(futures):
+                    chunk_index, dimensions, prompt_path, started_at = futures[future]
+                    try:
+                        response = future.result()
+                        chunk_fields = sanitize_fields(
+                            parse_fields(response), dimensions, record["profile_text"]
+                        )
+                    except (LLMUnauthorizedError, LLMCancelledError):
+                        for pending in futures:
+                            pending.cancel()
+                        raise
+                    except Exception as error:
+                        chunk_fields = sanitize_fields([], dimensions, record["profile_text"])
+                        tqdm.write(
+                            f"user={user_id} chunk={chunk_index}/{len(chunks)} "
+                            f"LLM retries exhausted; marking {len(dimensions)} dimensions "
+                            f"unsupported; error={error}"
+                        )
+                    chunk_results[chunk_index] = chunk_fields
+                    categories = sorted({
+                        str(dimension.get("category") or "Uncategorized")
+                        for dimension in dimensions
+                    })
+                    supported_count = sum(
+                        field["value"] is not None for field in chunk_fields
+                    )
+                    elapsed_seconds = time.perf_counter() - started_at
                     tqdm.write(
                         f"user={user_id} chunk={chunk_index}/{len(chunks)} "
-                        f"LLM retries exhausted; marking {len(dimensions)} dimensions "
-                        f"unsupported; error={error}"
+                        f"category={','.join(categories)} dimensions={len(dimensions)} "
+                        f"supported={supported_count} elapsed={elapsed_seconds:.2f}s "
+                        f"prompt_log={prompt_path.name}"
                     )
-                fields.extend(chunk_fields)
-                categories = sorted({str(dimension.get("category") or "Uncategorized") for dimension in dimensions})
-                supported_count = sum(field["value"] is not None for field in chunk_fields)
-                elapsed_seconds = time.perf_counter() - started_at
-                tqdm.write(
-                    f"user={user_id} chunk={chunk_index}/{len(chunks)} "
-                    f"category={','.join(categories)} dimensions={len(dimensions)} "
-                    f"supported={supported_count} elapsed={elapsed_seconds:.2f}s "
-                    f"prompt_log={prompt_path.name}"
-                )
+            finally:
+                executor.shutdown(wait=True, cancel_futures=True)
+            fields = [
+                field
+                for chunk_index in range(1, len(chunks) + 1)
+                for field in chunk_results[chunk_index]
+            ]
             if len(fields) != len(schema):
                 raise RuntimeError(f"Expected {len(schema)} fields, got {len(fields)} for {user_id}")
             result = {key: record[key] for key in (
