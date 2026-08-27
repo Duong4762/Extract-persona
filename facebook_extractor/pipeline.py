@@ -18,6 +18,7 @@ from tqdm.auto import tqdm
 from llm_client import LLMCancelledError, LLMSettings, LLMUnauthorizedError, complete_prompt
 from persona_coverage_chart import render_category_coverage_chart
 from .config import Config
+from .content_selection import select_contents
 from .filters import is_advertising
 from .records import (
     assemble_profile,
@@ -368,6 +369,10 @@ def ingest_posts(config: Config) -> None:
                     "source": "facebook",
                     "text": text,
                     "timestamp": format_vietnam_datetime(timestamp),
+                    "like_count": int(row.get("like_count") or 0),
+                    "share_count": int(row.get("share_count") or 0),
+                    "comment_count": int(row.get("comment_count") or 0),
+                    "reply_count": int(row.get("reply_count") or 0),
                 }
                 handle = handles[user_shard(user_id, config.post_shards)]
                 handle.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -472,6 +477,11 @@ def prepare_histories(config: Config) -> None:
             for user_id, raw_posts in posts_by_user.items():
                 posts = filter_posts(
                     raw_posts, min_post_text_chars=config.min_post_text_chars
+                )
+                posts = select_contents(
+                    posts,
+                    max_contents=config.max_contents,
+                    timeline_ratio=config.timeline_content_ratio,
                 )
                 if len(posts) < 2:
                     continue
