@@ -36,6 +36,10 @@ def main(argv: Iterable[str] | None = None) -> None:
         raise ValueError("min-history-days must be at least 0")
     if config.llm_workers < 1:
         raise ValueError("llm-workers must be at least 1")
+    if config.max_contents < 1:
+        raise ValueError("max-contents must be at least 1")
+    if not 0 <= config.timeline_content_ratio <= 1:
+        raise ValueError("timeline-content-ratio must be between 0 and 1")
 
     print("Work directory:", config.work_dir.resolve())
     config.work_dir.mkdir(parents=True, exist_ok=True)

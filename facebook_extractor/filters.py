@@ -2,6 +2,34 @@
 
 import re
 import unicodedata
+from collections import Counter
+
+
+EMOJI_COMPONENT = (
+    r"(?:[\U0001F300-\U0001FAFF\u2600-\u26FF\u2700-\u27BF]"
+    r"[\uFE0E\uFE0F]?[\U0001F3FB-\U0001F3FF]?)"
+)
+EMOJI_PATTERN = re.compile(
+    rf"(?:[\U0001F1E6-\U0001F1FF]{{2}}|"
+    rf"[#*0-9][\uFE0F]?\u20E3|"
+    rf"{EMOJI_COMPONENT}(?:\u200D{EMOJI_COMPONENT})*)"
+)
+
+
+def emoji_tokens(text: str) -> list[tuple[str, int, int]]:
+    """Return normalized emoji tokens together with their source spans."""
+    return [
+        (match.group().replace("\uFE0E", "").replace("\uFE0F", ""), *match.span())
+        for match in EMOJI_PATTERN.finditer(text or "")
+    ]
+
+
+def has_promotional_emoji_pattern(text: str) -> bool:
+    """Detect repeated emoji types or two emoji graphemes placed consecutively."""
+    tokens = emoji_tokens(text)
+    if any(count > 3 for count in Counter(token for token, _, _ in tokens).values()):
+        return True
+    return any(left_end == right_start for (_, _, left_end), (_, right_start, _) in zip(tokens, tokens[1:]))
 
 
 def normalize_text(text: str) -> str:
@@ -49,7 +77,10 @@ DELIVERY_PATTERN = re.compile(
 )
 STOCK_PATTERN = re.compile(
     r"\b(?:con hang|san hang|hang co san|hang moi ve|mau moi ve|co san|ve hang|"
-    r"sap het hang|chi con \d+|con duy nhat \d+)\b"
+    r"sap het hang|chi con \d+|con duy nhat \d+)\b|"
+    r"/\s*(?:\d+(?:[.,]\d+)?\s*)?"
+    r"(?:kg|g|gram|lang|ml|l|lit|tui|goi|hop|chai|lo|hu|thung|khay|"
+    r"bo|set|combo|cai|chiec|cap|con|qua|phan|suat)\b"
 )
 COMMERCIAL_HASHTAG_PATTERN = re.compile(
     r"#(?:sale|giamgia|khuyenmai|freeship|chotdon|order|giasi|bansi|banle|"
@@ -75,6 +106,8 @@ DIRECT_AD_PATTERNS = (
 
 def is_advertising(text: str) -> bool:
     """Return whether content has strong commercial/advertising signals."""
+    if has_promotional_emoji_pattern(text):
+        return True
     normalized = normalize_text(text)
     if not normalized:
         return False
