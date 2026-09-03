@@ -8,6 +8,7 @@ from .pipeline import (
     compact_profiles,
     extract_personas,
     generate_persona_stats,
+    find_user_history,
     ingest_posts,
     prepare_histories,
     select_users,
@@ -20,16 +21,27 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument(
         "stage",
-        choices=("all", "ingest", "prepare", "compact", "extract", "stats"),
+        choices=("all", "ingest", "prepare", "compact", "extract", "stats", "find"),
         nargs="?",
         default="all",
     )
+    parser.add_argument("user_id", nargs="?", help="Facebook user ID for the find stage")
     return parser.parse_args(argv)
 
 
 def main(argv: Iterable[str] | None = None) -> None:
     args = parse_args(argv)
     config = Config()
+    if args.stage == "find":
+        if not args.user_id:
+            raise SystemExit("The find stage requires a user_id")
+        path = find_user_history(config, args.user_id)
+        if path is None:
+            raise SystemExit(f"User {args.user_id} was not found in history shards")
+        print(f"User {args.user_id} history shard: {path.resolve()}")
+        return
+    if args.user_id:
+        raise SystemExit("user_id is only valid with the find stage")
     if config.post_shards < 1:
         raise ValueError("post-shards must be at least 1")
     if config.min_history_days < 0:
@@ -40,6 +52,12 @@ def main(argv: Iterable[str] | None = None) -> None:
         raise ValueError("max-contents must be at least 1")
     if not 0 <= config.timeline_content_ratio <= 1:
         raise ValueError("timeline-content-ratio must be between 0 and 1")
+    if min(
+        config.max_content_score_at,
+        config.max_character_score_at,
+        config.max_history_score_at,
+    ) <= 0:
+        raise ValueError("user score caps must be greater than 0")
 
     print("Work directory:", config.work_dir.resolve())
     config.work_dir.mkdir(parents=True, exist_ok=True)

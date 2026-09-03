@@ -32,6 +32,35 @@ csv.field_size_limit(100_000_000)
 
 ASSIGNMENT_TYPES = {"direct", "structured_claim", "summary_inference", "unsupported"}
 NULLISH_VALUES = {"", "null", "none", "n/a", "na", "unknown", "unsupported", "not applicable"}
+def capped_score(value: float, maximum: float) -> float:
+    return min(max(value, 0.0) / maximum, 1.0)
+
+
+def user_selection_score(
+    post_count: float, text_chars: float, history_days: float, config: Config
+) -> float:
+    return (
+        0.4375 * capped_score(text_chars, config.max_character_score_at)
+        + 0.1875 * capped_score(history_days, config.max_history_score_at)
+        + 0.375 * capped_score(post_count, config.max_content_score_at)
+    )
+
+
+def advertising_score_factor(advertising_ratio: float) -> float:
+    ratio = max(float(advertising_ratio), 0.0)
+    if ratio == 0:
+        return 1.0
+    if ratio < 0.05:
+        return 0.90
+    if ratio < 0.15:
+        return 0.75
+    if ratio < 0.30:
+        return 0.55
+    if ratio < 0.50:
+        return 0.30
+    return 0.0
+
+
 def build_post_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> str:
     """Build a schema-constrained prompt for a Vietnamese Facebook user."""
     lines = [
@@ -306,6 +335,27 @@ def iter_history_shards(config: Config) -> Iterator[Path]:
             yield path
 
 
+def find_user_history(config: Config, user_id: str) -> Path | None:
+    """Return the history shard containing ``user_id``, if it exists."""
+    normalized_user_id = str(user_id or "").strip()
+    if not normalized_user_id:
+        raise ValueError("user_id must not be empty")
+
+    expected_index = user_shard(normalized_user_id, config.post_shards)
+    expected_path = history_shard_path(config, expected_index)
+    candidates = [expected_path]
+    candidates.extend(
+        path for path in iter_history_shards(config) if path != expected_path
+    )
+    for path in candidates:
+        if not path.is_file():
+            continue
+        for record in iter_local_jsonl(path):
+            if str(record.get("user_id") or "").strip() == normalized_user_id:
+                return path
+    return None
+
+
 def compact_shard_path(config: Config, shard_index: int) -> Path:
     return config.compact_shards_dir / f"compact-{shard_index:04d}.jsonl"
 
@@ -385,23 +435,6 @@ def ingest_posts(config: Config) -> None:
           f"in {config.post_shards} JSONL shards")
 
 
-def percentile_ranks(values: list[float]) -> list[float]:
-    if not values:
-        return []
-    order = sorted(range(len(values)), key=values.__getitem__)
-    result = [0.0] * len(values)
-    position = 0
-    while position < len(order):
-        end = position + 1
-        while end < len(order) and values[order[end]] == values[order[position]]:
-            end += 1
-        percentile = ((position + 1 + end) / 2) / len(order)
-        for index in order[position:end]:
-            result[index] = percentile
-        position = end
-    return result
-
-
 def select_users(config: Config) -> None:
     if not any(iter_post_shards(config)):
         raise FileNotFoundError(f"No post shards in {config.post_shards_dir}. Run ingest first.")
@@ -420,32 +453,64 @@ def select_users(config: Config) -> None:
             timestamp_ms = parse_comment_date(row.get("timestamp"))
             if timestamp_ms is None:
                 continue
-            item = aggregate.setdefault(user_id, {"count": 0, "text_posts": 0,
-                "text_chars": 0, "min_ts": timestamp_ms, "max_ts": timestamp_ms})
+            item = aggregate.setdefault(user_id, {
+                "count": 0,
+                "text_chars": 0,
+                "total_before_ad_filter": 0,
+                "advertising_filtered_count": 0,
+                "min_ts": None,
+                "max_ts": None,
+            })
             text = str(row.get("text") or "")
+            item["total_before_ad_filter"] += 1
             if is_advertising(text):
+                item["advertising_filtered_count"] += 1
                 continue
             item["count"] += 1
-            item["text_posts"] += int(bool(text.strip())); item["text_chars"] += len(text)
-            item["min_ts"] = min(item["min_ts"], timestamp_ms)
-            item["max_ts"] = max(item["max_ts"], timestamp_ms)
+            item["text_chars"] += len(text)
+            item["min_ts"] = timestamp_ms if item["min_ts"] is None else min(item["min_ts"], timestamp_ms)
+            item["max_ts"] = timestamp_ms if item["max_ts"] is None else max(item["max_ts"], timestamp_ms)
     eligible = []
     for user_id, item in aggregate.items():
+        if item["min_ts"] is None or item["max_ts"] is None:
+            continue
         history_days = (item["max_ts"] - item["min_ts"]) / 86_400_000
+        advertising_ratio = (
+            item["advertising_filtered_count"] / item["total_before_ad_filter"]
+            if item["total_before_ad_filter"] else 0.0
+        )
+        score_factor = advertising_score_factor(advertising_ratio)
         if (item["count"] >= config.min_posts
                 and item["text_chars"] >= config.min_text_chars
-                and history_days >= config.min_history_days):
-            eligible.append((user_id, item["count"], item["text_posts"], item["text_chars"],
-                             history_days))
-    metric_columns = (3, 2, 4, 1)
-    weights = (0.4375, 0.25, 0.1875, 0.125)
-    ranks = [percentile_ranks([float(row[column] or 0) for row in eligible]) for column in metric_columns]
-    scored = [(sum(weight * vector[index] for weight, vector in zip(weights, ranks)), row)
-              for index, row in enumerate(eligible)]
-    scored.sort(key=lambda item: (-item[0], -item[1][3], -item[1][2], -item[1][1], item[1][0]))
+                and history_days >= config.min_history_days
+                and score_factor > 0):
+            eligible.append((
+                user_id,
+                item["count"],
+                item["text_chars"],
+                history_days,
+                item["advertising_filtered_count"],
+                item["total_before_ad_filter"],
+                advertising_ratio,
+                score_factor,
+            ))
+    scored = [(
+        user_selection_score(row[1], row[2], row[3], config) * row[7],
+        row,
+    ) for row in eligible]
+    scored.sort(key=lambda item: (-item[0], -item[1][2], -item[1][3], -item[1][1], item[1][0]))
     with config.selected_users_path.open("w", encoding="utf-8") as output:
         for rank, (score, row) in enumerate(scored[:config.top_k], 1):
-            keys = ("user_id", "post_count", "text_posts", "text_chars", "history_days")
+            keys = (
+                "user_id",
+                "post_count",
+                "text_chars",
+                "history_days",
+                "advertising_filtered_count",
+                "total_posts_before_ad_filter",
+                "advertising_ratio",
+                "advertising_score_factor",
+            )
             record = {key: value for key, value in zip(keys, row)}
             record.update({"rank": rank, "score": score})
             output.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -647,6 +712,7 @@ def generate_persona_stats(config: Config) -> None:
     for category in field_categories.values():
         schema_dimensions_by_category[category] += 1
     seen_users: set[str] = set()
+    supported_dimensions_by_user: dict[str, int] = {}
     supported_dimensions_total = 0
     supported_by_category: dict[str, int] = defaultdict(int)
     with config.personas_path.open(encoding="utf-8") as source:
@@ -661,11 +727,13 @@ def generate_persona_stats(config: Config) -> None:
             if not user_id or user_id in seen_users:
                 continue
             seen_users.add(user_id)
+            supported_dimensions_by_user[user_id] = 0
             fields = persona.get("fields") or []
             for field in fields:
                 if not isinstance(field, dict) or field.get("value") is None:
                     continue
                 supported_dimensions_total += 1
+                supported_dimensions_by_user[user_id] += 1
                 field_id = str(field.get("field_id") or "")
                 category = field_categories.get(field_id, "Unknown field category")
                 supported_by_category[category] += 1
@@ -687,6 +755,13 @@ def generate_persona_stats(config: Config) -> None:
             supported_dimensions_total / persona_count, 4
         ) if persona_count else 0.0,
         "categories": category_stats,
+        "top_100_users_by_supported_dimension_count": [
+            {"user_id": user_id, "supported_dimension_count": count}
+            for user_id, count in sorted(
+                supported_dimensions_by_user.items(),
+                key=lambda item: (-item[1], item[0]),
+            )[:100]
+        ],
     }
     config.persona_stats_path.write_text(
         json.dumps(stats, ensure_ascii=False, indent=2) + "\n",

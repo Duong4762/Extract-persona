@@ -838,6 +838,7 @@ def generate_persona_stats(config: Config) -> None:
     for category in field_categories.values():
         schema_dimensions_by_category[category] += 1
     seen_users: set[str] = set()
+    supported_dimensions_by_user: dict[str, int] = {}
     supported_dimensions_total = 0
     supported_by_category: dict[str, int] = defaultdict(int)
 
@@ -853,10 +854,12 @@ def generate_persona_stats(config: Config) -> None:
             if not user_id or user_id in seen_users:
                 continue
             seen_users.add(user_id)
+            supported_dimensions_by_user[user_id] = 0
             for field in persona.get("fields") or []:
                 if not isinstance(field, dict) or field.get("value") is None:
                     continue
                 supported_dimensions_total += 1
+                supported_dimensions_by_user[user_id] += 1
                 field_id = str(field.get("field_id") or "")
                 category = field_categories.get(field_id, "Unknown field category")
                 supported_by_category[category] += 1
@@ -877,6 +880,13 @@ def generate_persona_stats(config: Config) -> None:
             supported_dimensions_total / persona_count, 4
         ) if persona_count else 0.0,
         "categories": category_stats,
+        "top_100_users_by_supported_dimension_count": [
+            {"user_id": user_id, "supported_dimension_count": count}
+            for user_id, count in sorted(
+                supported_dimensions_by_user.items(),
+                key=lambda item: (-item[1], item[0]),
+            )[:100]
+        ],
     }
     config.persona_stats_path.write_text(
         json.dumps(stats, ensure_ascii=False, indent=2) + "\n",

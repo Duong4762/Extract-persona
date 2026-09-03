@@ -45,7 +45,10 @@ def normalize_text(text: str) -> str:
 
 
 PHONE_PATTERN = re.compile(
-    r"(?<!\d)(?:\+?84|0)(?:[\s.\-]?\d){8,10}(?!\d)"
+    r"(?<!\d)"
+    r"(?:\+?84|0)"
+    r"(?:[\s.\-]?\d){9}"
+    r"(?!\d)"
 )
 PRICE_PATTERN = re.compile(
     r"(?<!\d)\d+(?:[.,]\d+)*\s*(?:k|nghin|ngan|tr|trieu|d|dong|vnd)\b"
@@ -113,6 +116,8 @@ def is_advertising(text: str) -> bool:
         return False
 
     if any(pattern.search(normalized) for pattern in DIRECT_AD_PATTERNS):
+        return True
+    if PHONE_PATTERN.search(normalized):
         return True
     if QUOTATION_PATTERN.search(normalized):
         return True

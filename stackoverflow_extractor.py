@@ -636,6 +636,7 @@ def stats(config: Config) -> None:
     for category in categories_by_id.values():
         schema_counts[category] += 1
     seen: set[str] = set()
+    supported_by_user: dict[str, int] = {}
     supported_total = 0
     supported_by_category: dict[str, int] = defaultdict(int)
     for persona in iter_jsonl(config.personas_path):
@@ -643,9 +644,11 @@ def stats(config: Config) -> None:
         if not user_id or user_id in seen:
             continue
         seen.add(user_id)
+        supported_by_user[user_id] = 0
         for field in persona.get("fields") or []:
             if isinstance(field, dict) and field.get("value") is not None:
                 supported_total += 1
+                supported_by_user[user_id] += 1
                 supported_by_category[categories_by_id.get(str(field.get("field_id") or ""), "Unknown field category")] += 1
     persona_count = len(seen)
     category_totals = [
@@ -657,6 +660,12 @@ def stats(config: Config) -> None:
         "supported_dimension_count": supported_total,
         "average_supported_dimensions_per_persona": round(supported_total / persona_count, 4) if persona_count else 0.0,
         "categories": category_totals,
+        "top_100_users_by_supported_dimension_count": [
+            {"user_id": user_id, "supported_dimension_count": count}
+            for user_id, count in sorted(
+                supported_by_user.items(), key=lambda item: (-item[1], item[0])
+            )[:100]
+        ],
     }
     config.persona_stats_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     chart_rows = [
