@@ -1,0 +1,6716 @@
+{
+  "schemaVersion": "1.0.0",
+  "name": "Vietnamese Social Persona Dimension Space",
+  "targetDimensions": 394,
+  "dimensions": [
+    {
+      "id": "primary_industry",
+      "label": "Primary industry",
+      "group": "Background",
+      "subgroup": "Career",
+      "category": "Industry",
+      "description": "Economic activity of the persona's current main job (the job taking the most time)",
+      "values": [
+        "Agriculture, forestry and fishing",
+        "Mining and quarrying",
+        "Manufacturing",
+        "Electricity, gas, steam and air conditioning supply",
+        "Water supply; sewerage, waste management and remediation activities",
+        "Construction",
+        "Wholesale and retail trade; repair of motor vehicles and motorcycles",
+        "Transportation and storage",
+        "Accommodation and food service activities",
+        "Information and communication",
+        "Financial and insurance activities",
+        "Real estate activities",
+        "Professional, scientific and technical activities",
+        "Administrative and support service activities",
+        "Public administration and defence; compulsory social security",
+        "Education",
+        "Human health and social work activities",
+        "Arts, entertainment and recreation",
+        "Other service activities",
+        "Activities of households as employers",
+        "Activities of extraterritorial organizations and bodies",
+        "Unknown / unclassified",
+        "Not applicable"
+      ],
+      "index": 1,
+      "defaultValue": "Not applicable"
+    },
+    {
+      "id": "secondary_industry",
+      "label": "Secondary industry",
+      "group": "Background",
+      "subgroup": "Career",
+      "category": "Industry",
+      "description": "Additional economic activity from a current secondary job in a different ISIC Rev.4 section; None also covers people without a current main job.",
+      "values": [
+        "Agriculture, forestry and fishing",
+        "Mining and quarrying",
+        "Manufacturing",
+        "Electricity, gas, steam and air conditioning supply",
+        "Water supply; sewerage, waste management and remediation activities",
+        "Construction",
+        "Wholesale and retail trade; repair of motor vehicles and motorcycles",
+        "Transportation and storage",
+        "Accommodation and food service activities",
+        "Information and communication",
+        "Financial and insurance activities",
+        "Real estate activities",
+        "Professional, scientific and technical activities",
+        "Administrative and support service activities",
+        "Public administration and defence; compulsory social security",
+        "Education",
+        "Human health and social work activities",
+        "Arts, entertainment and recreation",
+        "Other service activities",
+        "Activities of households as employers",
+        "Activities of extraterritorial organizations and bodies",
+        "None",
+        "Unknown / unclassified"
+      ],
+      "index": 2,
+      "defaultValue": "None"
+    },
+    {
+      "id": "years_experience",
+      "label": "Years experience",
+      "group": "Background",
+      "subgroup": "Career",
+      "category": "Career Profile",
+      "description": "Tenure in their field.",
+      "values": [
+        "0-2",
+        "3-5",
+        "6-10",
+        "11-20",
+        "21+"
+      ],
+      "index": 3,
+      "defaultValue": null
+    },
+    {
+      "id": "age_bracket",
+      "label": "Age bracket",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Life-age band of the persona.",
+      "values": [
+        "Under 5",
+        "5-12",
+        "13-17",
+        "18-24",
+        "25-34",
+        "35-44",
+        "45-54",
+        "55-64",
+        "65-74",
+        "75-84",
+        "85+"
+      ],
+      "index": 4,
+      "defaultValue": null
+    },
+    {
+      "id": "marital_status",
+      "label": "Marital status",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Marital status.",
+      "values": [
+        "Single",
+        "In a relationship",
+        "Engaged",
+        "Married",
+        "Domestic partnership",
+        "Separated",
+        "Divorced",
+        "Widowed"
+      ],
+      "index": 5,
+      "defaultValue": null
+    },
+    {
+      "id": "children",
+      "label": "Children",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Children.",
+      "values": [
+        "None",
+        "1 child",
+        "2 children",
+        "3+ children"
+      ],
+      "index": 6,
+      "defaultValue": "None"
+    },
+    {
+      "id": "monthly_personal_income_band",
+      "label": "Monthly personal income band",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Monthly personal income from current work, including salary, wages, bonuses and allowances.",
+      "values": [
+        "No current work income",
+        "<5m",
+        "5m-10m",
+        "10m-20m",
+        "20m-40m",
+        "40m+"
+      ],
+      "index": 7,
+      "defaultValue": null
+    },
+    {
+      "id": "employment_status",
+      "label": "Employment status",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Current main work arrangement or main activity.",
+      "values": [
+        "Full-time",
+        "Part-time",
+        "Self-employed",
+        "Gig / freelance",
+        "Student",
+        "Unemployed",
+        "Retired",
+        "Homemaker"
+      ],
+      "index": 8,
+      "defaultValue": null
+    },
+    {
+      "id": "generational_cohort",
+      "label": "Generational cohort",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Generational cohort.",
+      "values": [
+        "Gen Alpha",
+        "Gen Z",
+        "Millennial",
+        "Gen X",
+        "Boomer",
+        "Silent"
+      ],
+      "index": 9,
+      "defaultValue": null
+    },
+    {
+      "id": "religious_affiliation",
+      "label": "Religious affiliation",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Religious affiliation.",
+      "values": [
+        "Buddhist",
+        "Christian",
+        "Muslim",
+        "Jewish",
+        "Hindu",
+        "None"
+      ],
+      "index": 10,
+      "defaultValue": "None"
+    },
+    {
+      "id": "region",
+      "label": "Region",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Coarse Vietnamese region",
+      "values": [
+        "North",
+        "Central",
+        "South"
+      ],
+      "index": 11,
+      "defaultValue": null
+    },
+    {
+      "id": "province",
+      "label": "Province",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Current provincial-level",
+      "values": [
+        "An Giang",
+        "Bắc Ninh",
+        "Cà Mau",
+        "Cần Thơ",
+        "Cao Bằng",
+        "Đà Nẵng",
+        "Đắk Lắk",
+        "Điện Biên",
+        "Đồng Nai",
+        "Đồng Tháp",
+        "Gia Lai",
+        "Hà Nội",
+        "Hà Tĩnh",
+        "Hải Phòng",
+        "Huế",
+        "Hưng Yên",
+        "Khánh Hòa",
+        "Lai Châu",
+        "Lâm Đồng",
+        "Lạng Sơn",
+        "Lào Cai",
+        "Nghệ An",
+        "Ninh Bình",
+        "Phú Thọ",
+        "Quảng Ngãi",
+        "Quảng Ninh",
+        "Quảng Trị",
+        "Sơn La",
+        "Tây Ninh",
+        "Thái Nguyên",
+        "Thanh Hóa",
+        "Thành phố Hồ Chí Minh",
+        "Tuyên Quang",
+        "Vĩnh Long"
+      ],
+      "index": 12,
+      "defaultValue": null
+    },
+    {
+      "id": "gender_identity",
+      "label": "Gender identity",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Self-identified gender.",
+      "values": [
+        "Woman",
+        "Man",
+        "Non-binary",
+        "Self-described",
+        "Prefer not to say"
+      ],
+      "index": 13,
+      "defaultValue": "Prefer not to say"
+    },
+    {
+      "id": "socioeconomic_band",
+      "label": "Socioeconomic band",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Household per-capita income quintile (VHLSS q5); this is a household economic-position measure, distinct from the persona's monthly personal work income.",
+      "values": [
+        "Low income",
+        "Lower-middle",
+        "Middle",
+        "Upper-middle",
+        "High income"
+      ],
+      "index": 14,
+      "defaultValue": null
+    },
+    {
+      "id": "urbanicity",
+      "label": "Urbanicity",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Settlement density of where they live.",
+      "values": [
+        "Urban",
+        "Rural"
+      ],
+      "index": 15,
+      "defaultValue": null
+    },
+    {
+      "id": "dialect_register",
+      "label": "Dialect / register",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Core Demographics",
+      "description": "Default speech register.",
+      "values": [
+        "Formal / standard",
+        "Colloquial",
+        "Regional dialect",
+        "Code-switching",
+        "Technical jargon"
+      ],
+      "index": 16,
+      "defaultValue": null
+    },
+    {
+      "id": "household_size",
+      "label": "Household size",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Family",
+      "description": "Household size.",
+      "values": [
+        "Lives alone",
+        "2 people",
+        "3-4 people",
+        "5+ people"
+      ],
+      "index": 17,
+      "defaultValue": null
+    },
+    {
+      "id": "travel_breadth",
+      "label": "Travel breadth",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Life Events",
+      "description": "Travel breadth.",
+      "values": [
+        "Local only",
+        "Domestic travel",
+        "Regional / A few countries",
+        "Well-traveled",
+        "Lived / worked abroad"
+      ],
+      "index": 18,
+      "defaultValue": null
+    },
+    {
+      "id": "adversity_faced",
+      "label": "Adversity faced",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Life Events",
+      "description": "Adversity faced. (khó khắn đối mặt)",
+      "values": [
+        "Sheltered",
+        "Minor setbacks",
+        "Significant struggles",
+        "Overcame major hardship",
+        "Ongoing hardship"
+      ],
+      "index": 19,
+      "defaultValue": null
+    },
+    {
+      "id": "relationship_history",
+      "label": "Relationship history",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Life Events",
+      "description": "Past or accumulated relationship experience; does not establish a current partnership. Inexperienced means limited experience, not necessarily never partnered.",
+      "values": [
+        "Inexperienced",
+        "A few relationships",
+        "Married once",
+        "Long-term partnership",
+        "Remarried"
+      ],
+      "index": 20,
+      "defaultValue": null
+    },
+    {
+      "id": "faith_journey",
+      "label": "Faith journey",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Life Events",
+      "description": "Faith journey.",
+      "values": [
+        "Traditional devotion",
+        "Occasional practitioner",
+        "Spiritual in mind",
+        "Secular / Materialist",
+        "Converted / New path"
+      ],
+      "index": 21,
+      "defaultValue": null
+    },
+    {
+      "id": "public_recognition",
+      "label": "Public recognition",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Life Events",
+      "description": "Highest level of recognition outside the persona's immediate private circle.",
+      "values": [
+        "Locally known",
+        "Industry-recognized",
+        "Famous"
+      ],
+      "index": 22,
+      "defaultValue": null
+    },
+    {
+      "id": "tie_to_hometown",
+      "label": "Tie to hometown",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Life Events",
+      "description": "Tie to hometown.",
+      "values": [
+        "Still there",
+        "Visits often",
+        "Occasional return",
+        "Rarely returns",
+        "No connection"
+      ],
+      "index": 23,
+      "defaultValue": null
+    },
+    {
+      "id": "subject_logic",
+      "label": "Subject: Logic",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in logic.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 24,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_environmental_science",
+      "label": "Subject: Environmental science",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in environmental science.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 25,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_physics",
+      "label": "Subject: Physics",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in physics.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 26,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_chemistry",
+      "label": "Subject: Chemistry",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in chemistry.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 27,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_biology",
+      "label": "Subject: Biology",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in biology.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 28,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_earth_science",
+      "label": "Subject: Earth science",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in earth science.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 29,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_computer_science",
+      "label": "Subject: Computer science",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in computer science.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 30,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_economics",
+      "label": "Subject: Economics",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in economics.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 31,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_psychology",
+      "label": "Subject: Psychology",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in psychology.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 32,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_sociology",
+      "label": "Subject: Sociology",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in sociology.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 33,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_world_history",
+      "label": "Subject: World history",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in world history.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 34,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_geography",
+      "label": "Subject: Geography",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in geography.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 35,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_literature",
+      "label": "Subject: Literature",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in literature.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 36,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_creative_writing",
+      "label": "Subject: Creative writing",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in creative writing.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 37,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_foreign_languages",
+      "label": "Subject: Foreign languages",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in foreign languages.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 38,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_philosophy",
+      "label": "Subject: Philosophy",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in philosophy.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 39,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_visual_art",
+      "label": "Subject: Visual art",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in visual art.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 40,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_music",
+      "label": "Subject: Music",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in music.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 41,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_drama",
+      "label": "Subject: Drama",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in drama.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 42,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_physical_education",
+      "label": "Subject: Physical education",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in physical education.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 43,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_health_science",
+      "label": "Subject: Health science",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in health science.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 44,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_business_studies",
+      "label": "Subject: Business studies",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in business studies.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 45,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "subject_mathematics",
+      "label": "Subject: Mathematics",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Interest in algebra.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 46,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "highest_education",
+      "label": "Highest education",
+      "group": "Background",
+      "subgroup": "Education",
+      "category": "Academic Background",
+      "description": "Highest level of formal education completed.",
+      "values": [
+        "Below primary / no formal",
+        "Primary",
+        "Lower Secondary",
+        "Upper Secondary",
+        "Post-secondary vocational / certificate",
+        "College / short-cycle tertiary",
+        "Bachelor's",
+        "Master's",
+        "Doctorate"
+      ],
+      "index": 47,
+      "defaultValue": null
+    },
+    {
+      "id": "politeness",
+      "label": "Politeness",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Politeness.",
+      "values": [
+        "Very polite",
+        "Polite",
+        "Neutral",
+        "Brusque",
+        "Rude"
+      ],
+      "index": 48,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "emoji_emoticon_use",
+      "label": "Emoji / emoticon use",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Emoji / emoticon use.",
+      "values": [
+        "Heavy",
+        "Moderate",
+        "Rare",
+        "Never"
+      ],
+      "index": 49,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "storytelling_tendency",
+      "label": "Storytelling tendency",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Storytelling tendency.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 50,
+      "defaultValue": "None"
+    },
+    {
+      "id": "empathy_expression",
+      "label": "Empathy expression",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Empathy expression.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 51,
+      "defaultValue": "None"
+    },
+    {
+      "id": "risk_framing",
+      "label": "Risk framing",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Risk framing.",
+      "values": [
+        "Opportunity-focused",
+        "Balanced",
+        "Threat-focused"
+      ],
+      "index": 52,
+      "defaultValue": "Balanced"
+    },
+    {
+      "id": "big_picture_vs_detail",
+      "label": "Big-picture vs detail",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Big-picture vs detail.",
+      "values": [
+        "Big-picture only",
+        "Big-picture",
+        "Both",
+        "Detail",
+        "Detail-obsessed"
+      ],
+      "index": 53,
+      "defaultValue": null
+    },
+    {
+      "id": "reading_vs_watching",
+      "label": "Reading vs watching",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Reading vs watching.",
+      "values": [
+        "Strongly prefers reading",
+        "Prefers reading",
+        "No preference",
+        "Prefers video",
+        "Strongly prefers video"
+      ],
+      "index": 54,
+      "defaultValue": "No preference"
+    },
+    {
+      "id": "decision_speed",
+      "label": "Decision speed",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Decision speed.",
+      "values": [
+        "Snap decisions",
+        "Quick",
+        "Balanced",
+        "Deliberate",
+        "Agonizes"
+      ],
+      "index": 55,
+      "defaultValue": "Balanced"
+    },
+    {
+      "id": "question_asking",
+      "label": "Question-asking",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Question-asking.",
+      "values": [
+        "Asks constantly",
+        "Asks often",
+        "Sometimes",
+        "Rarely asks"
+      ],
+      "index": 56,
+      "defaultValue": null
+    },
+    {
+      "id": "learning_pace",
+      "label": "Learning pace",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Learning pace.",
+      "values": [
+        "Very fast",
+        "Fast",
+        "Average",
+        "Deliberate",
+        "Slow"
+      ],
+      "index": 57,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "attention_span",
+      "label": "Attention span",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Attention span.",
+      "values": [
+        "Very long",
+        "Long",
+        "Average",
+        "Short",
+        "Very short"
+      ],
+      "index": 58,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "procrastination_tendency",
+      "label": "Procrastination tendency",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Procrastination tendency.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 59,
+      "defaultValue": "None"
+    },
+    {
+      "id": "perfectionism",
+      "label": "Perfectionism",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Perfectionism.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 60,
+      "defaultValue": "None"
+    },
+    {
+      "id": "feedback_receptiveness",
+      "label": "Feedback receptiveness",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Feedback receptiveness.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 61,
+      "defaultValue": "None"
+    },
+    {
+      "id": "conflict_approach",
+      "label": "Conflict approach",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Conflict approach.",
+      "values": [
+        "Avoids conflict",
+        "Polite debate",
+        "Sarcastic",
+        "Direct challenge",
+        "Aggressive"
+      ],
+      "index": 62,
+      "defaultValue": null
+    },
+    {
+      "id": "confidence_calibration",
+      "label": "Confidence calibration",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Confidence calibration.",
+      "values": [
+        "Overconfident",
+        "Confident",
+        "Well-calibrated",
+        "Cautious",
+        "Underconfident"
+      ],
+      "index": 63,
+      "defaultValue": null
+    },
+    {
+      "id": "emotional_expressiveness",
+      "label": "Emotional expressiveness",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Emotional expressiveness.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 64,
+      "defaultValue": "None"
+    },
+    {
+      "id": "skepticism",
+      "label": "Skepticism",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Skepticism.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 65,
+      "defaultValue": "None"
+    },
+    {
+      "id": "curiosity",
+      "label": "Curiosity",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Curiosity.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 66,
+      "defaultValue": "None"
+    },
+    {
+      "id": "patience",
+      "label": "Patience",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Patience.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 67,
+      "defaultValue": "None"
+    },
+    {
+      "id": "optimism",
+      "label": "Optimism",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Optimism.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 68,
+      "defaultValue": "None"
+    },
+    {
+      "id": "detail_orientation",
+      "label": "Detail orientation",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Detail orientation.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 69,
+      "defaultValue": "None"
+    },
+    {
+      "id": "humor_style",
+      "label": "Humor style",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Humor style.",
+      "values": [
+        "Dry",
+        "Sarcastic",
+        "Playful",
+        "Wholesome",
+        "Serious"
+      ],
+      "index": 70,
+      "defaultValue": null
+    },
+    {
+      "id": "directness",
+      "label": "Directness",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Directness.",
+      "values": [
+        "Blunt",
+        "Direct",
+        "Balanced",
+        "Indirect",
+        "Evasive"
+      ],
+      "index": 71,
+      "defaultValue": "Balanced"
+    },
+    {
+      "id": "formality",
+      "label": "Formality",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Formality.",
+      "values": [
+        "Very formal",
+        "Formal",
+        "Neutral",
+        "Casual",
+        "Slangy"
+      ],
+      "index": 72,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "verbosity",
+      "label": "Verbosity",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Communication",
+      "description": "Verbosity.",
+      "values": [
+        "Terse",
+        "Concise",
+        "Balanced",
+        "Wordy",
+        "Rambling"
+      ],
+      "index": 73,
+      "defaultValue": "Balanced"
+    },
+    {
+      "id": "language_thai",
+      "label": "Language: Thai",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Language Profile",
+      "description": "Spoken proficiency in Thai.",
+      "values": [
+        "Native",
+        "Fluent",
+        "Conversational",
+        "Basic",
+        "None"
+      ],
+      "index": 74,
+      "defaultValue": "None"
+    },
+    {
+      "id": "language_korean",
+      "label": "Language: Korean",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Language Profile",
+      "description": "Spoken proficiency in Korean.",
+      "values": [
+        "Native",
+        "Fluent",
+        "Conversational",
+        "Basic",
+        "None"
+      ],
+      "index": 75,
+      "defaultValue": "None"
+    },
+    {
+      "id": "language_german",
+      "label": "Language: German",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Language Profile",
+      "description": "Spoken proficiency in German.",
+      "values": [
+        "Native",
+        "Fluent",
+        "Conversational",
+        "Basic",
+        "None"
+      ],
+      "index": 76,
+      "defaultValue": "None"
+    },
+    {
+      "id": "language_japanese",
+      "label": "Language: Japanese",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Language Profile",
+      "description": "Spoken proficiency in Japanese.",
+      "values": [
+        "Native",
+        "Fluent",
+        "Conversational",
+        "Basic",
+        "None"
+      ],
+      "index": 77,
+      "defaultValue": "None"
+    },
+    {
+      "id": "language_russian",
+      "label": "Language: Russian",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Language Profile",
+      "description": "Spoken proficiency in Russian.",
+      "values": [
+        "Native",
+        "Fluent",
+        "Conversational",
+        "Basic",
+        "None"
+      ],
+      "index": 78,
+      "defaultValue": "None"
+    },
+    {
+      "id": "language_french",
+      "label": "Language: French",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Language Profile",
+      "description": "Spoken proficiency in French.",
+      "values": [
+        "Native",
+        "Fluent",
+        "Conversational",
+        "Basic",
+        "None"
+      ],
+      "index": 79,
+      "defaultValue": "None"
+    },
+    {
+      "id": "language_chinese",
+      "label": "Language: Chinese",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Language Profile",
+      "description": "Spoken proficiency in Cantonese.",
+      "values": [
+        "Native",
+        "Fluent",
+        "Conversational",
+        "Basic",
+        "None"
+      ],
+      "index": 80,
+      "defaultValue": "None"
+    },
+    {
+      "id": "language_english",
+      "label": "Language: English",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Language Profile",
+      "description": "Spoken proficiency in English.",
+      "values": [
+        "Native",
+        "Fluent",
+        "Conversational",
+        "Basic",
+        "None"
+      ],
+      "index": 81,
+      "defaultValue": "None"
+    },
+    {
+      "id": "multilingualism",
+      "label": "Multilingualism",
+      "group": "Background",
+      "subgroup": "Language",
+      "category": "Language Profile",
+      "description": "Number of working languages.",
+      "values": [
+        "Monolingual",
+        "Bilingual",
+        "Trilingual+"
+      ],
+      "index": 82,
+      "defaultValue": null
+    },
+    {
+      "id": "character_leadership",
+      "label": "Character: Leadership",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present leadership is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 83,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_forgiveness",
+      "label": "Character: Forgiveness",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present forgiveness is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 84,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_humility",
+      "label": "Character: Humility",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present humility is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 85,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_prudence",
+      "label": "Character: Prudence",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present prudence is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 86,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_self_regulation",
+      "label": "Character: Self-regulation",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present self-regulation is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 87,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_appreciation_of_beauty",
+      "label": "Character: Appreciation of beauty",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present appreciation of beauty is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 88,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_gratitude",
+      "label": "Character: Gratitude",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present gratitude is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 89,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_hope_optimism",
+      "label": "Character: Hope / optimism",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present hope / optimism is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 90,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_playfulness",
+      "label": "Character: Playfulness",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present playfulness is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 91,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_spirituality",
+      "label": "Character: Spirituality",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present spirituality is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 92,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_fairness",
+      "label": "Character: Fairness",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present fairness is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 93,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_teamwork",
+      "label": "Character: Teamwork",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present teamwork is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 94,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_social_intelligence",
+      "label": "Character: Social intelligence",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present social intelligence is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 95,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_kindness",
+      "label": "Character: Kindness",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present kindness is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 96,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "domain_stance",
+      "label": "Domain stance",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "Relationship to their field.",
+      "values": [
+        "Cutting-edge researcher",
+        "Practitioner",
+        "Educator",
+        "Student",
+        "Hobbyist",
+        "Skeptic / critic",
+        "Cross-disciplinary"
+      ],
+      "index": 97,
+      "defaultValue": null
+    },
+    {
+      "id": "dominant_trait",
+      "label": "Dominant trait",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "Most pronounced Big-Five-style trait.",
+      "values": [
+        "High openness",
+        "High conscientiousness",
+        "High extraversion",
+        "High agreeableness",
+        "High neuroticism",
+        "Balanced"
+      ],
+      "index": 98,
+      "defaultValue": "Balanced"
+    },
+    {
+      "id": "character_curiosity",
+      "label": "Character: Curiosity",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present curiosity is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 99,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_creativity",
+      "label": "Character: Creativity",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present creativity is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 100,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_love_of_learning",
+      "label": "Character: Love of learning",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present love of learning is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 101,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_open_mindedness",
+      "label": "Character: Open-mindedness",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present open-mindedness is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 102,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_perspective",
+      "label": "Character: Perspective",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present perspective is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 103,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_bravery",
+      "label": "Character: Bravery",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present bravery is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 104,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_perseverance",
+      "label": "Character: Perseverance",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present perseverance is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 105,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_honesty",
+      "label": "Character: Honesty",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present honesty is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 106,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_zest",
+      "label": "Character: Zest",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present zest is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 107,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_capacity_for_love",
+      "label": "Character: Capacity for love",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present capacity for love is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 108,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_loyalty",
+      "label": "Character: Loyalty",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present loyalty is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 109,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_generosity",
+      "label": "Character: Generosity",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present generosity is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 110,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_discipline",
+      "label": "Character: Discipline",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present discipline is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 111,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_resilience",
+      "label": "Character: Resilience",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present resilience is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 112,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_empathy",
+      "label": "Character: Empathy",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present empathy is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 113,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_ambition",
+      "label": "Character: Ambition",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present ambition is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 114,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_competitiveness",
+      "label": "Character: Competitiveness",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present competitiveness is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 115,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "character_adaptability",
+      "label": "Character: Adaptability",
+      "group": "Psychology",
+      "subgroup": "Personality",
+      "category": "Character",
+      "description": "How present adaptability is in the persona.",
+      "values": [
+        "Signature",
+        "Strong",
+        "Moderate",
+        "Slight",
+        "Absent"
+      ],
+      "index": 116,
+      "defaultValue": "Moderate"
+    },
+    {
+      "id": "attitude_social_media",
+      "label": "Attitude: Social media",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward social media.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 117,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_remote_work",
+      "label": "Attitude: Remote work",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward remote work.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 118,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_free_markets",
+      "label": "Attitude: Free markets",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward free markets.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 119,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_government_regulation",
+      "label": "Attitude: Government regulation",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward government regulation.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 120,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_climate_action",
+      "label": "Attitude: Climate action",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward climate action.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 121,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_cryptocurrency",
+      "label": "Attitude: Cryptocurrency",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward cryptocurrency.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 122,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_data_privacy",
+      "label": "Attitude: Data privacy",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward data privacy.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 123,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "moral_foundation_fairness_cheating",
+      "label": "Moral Foundation Fairness/Cheating",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Moral Foundations Theory construct: sensitivity to fairness versus cheating.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 124,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "moral_foundation_authority_subversion",
+      "label": "Moral Foundation Authority/Subversion",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Moral Foundations Theory construct: sensitivity to authority versus subversion.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 125,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "interest_spirituality",
+      "label": "Interest: Spirituality",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Level of interest in spirituality.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 126,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "moral_foundation_loyalty_betrayal",
+      "label": "Moral Foundation Loyalty/Betrayal",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Moral Foundations Theory construct: sensitivity to loyalty versus betrayal.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 127,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "attitude_the_gig_economy",
+      "label": "Attitude: The gig economy",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward the gig economy.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 128,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "dospert_health_safety_risk_tolerance",
+      "label": "DOSPERT Health/Safety Risk Tolerance",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Domain-specific risk orientation for health and safety risks.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 129,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "moral_foundation_liberty_oppression",
+      "label": "Moral Foundation Liberty/Oppression",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Moral Foundations Theory construct: sensitivity to liberty versus oppression.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 130,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "moral_foundation_sanctity_degradation",
+      "label": "Moral Foundation Sanctity/Degradation",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Moral Foundations Theory construct: sensitivity to sanctity versus degradation.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 131,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "attitude_public_transit",
+      "label": "Attitude: Public transit",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward public transit.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 132,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_electric_vehicles",
+      "label": "Attitude: Electric vehicles",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward electric vehicles.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 133,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_new_technology",
+      "label": "Attitude: New technology",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward new technology.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 134,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_brand_loyalty",
+      "label": "Attitude: Brand loyalty",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward brand loyalty.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 135,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_advertising",
+      "label": "Attitude: Advertising",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward advertising.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 136,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_influencers",
+      "label": "Attitude: Influencers",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward influencers.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 137,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_online_reviews",
+      "label": "Attitude: Online reviews",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward online reviews.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 138,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_free_speech",
+      "label": "Attitude: Free speech",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward free speech.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 139,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_privacy_vs_security",
+      "label": "Attitude: Privacy vs security",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward privacy vs security.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 140,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_working_from_office",
+      "label": "Attitude: Working from office",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward working from office.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 141,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_performance_reviews",
+      "label": "Attitude: Performance reviews",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward performance reviews.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 142,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "attitude_higher_education",
+      "label": "Attitude: Higher education",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Stance toward higher education.",
+      "values": [
+        "Enthusiast",
+        "Positive",
+        "Neutral",
+        "Skeptical",
+        "Opposed"
+      ],
+      "index": 143,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "political_lean",
+      "label": "Political lean",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Beliefs",
+      "description": "Broad political orientation.",
+      "values": [
+        "Left",
+        "Center-left",
+        "Center",
+        "Center-right",
+        "Right",
+        "Apolitical"
+      ],
+      "index": 144,
+      "defaultValue": "Apolitical"
+    },
+    {
+      "id": "sdt_relatedness_need",
+      "label": "SDT Relatedness Need",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "Self-Determination Theory basic psychological need: relatedness.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 145,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "schwartz_universalism",
+      "label": "Schwartz Universalism",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "Schwartz basic value construct: understanding, tolerance, and protection for all people and nature.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 146,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "schwartz_benevolence",
+      "label": "Schwartz Benevolence",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "Schwartz basic value construct: preserving and enhancing the welfare of close others.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 147,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_helping_others",
+      "label": "Value: Helping others",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes helping others.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 148,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_fun_enjoyment",
+      "label": "Value: Fun & enjoyment",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes fun & enjoyment.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 149,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_integrity_honesty",
+      "label": "Value: Integrity & honesty",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes integrity & honesty.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 150,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_beauty_aesthetics",
+      "label": "Value: Beauty & aesthetics",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes beauty & aesthetics.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 151,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_patriotism",
+      "label": "Value: Patriotism",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes patriotism.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 152,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_equality",
+      "label": "Value: Equality",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes equality.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 153,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_privacy",
+      "label": "Value: Privacy",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes privacy.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 154,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "schwartz_security",
+      "label": "Schwartz Security",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "Schwartz basic value construct: safety, harmony, and stability.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 155,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_justice_fairness",
+      "label": "Value: Justice & fairness",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes justice & fairness.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 156,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_social_status",
+      "label": "Value: Social status",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes social status.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 157,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "economic_motivation",
+      "label": "Economic motivation",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "Spending posture.",
+      "values": [
+        "Cost-sensitive",
+        "Value-driven",
+        "Premium-seeking",
+        "Indifferent"
+      ],
+      "index": 158,
+      "defaultValue": null
+    },
+    {
+      "id": "value_security_stability",
+      "label": "Value: Security & stability",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes security & stability.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 159,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_personal_freedom",
+      "label": "Value: Personal freedom",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes personal freedom.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 160,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_creativity_self_expression",
+      "label": "Value: Creativity & self-expression",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes creativity & self-expression.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 161,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_family",
+      "label": "Value: Family",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes family.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 162,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_health",
+      "label": "Value: Health",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes health.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 163,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_wealth",
+      "label": "Value: Wealth",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes wealth.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 164,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "value_tradition",
+      "label": "Value: Tradition",
+      "group": "Psychology",
+      "subgroup": "Worldview",
+      "category": "Values & Motivation",
+      "description": "How strongly the persona prioritizes tradition.",
+      "values": [
+        "Very high",
+        "High",
+        "Average",
+        "Low",
+        "Very low"
+      ],
+      "index": 165,
+      "defaultValue": "Average"
+    },
+    {
+      "id": "tech_savviness",
+      "label": "Tech savviness",
+      "group": "Capability",
+      "subgroup": "Domains",
+      "category": "Cross-Domain Expertise Profile",
+      "description": "Comfort with technology.",
+      "values": [
+        "Digital native",
+        "Comfortable",
+        "Cautious adopter",
+        "Reluctant",
+        "Avoidant"
+      ],
+      "index": 166,
+      "defaultValue": null
+    },
+    {
+      "id": "domain",
+      "label": "Domain",
+      "group": "Capability",
+      "subgroup": "Domains",
+      "category": "Cross-Domain Expertise Profile",
+      "description": "Primary field of work or study.",
+      "values": [
+        "Software & AI",
+        "Healthcare & Medicine",
+        "Law & Policy",
+        "Finance & Economics",
+        "Education",
+        "Engineering",
+        "Natural Sciences",
+        "Social Sciences",
+        "Arts & Humanities",
+        "Business & Management",
+        "Agriculture",
+        "Manufacturing",
+        "Media & Journalism",
+        "Public Sector",
+        "Hospitality",
+        "Skilled Trades"
+      ],
+      "index": 167,
+      "defaultValue": null
+    },
+    {
+      "id": "skill_logical_reasoning",
+      "label": "Skill: Logical reasoning",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Proficiency in logical reasoning.",
+      "values": [
+        "Master",
+        "Advanced",
+        "Intermediate",
+        "Beginner",
+        "None"
+      ],
+      "index": 168,
+      "defaultValue": "None"
+    },
+    {
+      "id": "skill_critical_thinking",
+      "label": "Skill: Critical thinking",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Proficiency in critical thinking.",
+      "values": [
+        "Master",
+        "Advanced",
+        "Intermediate",
+        "Beginner",
+        "None"
+      ],
+      "index": 169,
+      "defaultValue": "None"
+    },
+    {
+      "id": "skill_speed_reading",
+      "label": "Skill: Speed reading",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Proficiency in speed reading.",
+      "values": [
+        "Master",
+        "Advanced",
+        "Intermediate",
+        "Beginner",
+        "None"
+      ],
+      "index": 170,
+      "defaultValue": "None"
+    },
+    {
+      "id": "skill_fact_checking",
+      "label": "Skill: Fact-checking",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Proficiency in fact-checking.",
+      "values": [
+        "Master",
+        "Advanced",
+        "Intermediate",
+        "Beginner",
+        "None"
+      ],
+      "index": 171,
+      "defaultValue": "None"
+    },
+    {
+      "id": "skill_writing",
+      "label": "Skill: Writing",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Proficiency in writing.",
+      "values": [
+        "Master",
+        "Advanced",
+        "Intermediate",
+        "Beginner",
+        "None"
+      ],
+      "index": 172,
+      "defaultValue": "None"
+    },
+    {
+      "id": "skill_copywriting",
+      "label": "Skill: Copywriting",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Proficiency in copywriting.",
+      "values": [
+        "Master",
+        "Advanced",
+        "Intermediate",
+        "Beginner",
+        "None"
+      ],
+      "index": 173,
+      "defaultValue": "None"
+    },
+    {
+      "id": "skill_storytelling",
+      "label": "Skill: Storytelling",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Proficiency in storytelling.",
+      "values": [
+        "Master",
+        "Advanced",
+        "Intermediate",
+        "Beginner",
+        "None"
+      ],
+      "index": 174,
+      "defaultValue": "None"
+    },
+    {
+      "id": "query_complexity",
+      "label": "Query complexity",
+      "group": "Behavior and Interaction",
+      "subgroup": "Interaction State",
+      "category": "Current Emotional State",
+      "description": "Shape of the request.",
+      "values": [
+        "Simple factual",
+        "Multi-step",
+        "Ambiguous / underspecified",
+        "Adversarial",
+        "Open-ended creative"
+      ],
+      "index": 175,
+      "defaultValue": null
+    },
+    {
+      "id": "emotional_state",
+      "label": "Emotional state",
+      "group": "Behavior and Interaction",
+      "subgroup": "Interaction State",
+      "category": "Current Emotional State",
+      "description": "Emotional Triggers  -> behavior of like, share, comment actions",
+      "values": [
+        "Calm",
+        "Curious",
+        "Frustrated",
+        "Anxious",
+        "Excited",
+        "Skeptical",
+        "Urgent"
+      ],
+      "index": 176,
+      "defaultValue": null
+    },
+    {
+      "id": "social_engagement_style",
+      "label": "Social engagement style",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Social Usage",
+      "description": "Dominant participation style online",
+      "values": [
+        "Lurker",
+        "Reactor",
+        "Commenter",
+        "Sharer",
+        "Group participant",
+        "Creator",
+        "Seller or affiliate"
+      ],
+      "index": 177,
+      "defaultValue": null
+    },
+    {
+      "id": "posting_frequency",
+      "label": "Posting frequency",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Social Usage",
+      "description": "How often the persona posts original content.",
+      "values": [
+        "Never",
+        "Rarely",
+        "Monthly",
+        "Weekly",
+        "Daily",
+        "Multiple daily"
+      ],
+      "index": 178,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "commenting_frequency",
+      "label": "Commenting frequency",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Social Usage",
+      "description": "How often the persona comments publicly.",
+      "values": [
+        "Never",
+        "Rarely",
+        "Monthly",
+        "Weekly",
+        "Daily",
+        "Multiple daily"
+      ],
+      "index": 179,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "sharing_frequency",
+      "label": "Sharing frequency",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Social Usage",
+      "description": "How often the persona shares a post.",
+      "values": [
+        "Never",
+        "Rarely",
+        "Monthly",
+        "Weekly",
+        "Daily",
+        "Multiple daily"
+      ],
+      "index": 180,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "messaging_intensity",
+      "label": "Messaging intensity",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Social Usage",
+      "description": "Messaging intensity",
+      "values": [
+        "Minimal",
+        "Family only",
+        "Friends and family",
+        "Work and commerce",
+        "Always-on messaging"
+      ],
+      "index": 181,
+      "defaultValue": null
+    },
+    {
+      "id": "group_community_participation",
+      "label": "Group community participation",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Social Usage",
+      "description": "Participation in Facebook/Zalo/forum groups.",
+      "values": [
+        "None",
+        "Reads only",
+        "Occasional questions",
+        "Frequent commenter",
+        "Moderator or organizer",
+        "Seller in groups"
+      ],
+      "index": 182,
+      "defaultValue": "None"
+    },
+    {
+      "id": "content_consumption_format",
+      "label": "Content Consumption Format",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Content Consumption Format",
+      "description": "How they best absorb information.",
+      "values": [
+        "Visual",
+        "Auditory",
+        "Reading / writing",
+        "Kinesthetic",
+        "Mixed"
+      ],
+      "index": 183,
+      "defaultValue": null
+    },
+    {
+      "id": "habit_doomscrolling",
+      "label": "Habit: Doomscrolling",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Habits",
+      "description": "How often the persona engages in doomscrolling.",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 184,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "habit_naps",
+      "label": "Habit: Naps",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Habits",
+      "description": "How often the persona engages in naps.",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 185,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "habit_reading_before_bed",
+      "label": "Habit: Reading before bed",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Habits",
+      "description": "Frequency of intentional reading of books, articles or documents before bed; a subset of reading_frequency.",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 186,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "habit_phone_free_downtime",
+      "label": "Habit: Phone-free downtime",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Habits",
+      "description": "How often the persona engages in phone-free downtime.",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 187,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "habit_re_reading_texts_before_sending",
+      "label": "Habit: Re-reading texts before sending",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Habits",
+      "description": "How often the persona engages in re-reading texts before sending.",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 188,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "pet_peeve_auto_play_video",
+      "label": "Pet peeve: Auto-play video",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Preferences",
+      "description": "Reaction to auto-play video.",
+      "values": [
+        "Major peeve",
+        "Annoys",
+        "Neutral",
+        "Fine"
+      ],
+      "index": 189,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "pet_peeve_pop_up_ads",
+      "label": "Pet peeve: Pop-up ads",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Preferences",
+      "description": "Reaction to pop-up ads.",
+      "values": [
+        "Major peeve",
+        "Annoys",
+        "Neutral",
+        "Fine"
+      ],
+      "index": 190,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "pet_peeve_forced_small_talk",
+      "label": "Pet peeve: Forced small talk",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Preferences",
+      "description": "Reaction to forced small talk.",
+      "values": [
+        "Major peeve",
+        "Annoys",
+        "Neutral",
+        "Fine"
+      ],
+      "index": 191,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "pet_peeve_clickbait",
+      "label": "Pet peeve: Clickbait",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Preferences",
+      "description": "Reaction to clickbait.",
+      "values": [
+        "Major peeve",
+        "Annoys",
+        "Neutral",
+        "Fine"
+      ],
+      "index": 192,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "pet_peeve_condescension",
+      "label": "Pet peeve: Condescension",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Preferences",
+      "description": "Reaction to condescension.",
+      "values": [
+        "Major peeve",
+        "Annoys",
+        "Neutral",
+        "Fine"
+      ],
+      "index": 193,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "logic_vs_intuition",
+      "label": "Logic vs intuition",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Preferences",
+      "description": "Logic vs intuition.",
+      "values": [
+        "Pure logic",
+        "Logic-leaning",
+        "Balanced",
+        "Intuition-leaning",
+        "Pure intuition"
+      ],
+      "index": 194,
+      "defaultValue": "Balanced"
+    },
+    {
+      "id": "quality_vs_quantity",
+      "label": "Quality vs quantity",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Preferences",
+      "description": "Quality vs quantity.",
+      "values": [
+        "Quality first",
+        "Quality-leaning",
+        "Balanced",
+        "Quantity-leaning",
+        "Quantity first"
+      ],
+      "index": 195,
+      "defaultValue": "Balanced"
+    },
+    {
+      "id": "speed_vs_accuracy",
+      "label": "Speed vs accuracy",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Preferences",
+      "description": "Speed vs accuracy.",
+      "values": [
+        "Speed first",
+        "Speed-leaning",
+        "Balanced",
+        "Accuracy-leaning",
+        "Accuracy first"
+      ],
+      "index": 196,
+      "defaultValue": "Balanced"
+    },
+    {
+      "id": "novelty_vs_familiarity",
+      "label": "Novelty vs familiarity",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Preferences",
+      "description": "Novelty vs familiarity.",
+      "values": [
+        "Always novel",
+        "Novelty-leaning",
+        "Balanced",
+        "Comfort-leaning",
+        "Always familiar"
+      ],
+      "index": 197,
+      "defaultValue": "Balanced"
+    },
+    {
+      "id": "media_diet",
+      "label": "Media diet",
+      "group": "Behavior and Interaction",
+      "subgroup": "Personal Behavior",
+      "category": "Preferences",
+      "description": "Primary information sources.",
+      "values": [
+        "Academic journals",
+        "News",
+        "Social-media-heavy",
+        "Long-form",
+        "Video-first",
+        "Minimal"
+      ],
+      "index": 198,
+      "defaultValue": null
+    },
+    {
+      "id": "culture_vietnam",
+      "label": "Culture: Vietnam",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Familiarity with Vietnam culture.",
+      "values": [
+        "Native",
+        "Lived there",
+        "Visited",
+        "Studied",
+        "Unfamiliar"
+      ],
+      "index": 199,
+      "defaultValue": null
+    },
+    {
+      "id": "reading_frequency",
+      "label": "Reading frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Frequency of intentional reading of books, articles or documents, including reading before bed.",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 200,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "gaming_frequency",
+      "label": "Gaming frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Gaming frequency.",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 201,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "streaming_hours_week",
+      "label": "Streaming hours/week",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Streaming hours/week.",
+      "values": [
+        "0-2",
+        "3-7",
+        "8-15",
+        "16+"
+      ],
+      "index": 202,
+      "defaultValue": null
+    },
+    {
+      "id": "music_listening",
+      "label": "Music listening",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Music listening.",
+      "values": [
+        "All day",
+        "Daily",
+        "Sometimes",
+        "Rarely"
+      ],
+      "index": 203,
+      "defaultValue": null
+    },
+    {
+      "id": "podcast_listening",
+      "label": "Podcast listening",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Podcast listening.",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 204,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "primary_social_platform",
+      "label": "Primary social platform",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Main currently used social platform; must be used at least as frequently as other platforms. Ties are allowed; frequency does not measure duration.",
+      "values": [
+        "Facebook",
+        "Zalo",
+        "TikTok",
+        "YouTube",
+        "Instagram",
+        "Threads",
+        "LinkedIn",
+        "X / Twitter",
+        "Reddit",
+        "Forums",
+        "None"
+      ],
+      "index": 205,
+      "defaultValue": "None"
+    },
+    {
+      "id": "facebook_frequency",
+      "label": "Facebook frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Facebook frequency",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 206,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "zalo_frequency",
+      "label": "Zalo frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Zalo frequency",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 207,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "tiktok_frequency",
+      "label": "Tiktok frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Tiktok frequency",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 208,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "youtube_frequency",
+      "label": "Youtube frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Youtube frequency",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 209,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "instagram_frequency",
+      "label": "Instagram frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Instagram frequency",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 210,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "threads_frequency",
+      "label": "Threads frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Threads frequency",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 211,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "linkedin_frequency",
+      "label": "LinkedIn frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "LinkedIn frequency",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 212,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "x_twitter_frequency",
+      "label": "X / Twitter frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "X / Twitter frequency",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 213,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "reddit_frequency",
+      "label": "Reddit frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Reddit frequency",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 214,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "forums_frequency",
+      "label": "Forums frequency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Forums frequency",
+      "values": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "Rarely",
+        "Never"
+      ],
+      "index": 215,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "fashion_sense",
+      "label": "Fashion sense",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Fashion sense.",
+      "values": [
+        "Trend-setter",
+        "Trend-follower",
+        "Classic",
+        "Practical",
+        "Indifferent"
+      ],
+      "index": 216,
+      "defaultValue": null
+    },
+    {
+      "id": "vacation_style",
+      "label": "Vacation style",
+      "group": "Lifestyle and Health",
+      "subgroup": "Culture and Daily Life",
+      "category": "Cultural Familiarity",
+      "description": "Vacation style.",
+      "values": [
+        "Adventure",
+        "Relaxation",
+        "Culture",
+        "Luxury",
+        "Budget backpacking",
+        "Staycation"
+      ],
+      "index": 217,
+      "defaultValue": null
+    },
+    {
+      "id": "interest_fitness",
+      "label": "Interest: Fitness",
+      "group": "Lifestyle and Health",
+      "subgroup": "Health",
+      "category": "Health Orientation & Behaviors",
+      "description": "Level of interest in fitness.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 218,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "stress_level",
+      "label": "Stress level",
+      "group": "Lifestyle and Health",
+      "subgroup": "Health",
+      "category": "Health Status & Accessibility",
+      "description": "Stress level.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 219,
+      "defaultValue": "None"
+    },
+    {
+      "id": "energy_level",
+      "label": "Energy level",
+      "group": "Lifestyle and Health",
+      "subgroup": "Health",
+      "category": "Health Status & Accessibility",
+      "description": "Energy level.",
+      "values": [
+        "Very high",
+        "High",
+        "Moderate",
+        "Low",
+        "None"
+      ],
+      "index": 220,
+      "defaultValue": "None"
+    },
+    {
+      "id": "interest_tv_series",
+      "label": "Interest: TV series",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in tv series.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 221,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_anime",
+      "label": "Interest: Anime",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in anime.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 222,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_comics",
+      "label": "Interest: Comics",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in comics.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 223,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_music",
+      "label": "Interest: Music",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in music.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 224,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_live_concerts",
+      "label": "Interest: Live concerts",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in live concerts.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 225,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_theater",
+      "label": "Interest: Theater",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in theater.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 226,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_visual_art",
+      "label": "Interest: Visual art",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in visual art.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 227,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_literature",
+      "label": "Interest: Literature",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in literature.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 228,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_poetry",
+      "label": "Interest: Poetry",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in poetry.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 229,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_film",
+      "label": "Interest: Film",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in film.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 230,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_history",
+      "label": "Interest: History",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in history.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 231,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_religion",
+      "label": "Interest: Religion",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in religion.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 232,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_meditation",
+      "label": "Interest: Meditation",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in meditation.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 233,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_yoga",
+      "label": "Interest: Yoga",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in yoga.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 234,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_hiking",
+      "label": "Interest: Hiking",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in hiking.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 235,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_camping",
+      "label": "Interest: Camping",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in camping.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 236,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_fishing",
+      "label": "Interest: Fishing",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in fishing.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 237,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_birdwatching",
+      "label": "Interest: Birdwatching",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in birdwatching.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 238,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_board_games",
+      "label": "Interest: Board games",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in board games.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 239,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_philosophy",
+      "label": "Interest: Philosophy",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in philosophy.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 240,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_puzzles",
+      "label": "Interest: Puzzles",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in puzzles.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 241,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_photography",
+      "label": "Interest: Photography",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in photography.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 242,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_cycling",
+      "label": "Interest: Cycling",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in cycling.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 243,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_politics",
+      "label": "Interest: Politics",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in politics.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 244,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_sports",
+      "label": "Interest: Sports",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in sports.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 245,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_travel",
+      "label": "Interest: Travel",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in travel.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 246,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_cooking",
+      "label": "Interest: Cooking",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in cooking.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 247,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_gaming",
+      "label": "Interest: Gaming",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in gaming.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 248,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_fashion",
+      "label": "Interest: Fashion",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in fashion.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 249,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_technology",
+      "label": "Interest: Technology",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in technology.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 250,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_science",
+      "label": "Interest: Science",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in science.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 251,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_running",
+      "label": "Interest: Running",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in running.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 252,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_space",
+      "label": "Interest: Space",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in space.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 253,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_investing",
+      "label": "Interest: Investing",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in investing.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 254,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_cryptocurrency",
+      "label": "Interest: Cryptocurrency",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in cryptocurrency.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 255,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_real_estate",
+      "label": "Interest: Real estate",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in real estate.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 256,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_parenting",
+      "label": "Interest: Parenting",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in parenting.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 257,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_pets",
+      "label": "Interest: Pets",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in pets.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 258,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_gardening",
+      "label": "Interest: Gardening",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in gardening.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 259,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_home_improvement",
+      "label": "Interest: Home improvement",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in home improvement.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 260,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_cars",
+      "label": "Interest: Cars",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in cars.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 261,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_motorcycles",
+      "label": "Interest: Motorcycles",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in motorcycles.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 262,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_personal_finance",
+      "label": "Interest: Personal finance",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in personal finance.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 263,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_chess",
+      "label": "Interest: Chess",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in chess.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 264,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_true_crime",
+      "label": "Interest: True crime",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in true crime.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 265,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_drones",
+      "label": "Interest: Drones",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in drones.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 266,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_3d_printing",
+      "label": "Interest: 3D printing",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in 3d printing.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 267,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_entrepreneurship",
+      "label": "Interest: Entrepreneurship",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in entrepreneurship.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 268,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_self_improvement",
+      "label": "Interest: Self-improvement",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in self-improvement.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 269,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_robotics",
+      "label": "Interest: Robotics",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in robotics.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 270,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_stand_up_comedy",
+      "label": "Interest: Stand-up comedy",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in stand-up comedy.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 271,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_podcasts",
+      "label": "Interest: Podcasts",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in podcasts.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 272,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_social_media",
+      "label": "Interest: Social media",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in social media.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 273,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_activism",
+      "label": "Interest: Activism",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in activism.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 274,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_environment",
+      "label": "Interest: Environment",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in environment.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 275,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_wine",
+      "label": "Interest: Wine",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in wine.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 276,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_coffee",
+      "label": "Interest: Coffee",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in coffee.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 277,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_magic_tricks",
+      "label": "Interest: Magic tricks",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in magic tricks.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 278,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_tea",
+      "label": "Interest: Tea",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in tea.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 279,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_interior_design",
+      "label": "Interest: Interior design",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in interior design.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 280,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_architecture",
+      "label": "Interest: Architecture",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in architecture.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 281,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_languages",
+      "label": "Interest: Languages",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in languages.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 282,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_collecting",
+      "label": "Interest: Collecting",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in collecting.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 283,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_knitting",
+      "label": "Interest: Knitting",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in knitting.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 284,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_woodworking",
+      "label": "Interest: Woodworking",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in woodworking.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 285,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_calligraphy",
+      "label": "Interest: Calligraphy",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in calligraphy.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 286,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_dance",
+      "label": "Interest: Dance",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in dance.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 287,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "interest_baking",
+      "label": "Interest: Baking",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Broad Interest Areas",
+      "description": "Level of interest in baking.",
+      "values": [
+        "Passionate",
+        "Interested",
+        "Neutral",
+        "Indifferent",
+        "Averse"
+      ],
+      "index": 288,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_thai",
+      "label": "Cuisine: Thai",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Thai cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 289,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_vietnamese",
+      "label": "Cuisine: Vietnamese",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Vietnamese cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 290,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_indian",
+      "label": "Cuisine: Indian",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Indian cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 291,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_sushi",
+      "label": "Cuisine: Sushi",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Sushi cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 292,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_ramen",
+      "label": "Cuisine: Ramen",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Ramen cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 293,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_vegetarian",
+      "label": "Cuisine: Vegetarian",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Vegetarian cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 294,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_seafood",
+      "label": "Cuisine: Seafood",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Seafood cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 295,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_korean",
+      "label": "Cuisine: Korean",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Korean cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 296,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_japanese",
+      "label": "Cuisine: Japanese",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Japanese cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 297,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_italian",
+      "label": "Cuisine: Italian",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Italian cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 298,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_french",
+      "label": "Cuisine: French",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for French cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 299,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_mexican",
+      "label": "Cuisine: Mexican",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Mexican cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 300,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_american_bbq",
+      "label": "Cuisine: American BBQ",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for American BBQ cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 301,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "cuisine_chinese",
+      "label": "Cuisine: Chinese",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Food",
+      "description": "Taste for Chinese cuisine.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Avoid"
+      ],
+      "index": 302,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "hobby_knitting_embroidery",
+      "label": "Hobby: Knitting / Embroidery",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with knitting or Embroidery.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 303,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_kayaking",
+      "label": "Hobby: Kayaking",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with kayaking.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 304,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_rock_climbing",
+      "label": "Hobby: Rock climbing",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with rock climbing.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 305,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_aquariums",
+      "label": "Hobby: Aquariums",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with aquariums.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 306,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_bonsai",
+      "label": "Hobby: Bonsai",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with bonsai.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 307,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_gardening",
+      "label": "Hobby: Gardening",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with gardening.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 308,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_antiquing",
+      "label": "Hobby: Antiquing",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with antiquing.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 309,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_model_building",
+      "label": "Hobby: Model building",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with model building.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 310,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_jewelry_making",
+      "label": "Hobby: Jewelry making",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with jewelry making.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 311,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_woodworking",
+      "label": "Hobby: Woodworking",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with woodworking.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 312,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_metalworking",
+      "label": "Hobby: Metalworking",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with metalworking.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 313,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_cosplay",
+      "label": "Hobby: Cosplay",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with cosplay.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 314,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_stand_up_comedy",
+      "label": "Hobby: Stand-up comedy",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with stand-up comedy.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 315,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_dancing",
+      "label": "Hobby: Dancing",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with dancing.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 316,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_karaoke",
+      "label": "Hobby: Karaoke",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with karaoke.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 317,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "hobby_bread_baking",
+      "label": "Hobby: Bread baking",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Hobbies",
+      "description": "Engagement with bread baking.",
+      "values": [
+        "Avid",
+        "Active",
+        "Occasional",
+        "Curious",
+        "Never"
+      ],
+      "index": 318,
+      "defaultValue": "Never"
+    },
+    {
+      "id": "music_pop",
+      "label": "Music: Pop",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Pop music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 319,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_rock",
+      "label": "Music: Rock",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Rock music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 320,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_hip_hop_trap",
+      "label": "Music: Hip-hop / Trap",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Hip-hop / Trap music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 321,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_r_b",
+      "label": "Music: R&B",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for R&B music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 322,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_jazz",
+      "label": "Music: Jazz",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Jazz music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 323,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_classical",
+      "label": "Music: Classical",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Classical music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 324,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_electronic",
+      "label": "Music: Electronic",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Electronic music (EDM).",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 325,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_house",
+      "label": "Music: House",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for House music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 326,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_folk",
+      "label": "Music: Folk",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Folk music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 327,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_indie",
+      "label": "Music: Indie",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Indie music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 328,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_ballad",
+      "label": "Music: Ballad",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Ballad music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 329,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_mystery",
+      "label": "Film: Mystery",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for mystery films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 330,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_historical",
+      "label": "Film: Historical",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for historical films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 331,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_war",
+      "label": "Film: War",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for war films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 332,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_western",
+      "label": "Film: Western",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for western films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 333,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_superhero",
+      "label": "Film: Superhero",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for superhero films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 334,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_animation",
+      "label": "Film: Animation",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for animation films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 335,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_disaster",
+      "label": "Film: Disaster",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for disaster films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 336,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_literary_fiction",
+      "label": "Books: Literary fiction",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for literary fiction.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 337,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_science_fiction",
+      "label": "Books: Science fiction",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for science fiction.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 338,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_fantasy",
+      "label": "Books: Fantasy",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for fantasy.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 339,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_mystery",
+      "label": "Books: Mystery",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for mystery.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 340,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_thriller",
+      "label": "Books: Thriller",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for thriller.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 341,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_romance",
+      "label": "Books: Romance",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for romance.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 342,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_historical_fiction",
+      "label": "Books: Historical fiction",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for historical fiction.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 343,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_horror",
+      "label": "Books: Horror",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for horror.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 344,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_comedy_drama",
+      "label": "Film: Comedy-drama",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for comedy-drama films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 345,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_k_pop",
+      "label": "Music: K-pop",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for K-pop music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 346,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_documentary",
+      "label": "Film: Documentary",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for documentary films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 347,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_fantasy",
+      "label": "Film: Fantasy",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for fantasy films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 348,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_latin_afrobeats",
+      "label": "Music: Latin / Afrobeats",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Latin / Afrobeats music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 349,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_disco",
+      "label": "Music: Disco",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Disco music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 350,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_ambient",
+      "label": "Music: Ambient",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Ambient music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 351,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "music_lo_fi",
+      "label": "Music: Lo-fi",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for Lo-fi music.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 352,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_romance",
+      "label": "Film: Romance",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for romance films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 353,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_action",
+      "label": "Film: Action",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for action films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 354,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_adventure",
+      "label": "Film: Adventure",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for adventure films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 355,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_comedy",
+      "label": "Film: Comedy",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for comedy films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 356,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_drama",
+      "label": "Film: Drama",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for drama films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 357,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_horror",
+      "label": "Film: Horror",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for horror films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 358,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_thriller",
+      "label": "Film: Thriller",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for thriller films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 359,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_sci_fi",
+      "label": "Film: Sci-fi",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for sci-fi films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 360,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_biography",
+      "label": "Books: Biography",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for biography.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 361,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_memoir",
+      "label": "Books: Memoir",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for memoir.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 362,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_self_help",
+      "label": "Books: Self-help",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for self-help.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 363,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_business",
+      "label": "Books: Business",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for business.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 364,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_popular_science",
+      "label": "Books: Popular science",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for popular science.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 365,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_history",
+      "label": "Books: History",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for history.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 366,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_philosophy",
+      "label": "Books: Philosophy",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for philosophy.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 367,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_poetry",
+      "label": "Books: Poetry",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for poetry.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 368,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_young_adult",
+      "label": "Books: Young adult",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for young adult.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 369,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_graphic_novels",
+      "label": "Books: Graphic novels",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for graphic novels.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 370,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_true_crime",
+      "label": "Books: True crime",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for true crime.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 371,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_travel_writing",
+      "label": "Books: Travel writing",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for travel writing.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 372,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "books_cookbooks",
+      "label": "Books: Cookbooks",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for cookbooks.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 373,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "film_crime",
+      "label": "Film: Crime",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Media",
+      "description": "Taste for crime films.",
+      "values": [
+        "Love",
+        "Like",
+        "Neutral",
+        "Dislike"
+      ],
+      "index": 374,
+      "defaultValue": "Neutral"
+    },
+    {
+      "id": "sport_football",
+      "label": "Sport: Football",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to football.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 375,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_basketball",
+      "label": "Sport: Basketball",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to basketball.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 376,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_tennis",
+      "label": "Sport: Tennis",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to tennis.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 377,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_pilates",
+      "label": "Sport: Pilates",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to pilates.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 378,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_esports",
+      "label": "Sport: Esports",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to esports.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 379,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_yoga",
+      "label": "Sport: Yoga",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to yoga.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 380,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_martial_arts",
+      "label": "Sport: Martial arts",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to martial arts.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 381,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_golf",
+      "label": "Sport: Golf",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to golf.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 382,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_volleyball",
+      "label": "Sport: Volleyball",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to volleyball.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 383,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_swimming",
+      "label": "Sport: Swimming",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to swimming.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 384,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_running",
+      "label": "Sport: Running",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to running.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 385,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_cycling",
+      "label": "Sport: Cycling",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to cycling.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 386,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_boxing",
+      "label": "Sport: Boxing",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to boxing.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 387,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_mma",
+      "label": "Sport: MMA",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to mma.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 388,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_wrestling",
+      "label": "Sport: Wrestling",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to wrestling.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 389,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_climbing",
+      "label": "Sport: Climbing",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to climbing.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 390,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_gym_calisthenic",
+      "label": "Sport: Gym & Calisthenic",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to gymnastics.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 391,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_badminton",
+      "label": "Sport: Badminton",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to badminton.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 392,
+      "defaultValue": "None"
+    },
+    {
+      "id": "sport_table_tennis",
+      "label": "Sport: Table tennis",
+      "group": "Lifestyle and Health",
+      "subgroup": "Interests",
+      "category": "Sports",
+      "description": "Relationship to table tennis.",
+      "values": [
+        "Play",
+        "Follow",
+        "Casual",
+        "None"
+      ],
+      "index": 393,
+      "defaultValue": "None"
+    },
+    {
+      "id": "occupation_family",
+      "label": "Occupation family",
+      "group": "Background",
+      "subgroup": "Career",
+      "category": "Career Profile",
+      "description": "Broad current paid-job role, distinct from employer industry. Education floors are conservative model assumptions, not legal certification.",
+      "values": [
+        "No paid role",
+        "Agricultural worker",
+        "Production or skilled trades",
+        "Sales or personal services",
+        "Administrative support",
+        "General support",
+        "Business professional",
+        "Digital professional",
+        "Technical professional",
+        "Health technician",
+        "Physician",
+        "Teacher",
+        "Research professional"
+      ],
+      "index": 394,
+      "defaultValue": null
+    }
+  ]
+}
