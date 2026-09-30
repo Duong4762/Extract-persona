@@ -6,12 +6,31 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+# Ingest reads every one of these source batches (data/facebook/batchN) and
+# fans the users out across NUM_FRESH_BATCHES output batches so downstream
+# stages can process each output batch independently.
+SOURCE_BATCH_NUMBERS = (2, 3, 4, 5, 6, 7)
+NUM_FRESH_BATCHES = 13
+# Output batches are named batchN starting here, so they don't collide with
+# the already-processed facebook_persona_fresh/batch1 (built from data batch1).
+FRESH_BATCH_NAME_START = 2
+
+# Which output batch (1..NUM_FRESH_BATCHES) the prepare/compact/extract/stats
+# stages operate on; ingest always writes all of them in a single pass.
+FRESH_BATCH = int(os.environ.get("FRESH_BATCH", "1"))
+
 
 @dataclass(frozen=True)
 class Config:
-    content_dir: Path = PROJECT_ROOT / "data/facebook/batch1/content"
-    user_dir: Path = PROJECT_ROOT / "data/facebook/batch1/user"
-    work_dir: Path = PROJECT_ROOT / "facebook_persona_fresh/batch1"
+    fresh_batch: int = FRESH_BATCH
+    content_dirs: tuple[Path, ...] = tuple(
+        PROJECT_ROOT / f"data/facebook/batch{n}/content" for n in SOURCE_BATCH_NUMBERS
+    )
+    user_dirs: tuple[Path, ...] = tuple(
+        PROJECT_ROOT / f"data/facebook/batch{n}/user" for n in SOURCE_BATCH_NUMBERS
+    )
+    fresh_root: Path = PROJECT_ROOT / "facebook_persona_fresh"
+    work_dir: Path = PROJECT_ROOT / "facebook_persona_fresh" / f"batch{FRESH_BATCH + FRESH_BATCH_NAME_START - 1}"
     schema_path: Path = PROJECT_ROOT / "schema/dimension.json"
     max_rows_per_file: int = 0
     top_k: int = 50000
@@ -41,6 +60,10 @@ class Config:
         "OPENROUTER_MODEL", "google/gemma-4-31b-it:free"
     )
     llm_timeout_seconds: int = 300
+
+    def fresh_batch_dir(self, batch_number: int) -> Path:
+        """Work dir for output batch ``batch_number`` (1..NUM_FRESH_BATCHES)."""
+        return self.fresh_root / f"batch{batch_number + FRESH_BATCH_NAME_START - 1}"
 
     @property
     def post_shards_dir(self) -> Path:

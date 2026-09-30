@@ -17,7 +17,7 @@ from typing import Any, Iterator
 from tqdm.auto import tqdm
 from llm_client import LLMCancelledError, LLMSettings, LLMUnauthorizedError, complete_prompt
 from persona_coverage_chart import render_category_coverage_chart
-from .config import Config
+from .config import NUM_FRESH_BATCHES, Config
 from .content_selection import select_contents
 from .filters import is_advertising
 from .records import (
@@ -312,6 +312,10 @@ def shard_path(config: Config, shard_index: int) -> Path:
     return config.post_shards_dir / f"posts-{shard_index:04d}.jsonl"
 
 
+def shard_path_in(work_dir: Path, shard_index: int) -> Path:
+    return work_dir / "post_shards" / f"posts-{shard_index:04d}.jsonl"
+
+
 def user_shard(user_id: str, shard_count: int) -> int:
     digest = hashlib.sha1(user_id.encode("utf-8")).digest()
     return int.from_bytes(digest[:4], "big") % shard_count
@@ -373,16 +377,30 @@ def iter_compact_profiles(config: Config) -> Iterator[dict[str, Any]]:
 
 
 def ingest_posts(config: Config) -> None:
-    user_files = local_json_files(config.user_dir)
-    content_files = local_json_files(config.content_dir)
+    """Read every source batch and fan users out across NUM_FRESH_BATCHES output batches.
+
+    Each user is assigned to exactly one output batch (stable hash of user_id), so this
+    is a single streaming pass over the source data rather than one pass per output batch.
+    """
+    user_files = [path for source_dir in config.user_dirs for path in local_json_files(source_dir)]
+    content_files = [path for source_dir in config.content_dirs for path in local_json_files(source_dir)]
     if not user_files:
-        raise FileNotFoundError(f"No .jsonl/.json files found in {config.user_dir}")
+        raise FileNotFoundError(f"No .jsonl/.json files found in {list(config.user_dirs)}")
     if not content_files:
-        raise FileNotFoundError(f"No .jsonl/.json files found in {config.content_dir}")
-    config.post_shards_dir.mkdir(parents=True, exist_ok=True)
-    target_user_ids: set[str] = set()
+        raise FileNotFoundError(f"No .jsonl/.json files found in {list(config.content_dirs)}")
+
+    batch_numbers = range(1, NUM_FRESH_BATCHES + 1)
+    batch_dirs = {number: config.fresh_batch_dir(number) for number in batch_numbers}
+    for work_dir in batch_dirs.values():
+        (work_dir / "post_shards").mkdir(parents=True, exist_ok=True)
+
     excluded_profile_fields = {"phone", "number_follow", "number_friend", "averageReact", "hobby"}
-    with config.user_profiles_path.open("w", encoding="utf-8") as output:
+    target_user_batch: dict[str, int] = {}
+    profile_handles = {
+        number: (work_dir / "user_profiles.jsonl").open("w", encoding="utf-8")
+        for number, work_dir in batch_dirs.items()
+    }
+    try:
         for path in user_files:
             scanned = kept = 0
             for row in tqdm(iter_json_records(path), desc=f"users:{path.name}"):
@@ -390,15 +408,24 @@ def ingest_posts(config: Config) -> None:
                 if config.max_rows_per_file and scanned > config.max_rows_per_file:
                     break
                 user_id = compact_text(row.get("id"))
-                if not user_id or user_id in target_user_ids:
+                if not user_id or user_id in target_user_batch:
                     continue
-                target_user_ids.add(user_id)
+                batch_number = user_shard(user_id, NUM_FRESH_BATCHES) + 1
+                target_user_batch[user_id] = batch_number
                 profile = {key: value for key, value in row.items() if key not in excluded_profile_fields}
                 profile["id"] = user_id
-                output.write(json.dumps(profile, ensure_ascii=False) + "\n")
+                profile_handles[batch_number].write(json.dumps(profile, ensure_ascii=False) + "\n")
                 kept += 1
             print(f"{path.name}: profiles scanned={scanned:,}, kept={kept:,}")
-    handles = [shard_path(config, index).open("w", encoding="utf-8") for index in range(config.post_shards)]
+    finally:
+        for handle in profile_handles.values():
+            handle.close()
+
+    # Pass 1: stream all source content once, routing each row to its output batch's
+    # raw file. Only NUM_FRESH_BATCHES handles are open at a time (not
+    # NUM_FRESH_BATCHES * post_shards), so this stays well under OS file-handle limits.
+    raw_paths = {number: batch_dirs[number] / "post_shards" / "_raw.jsonl" for number in batch_numbers}
+    raw_handles = {number: path.open("w", encoding="utf-8") for number, path in raw_paths.items()}
     total_kept = 0
     try:
         for path in content_files:
@@ -409,7 +436,8 @@ def ingest_posts(config: Config) -> None:
                     break
                 user_id = compact_text(row.get("author_id"))
                 timestamp = parse_comment_date(row.get("published_time"))
-                if user_id not in target_user_ids or timestamp is None:
+                batch_number = target_user_batch.get(user_id)
+                if batch_number is None or timestamp is None:
                     continue
                 category = compact_text(row.get("article_type") or "facebook_content")
                 text = str(row.get("content") or "")
@@ -424,15 +452,37 @@ def ingest_posts(config: Config) -> None:
                     "comment_count": int(row.get("comment_count") or 0),
                     "reply_count": int(row.get("reply_count") or 0),
                 }
-                handle = handles[user_shard(user_id, config.post_shards)]
-                handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+                raw_handles[batch_number].write(json.dumps(record, ensure_ascii=False) + "\n")
                 kept += 1; total_kept += 1
             print(f"{path.name}: scanned={scanned:,}, kept={kept:,}")
     finally:
-        for handle in handles:
+        for handle in raw_handles.values():
             handle.close()
-    print(f"Target profiles={len(target_user_ids):,}; joined content={total_kept:,} "
-          f"in {config.post_shards} JSONL shards")
+
+    # Pass 2: reshard each output batch's raw file into config.post_shards JSONL
+    # shards, one batch at a time, then drop the raw file.
+    for number in tqdm(batch_numbers, desc="reshard output batches"):
+        raw_path = raw_paths[number]
+        shard_handles = [
+            shard_path_in(batch_dirs[number], index).open("w", encoding="utf-8")
+            for index in range(config.post_shards)
+        ]
+        try:
+            for record in iter_local_jsonl(raw_path):
+                shard_index = user_shard(record["user_id"], config.post_shards)
+                shard_handles[shard_index].write(json.dumps(record, ensure_ascii=False) + "\n")
+        finally:
+            for handle in shard_handles:
+                handle.close()
+        raw_path.unlink()
+
+    batch_user_counts: dict[int, int] = defaultdict(int)
+    for batch_number in target_user_batch.values():
+        batch_user_counts[batch_number] += 1
+    print(f"Target profiles={len(target_user_batch):,}; joined content={total_kept:,} "
+          f"across {NUM_FRESH_BATCHES} output batches ({config.post_shards} shards each)")
+    for number in batch_numbers:
+        print(f"  {batch_dirs[number].name}: users={batch_user_counts.get(number, 0):,}")
 
 
 def select_users(config: Config) -> None:
