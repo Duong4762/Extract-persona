@@ -49,7 +49,7 @@ class Config:
     max_post_text_chars: int = 230
     max_dims_per_chunk: int = 10
     max_llm_users: int = 500
-    llm_workers: int = 3
+    llm_workers: int = 2
     post_shards: int = 50
     llm_provider: str = os.environ.get("LLM_PROVIDER", "local")
     model: str = os.environ.get("LLM_MODEL", "Qwen3-14B")
