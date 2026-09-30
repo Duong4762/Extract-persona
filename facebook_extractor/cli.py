@@ -3,7 +3,7 @@
 import argparse
 from typing import Iterable
 
-from .config import NUM_FRESH_BATCHES, Config
+from .config import FRESH_BATCH_NAME_START, NUM_FRESH_BATCHES, Config
 from .pipeline import (
     compact_profiles,
     extract_personas,
@@ -42,8 +42,11 @@ def main(argv: Iterable[str] | None = None) -> None:
         return
     if args.user_id:
         raise SystemExit("user_id is only valid with the find stage")
-    if not 1 <= config.fresh_batch <= NUM_FRESH_BATCHES:
-        raise ValueError(f"FRESH_BATCH must be between 1 and {NUM_FRESH_BATCHES}")
+    fresh_batch_max = FRESH_BATCH_NAME_START + NUM_FRESH_BATCHES - 1
+    if not FRESH_BATCH_NAME_START <= config.fresh_batch <= fresh_batch_max:
+        raise ValueError(
+            f"FRESH_BATCH must be between {FRESH_BATCH_NAME_START} and {fresh_batch_max}"
+        )
     if config.post_shards < 1:
         raise ValueError("post-shards must be at least 1")
     if config.min_history_days < 0:
@@ -67,7 +70,8 @@ def main(argv: Iterable[str] | None = None) -> None:
         print(
             f"Ingest reads {tuple(d.parent.name for d in config.content_dirs)} and writes "
             f"all {NUM_FRESH_BATCHES} output batches "
-            f"({config.fresh_batch_dir(1).name}..{config.fresh_batch_dir(NUM_FRESH_BATCHES).name}); "
+            f"({config.fresh_batch_dir(FRESH_BATCH_NAME_START).name}.."
+            f"{config.fresh_batch_dir(FRESH_BATCH_NAME_START + NUM_FRESH_BATCHES - 1).name}); "
             "FRESH_BATCH only selects which one prepare/compact/extract/stats use below."
         )
         ingest_posts(config)

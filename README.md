@@ -77,3 +77,10 @@ python -m facebook_extractor compact
 python -m facebook_extractor extract
 python -m facebook_extractor stats
 ```
+
+# Sau đó xử lý từng batch output (2..14) bằng FRESH_BATCH
+$env:FRESH_BATCH = "1"   # -> facebook_persona_fresh/batch1
+python -m facebook_extractor prepare
+python -m facebook_extractor compact
+python -m facebook_extractor extract
+python -m facebook_extractor stats

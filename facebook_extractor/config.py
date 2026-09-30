@@ -15,9 +15,11 @@ NUM_FRESH_BATCHES = 13
 # the already-processed facebook_persona_fresh/batch1 (built from data batch1).
 FRESH_BATCH_NAME_START = 2
 
-# Which output batch (1..NUM_FRESH_BATCHES) the prepare/compact/extract/stats
-# stages operate on; ingest always writes all of them in a single pass.
-FRESH_BATCH = int(os.environ.get("FRESH_BATCH", "1"))
+# Which output batch (FRESH_BATCH_NAME_START..FRESH_BATCH_NAME_START+NUM_FRESH_BATCHES-1,
+# i.e. 2..14) the prepare/compact/extract/stats stages operate on; the number is the
+# literal folder suffix (FRESH_BATCH=2 -> facebook_persona_fresh/batch2). Ingest always
+# writes all of them in a single pass.
+FRESH_BATCH = int(os.environ.get("FRESH_BATCH", str(FRESH_BATCH_NAME_START)))
 
 
 @dataclass(frozen=True)
@@ -30,7 +32,7 @@ class Config:
         PROJECT_ROOT / f"data/facebook/batch{n}/user" for n in SOURCE_BATCH_NUMBERS
     )
     fresh_root: Path = PROJECT_ROOT / "facebook_persona_fresh"
-    work_dir: Path = PROJECT_ROOT / "facebook_persona_fresh" / f"batch{FRESH_BATCH + FRESH_BATCH_NAME_START - 1}"
+    work_dir: Path = PROJECT_ROOT / "facebook_persona_fresh" / f"batch{FRESH_BATCH}"
     schema_path: Path = PROJECT_ROOT / "schema/dimension.json"
     max_rows_per_file: int = 0
     top_k: int = 50000
@@ -62,8 +64,8 @@ class Config:
     llm_timeout_seconds: int = 300
 
     def fresh_batch_dir(self, batch_number: int) -> Path:
-        """Work dir for output batch ``batch_number`` (1..NUM_FRESH_BATCHES)."""
-        return self.fresh_root / f"batch{batch_number + FRESH_BATCH_NAME_START - 1}"
+        """Work dir for output batch ``batch_number`` (the literal folder suffix, e.g. 2..14)."""
+        return self.fresh_root / f"batch{batch_number}"
 
     @property
     def post_shards_dir(self) -> Path:

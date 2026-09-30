@@ -17,7 +17,7 @@ from typing import Any, Iterator
 from tqdm.auto import tqdm
 from llm_client import LLMCancelledError, LLMSettings, LLMUnauthorizedError, complete_prompt
 from persona_coverage_chart import render_category_coverage_chart
-from .config import NUM_FRESH_BATCHES, Config
+from .config import FRESH_BATCH_NAME_START, NUM_FRESH_BATCHES, Config
 from .content_selection import select_contents
 from .filters import is_advertising
 from .records import (
@@ -389,7 +389,7 @@ def ingest_posts(config: Config) -> None:
     if not content_files:
         raise FileNotFoundError(f"No .jsonl/.json files found in {list(config.content_dirs)}")
 
-    batch_numbers = range(1, NUM_FRESH_BATCHES + 1)
+    batch_numbers = range(FRESH_BATCH_NAME_START, FRESH_BATCH_NAME_START + NUM_FRESH_BATCHES)
     batch_dirs = {number: config.fresh_batch_dir(number) for number in batch_numbers}
     for work_dir in batch_dirs.values():
         (work_dir / "post_shards").mkdir(parents=True, exist_ok=True)
@@ -410,7 +410,7 @@ def ingest_posts(config: Config) -> None:
                 user_id = compact_text(row.get("id"))
                 if not user_id or user_id in target_user_batch:
                     continue
-                batch_number = user_shard(user_id, NUM_FRESH_BATCHES) + 1
+                batch_number = user_shard(user_id, NUM_FRESH_BATCHES) + FRESH_BATCH_NAME_START
                 target_user_batch[user_id] = batch_number
                 profile = {key: value for key, value in row.items() if key not in excluded_profile_fields}
                 profile["id"] = user_id
