@@ -33,7 +33,7 @@ class Config:
     )
     fresh_root: Path = PROJECT_ROOT / "facebook_persona_fresh"
     work_dir: Path = PROJECT_ROOT / "facebook_persona_fresh" / f"batch{FRESH_BATCH}"
-    schema_path: Path = PROJECT_ROOT / "schema/dimension.json"
+    schema_path: Path = PROJECT_ROOT / "schema/dimensions.json"
     max_rows_per_file: int = 0
     top_k: int = 50000
     min_posts: int = 50
@@ -46,10 +46,10 @@ class Config:
     max_character_score_at: float = 40_000
     max_history_score_at: float = 365
     max_profile_chars: int = 35_000
-    max_post_text_chars: int = 2_000
+    max_post_text_chars: int = 350
     max_dims_per_chunk: int = 10
     max_llm_users: int = 500
-    llm_workers: int = 2
+    llm_workers: int = 3
     post_shards: int = 50
     llm_provider: str = os.environ.get("LLM_PROVIDER", "local")
     model: str = os.environ.get("LLM_MODEL", "Qwen3-14B")

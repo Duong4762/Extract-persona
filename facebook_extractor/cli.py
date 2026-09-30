@@ -43,9 +43,9 @@ def main(argv: Iterable[str] | None = None) -> None:
     if args.user_id:
         raise SystemExit("user_id is only valid with the find stage")
     fresh_batch_max = FRESH_BATCH_NAME_START + NUM_FRESH_BATCHES - 1
-    if not FRESH_BATCH_NAME_START <= config.fresh_batch <= fresh_batch_max:
+    if not 1 <= config.fresh_batch <= fresh_batch_max:
         raise ValueError(
-            f"FRESH_BATCH must be between {FRESH_BATCH_NAME_START} and {fresh_batch_max}"
+            f"FRESH_BATCH must be between 1 and {fresh_batch_max}"
         )
     if config.post_shards < 1:
         raise ValueError("post-shards must be at least 1")
