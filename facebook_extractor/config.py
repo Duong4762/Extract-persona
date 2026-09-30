@@ -45,8 +45,8 @@ class Config:
     max_content_score_at: float = 150
     max_character_score_at: float = 40_000
     max_history_score_at: float = 365
-    max_profile_chars: int = 35_000
-    max_post_text_chars: int = 350
+    max_profile_chars: int = 30_000
+    max_post_text_chars: int = 300
     max_dims_per_chunk: int = 10
     max_llm_users: int = 500
     llm_workers: int = 3
