@@ -49,7 +49,7 @@ class Config:
     max_post_text_chars: int = 2_000
     max_dims_per_chunk: int = 10
     max_llm_users: int = 500
-    llm_workers: int = 3
+    llm_workers: int = 2
     post_shards: int = 50
     llm_provider: str = os.environ.get("LLM_PROVIDER", "local")
     model: str = os.environ.get("LLM_MODEL", "Qwen3-14B")
@@ -61,7 +61,7 @@ class Config:
     openrouter_model: str = os.environ.get(
         "OPENROUTER_MODEL", "google/gemma-4-31b-it:free"
     )
-    llm_timeout_seconds: int = 300
+    llm_timeout_seconds: int = 1800
 
     def fresh_batch_dir(self, batch_number: int) -> Path:
         """Work dir for output batch ``batch_number`` (the literal folder suffix, e.g. 2..14)."""
