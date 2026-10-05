@@ -33,7 +33,13 @@ class Config:
     )
     fresh_root: Path = PROJECT_ROOT / "facebook_persona_fresh"
     work_dir: Path = PROJECT_ROOT / "facebook_persona_fresh" / f"batch{FRESH_BATCH}"
-    schema_path: Path = PROJECT_ROOT / "schema/dimensions.json"
+    schema_path: Path = PROJECT_ROOT / "schema/dimensions_final.json"
+    # Prior schema revisions personas may have been extracted under; the ``migrate``
+    # stage uses these to carry forward unchanged dimensions onto ``schema_path``.
+    legacy_schema_paths: tuple[Path, ...] = (
+        PROJECT_ROOT / "schema/dimensions.json",
+        PROJECT_ROOT / "schema/dimension.json",
+    )
     max_rows_per_file: int = 0
     top_k: int = 50000
     min_posts: int = 50
@@ -45,11 +51,13 @@ class Config:
     max_content_score_at: float = 150
     max_character_score_at: float = 40_000
     max_history_score_at: float = 365
-    max_profile_chars: int = 24_000
-    max_post_text_chars: int = 230
+    max_profile_chars: int = 20_000
     max_dims_per_chunk: int = 10
     max_llm_users: int = 500
-    llm_workers: int = 2
+    llm_workers: int = 10
+    preprocess_workers: int = int(
+        os.environ.get("PREPROCESS_WORKERS", str(os.cpu_count()-2 or 4))
+    )
     post_shards: int = 50
     llm_provider: str = os.environ.get("LLM_PROVIDER", "local")
     model: str = os.environ.get("LLM_MODEL", "Qwen3-14B")
@@ -62,6 +70,15 @@ class Config:
         "OPENROUTER_MODEL", "google/gemma-4-31b-it:free"
     )
     llm_timeout_seconds: int = 1800
+    llm_bench_concurrency_levels: tuple[int, ...] = tuple(
+        int(level) for level in os.environ.get(
+            "LLM_BENCH_LEVELS", "1,2,4,8,12,16,24,32,64,128"
+        ).split(",") if level.strip()
+    )
+    llm_bench_requests_per_worker: int = int(
+        os.environ.get("LLM_BENCH_REQUESTS_PER_WORKER", "2")
+    )
+    llm_bench_prompt_index: int = int(os.environ.get("LLM_BENCH_PROMPT_INDEX", "14"))
 
     def fresh_batch_dir(self, batch_number: int) -> Path:
         """Work dir for output batch ``batch_number`` (the literal folder suffix, e.g. 2..14)."""
@@ -92,6 +109,10 @@ class Config:
         return self.work_dir / "personas_1290.jsonl"
 
     @property
+    def migrated_personas_path(self) -> Path:
+        return self.work_dir / "personas_migrated.jsonl"
+
+    @property
     def persona_stats_path(self) -> Path:
         return self.work_dir / "persona_stats.json"
 
@@ -102,3 +123,7 @@ class Config:
     @property
     def prompt_log_dir(self) -> Path:
         return self.work_dir / "prompt_log"
+
+    @property
+    def llm_bench_path(self) -> Path:
+        return self.work_dir / "llm_bench.json"

@@ -5,7 +5,19 @@ from typing import Any
 
 from .filters import normalize_text
 
-FIRST_PERSON_MARKERS = (
+_TOI_WORD_PATTERN = re.compile(r"(?<!\w)toi(?!\w)")
+
+
+def _with_t_abbreviation(markers: tuple[str, ...]) -> tuple[str, ...]:
+    """Add a "t" abbreviation variant for every marker containing the "toi" pronoun."""
+    expanded = list(markers)
+    for marker in markers:
+        if _TOI_WORD_PATTERN.search(marker):
+            expanded.append(_TOI_WORD_PATTERN.sub("t", marker))
+    return tuple(dict.fromkeys(expanded))
+
+
+FIRST_PERSON_MARKERS = _with_t_abbreviation((
     "toi", "minh", "tui", "tao", "t", "chung toi", "chung minh", "bon toi",
     "cua toi", "cua minh", "theo toi", "voi toi", "doi voi toi",
     "toi dung", "toi da dung", "minh dung", "minh da dung",
@@ -27,9 +39,9 @@ FIRST_PERSON_MARKERS = (
     "van phong toi", "van phong minh", "hoc sinh cua toi", "hoc sinh cua minh",
     "cho cua toi", "cho nha minh", "meo cua toi", "meo nha minh",
     "thu cung cua toi", "thu cung nha minh",
-)
+))
 
-PREFERENCE_VALUE_MARKERS = (
+PREFERENCE_VALUE_MARKERS = _with_t_abbreviation((
     "toi thich", "minh thich", "toi rat thich", "minh rat thich", "toi yeu",
     "minh yeu", "toi ua", "minh ua", "toi khong thich", "minh khong thich",
     "toi ghet", "minh ghet", "toi muon", "minh muon", "toi can", "minh can",
@@ -45,11 +57,53 @@ PREFERENCE_VALUE_MARKERS = (
     "tiet kiem khong gian", "nho gon", "di dong", "nhe", "chiu luc",
     "than thien moi truong", "khong doc hai", "huu co", "tu nhien",
     "khong huong lieu", "co mui", "khong mui",
-)
+))
+
+HOBBY_INTEREST_MARKERS = _with_t_abbreviation((
+    "so thich cua toi", "so thich cua minh", "dam me cua toi", "dam me cua minh",
+    "toi dam me", "minh dam me", "thu vui cua toi", "thu vui cua minh",
+    "toi hay choi", "minh hay choi", "toi choi", "minh choi", "toi tap",
+    "minh tap", "toi luyen tap", "minh luyen tap", "toi hay xem", "minh hay xem",
+    "toi hay nghe", "minh hay nghe", "toi hay doc", "minh hay doc",
+    "toi suu tam", "minh suu tam", "thoi quen cua toi", "thoi quen cua minh",
+    "toi danh thoi gian", "minh danh thoi gian", "toi thuong xuyen",
+    "minh thuong xuyen", "so truong cua toi", "so truong cua minh",
+    "toi gioi ve", "minh gioi ve", "toi la fan cua", "minh la fan cua",
+    "toi hay di", "minh hay di", "cuoi tuan toi", "cuoi tuan minh",
+    "thoi gian ranh toi", "thoi gian ranh minh",
+))
+
+WORK_OCCUPATION_MARKERS = _with_t_abbreviation((
+    "cong viec cua toi", "cong viec cua minh", "toi lam viec", "minh lam viec",
+    "toi lam nghe", "minh lam nghe", "nghe cua toi", "nghe cua minh",
+    "toi lam o", "minh lam o", "toi dang lam", "minh dang lam",
+    "cong ty toi", "cong ty minh", "sep toi", "sep minh",
+    "dong nghiep toi", "dong nghiep minh", "toi phu trach", "minh phu trach",
+    "toi quan ly", "minh quan ly", "chuc vu cua toi", "chuc vu cua minh",
+    "toi kinh doanh", "minh kinh doanh", "toi khoi nghiep", "minh khoi nghiep",
+    "du an cua toi", "du an cua minh", "khach hang cua toi", "khach hang cua minh",
+    "toi lam chu", "minh lam chu", "nganh cua toi", "nganh cua minh",
+    "toi lam tai", "minh lam tai", "deadline cua toi", "deadline cua minh",
+))
+
+OPINION_VIEWPOINT_MARKERS = _with_t_abbreviation((
+    "theo quan diem cua toi", "theo quan diem cua minh", "quan diem cua toi",
+    "quan diem cua minh", "toi cho rang", "minh cho rang", "toi tin rang",
+    "minh tin rang", "toi nghi rang", "minh nghi rang", "ca nhan toi",
+    "ca nhan minh", "toi ung ho", "minh ung ho", "toi phan doi", "minh phan doi",
+    "toi khong dong y", "minh khong dong y", "toi dong y", "minh dong y",
+    "toi tin tuong", "minh tin tuong", "quan diem ca nhan", "goc nhin cua toi",
+    "goc nhin cua minh", "theo nhan dinh cua toi", "theo nhan dinh cua minh",
+    "toi danh gia", "minh danh gia", "toi nhan dinh", "minh nhan dinh",
+    "theo kinh nghiem cua toi", "theo kinh nghiem cua minh",
+))
 
 MARKER_GROUPS = (
     (FIRST_PERSON_MARKERS, 1.8),
     (PREFERENCE_VALUE_MARKERS, 1.6),
+    (HOBBY_INTEREST_MARKERS, 1.7),
+    (WORK_OCCUPATION_MARKERS, 1.7),
+    (OPINION_VIEWPOINT_MARKERS, 1.7),
 )
 
 

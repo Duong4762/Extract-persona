@@ -1,0 +1,3556 @@
+{
+  "schemaVersion": "1.0.0",
+  "name": "Vietnamese Social Persona Dimension Space",
+  "targetDimensions": 194,
+  "dimensions": [
+    {
+      "id": "age_bracket",
+      "dimension": "Age bracket",
+      "label": "Nhóm tuổi",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Nhóm tuổi",
+      "values": [
+        "Dưới 5 tuổi",
+        "5-12 tuổi",
+        "13-17 tuổi",
+        "18-24 tuổi",
+        "25-34 tuổi",
+        "35-44 tuổi",
+        "45-54 tuổi",
+        "55-64 tuổi",
+        "65-74 tuổi",
+        "75-84 tuổi",
+        "Từ 85 tuổi trở lên"
+      ],
+      "index": 1,
+      "defaultValue": null
+    },
+    {
+      "id": "generational_cohort",
+      "dimension": "Generational cohort",
+      "label": "Thế hệ",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Nhóm thế hệ dựa trên thời kỳ họ sinh ra, thường được dùng để mô tả những trải nghiệm xã hội và công nghệ chung.",
+      "values": [
+        "Gen Alpha",
+        "Gen Z",
+        "Gen Y",
+        "Gen X",
+        "Boomer",
+        "Silent"
+      ],
+      "index": 2,
+      "defaultValue": null
+    },
+    {
+      "id": "gender_identity",
+      "dimension": "Gender identity",
+      "label": "Bản dạng giới",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Bản dạng giới",
+      "values": [
+        "Nam",
+        "Nữ",
+        "Phi nhị nguyên giới",
+        "Không tiết lộ"
+      ],
+      "index": 3,
+      "defaultValue": null
+    },
+    {
+      "id": "region",
+      "dimension": "Region",
+      "label": "Vùng miền",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Vùng miền",
+      "values": [
+        "Miền Bắc",
+        "Miền Trung",
+        "Miền Nam"
+      ],
+      "index": 4,
+      "defaultValue": null
+    },
+    {
+      "id": "province",
+      "dimension": "Province",
+      "label": "Tỉnh / Thành phố",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Tỉnh / Thành phố",
+      "values": [
+        "An Giang",
+        "Bắc Ninh",
+        "Cà Mau",
+        "Cần Thơ",
+        "Cao Bằng",
+        "Đà Nẵng",
+        "Đắk Lắk",
+        "Điện Biên",
+        "Đồng Nai",
+        "Đồng Tháp",
+        "Gia Lai",
+        "Hà Nội",
+        "Hà Tĩnh",
+        "Hải Phòng",
+        "Huế",
+        "Hưng Yên",
+        "Khánh Hòa",
+        "Lai Châu",
+        "Lâm Đồng",
+        "Lạng Sơn",
+        "Lào Cai",
+        "Nghệ An",
+        "Ninh Bình",
+        "Phú Thọ",
+        "Quảng Ngãi",
+        "Quảng Ninh",
+        "Quảng Trị",
+        "Sơn La",
+        "Tây Ninh",
+        "Thái Nguyên",
+        "Thanh Hóa",
+        "Thành phố Hồ Chí Minh",
+        "Tuyên Quang",
+        "Vĩnh Long"
+      ],
+      "index": 5,
+      "defaultValue": null
+    },
+    {
+      "id": "urbanicity",
+      "dimension": "Urbanicity",
+      "label": "Môi trường sinh sống",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Mức độ đô thị hóa của khu vực đang sinh sống.",
+      "values": [
+        "Thành thị",
+        "Nông thôn"
+      ],
+      "index": 6,
+      "defaultValue": null
+    },
+    {
+      "id": "marital_status",
+      "dimension": "Marital status",
+      "label": "Tình trạng hôn nhân / tình cảm",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Tình trạng quan hệ tình cảm hoặc hôn nhân hiện tại",
+      "values": [
+        "Độc thân",
+        "Đang hẹn hò",
+        "Đã đính hôn",
+        "Đã kết hôn",
+        "Ly thân / Đã ly hôn",
+        "Góa"
+      ],
+      "index": 7,
+      "defaultValue": null
+    },
+    {
+      "id": "children",
+      "dimension": "Children",
+      "label": "Số con",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Số con",
+      "values": [
+        "Chưa có con",
+        "1 con",
+        "2 con",
+        "Từ 3 con trở lên"
+      ],
+      "index": 8,
+      "defaultValue": "Chưa có con"
+    },
+    {
+      "id": "household_size",
+      "dimension": "Household size",
+      "label": "Quy mô hộ gia đình",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Số người đang sống trong một hộ gia đình.",
+      "values": [
+        "Sống một mình",
+        "2 người",
+        "3-4 người",
+        "Từ 5 người trở lên"
+      ],
+      "index": 9,
+      "defaultValue": null
+    },
+    {
+      "id": "socioeconomic_band",
+      "dimension": "Socioeconomic band",
+      "label": "Mức sống kinh tế",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Điều kiện kinh tế và mức sống tổng thể.",
+      "values": [
+        "Thấp",
+        "Trung bình thấp",
+        "Trung bình",
+        "Trung bình cao",
+        "Cao"
+      ],
+      "index": 10,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "income_band",
+      "dimension": "Income band",
+      "label": "Thu nhập hàng tháng",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Thu nhập hàng tháng",
+      "values": [
+        "Dưới 5 triệu",
+        "5-10 triệu",
+        "10-20 triệu",
+        "20-40 triệu",
+        "40-80 triệu",
+        "Trên 80 triệu"
+      ],
+      "index": 11,
+      "defaultValue": null
+    },
+    {
+      "id": "religious_affiliation",
+      "dimension": "Religious affiliation",
+      "label": "Tín ngưỡng tôn giáo",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Tín ngưỡng tôn giáo",
+      "values": [
+        "Phật giáo",
+        "Kitô giáo / Cơ Đốc giáo",
+        "Hồi giáo",
+        "Do Thái giáo",
+        "Ấn Độ giáo",
+        "Không có"
+      ],
+      "index": 12,
+      "defaultValue": "Không có"
+    },
+    {
+      "id": "faith_practice_level",
+      "dimension": "Faith practice level",
+      "label": "Mức độ tín ngưỡng",
+      "group": "Background",
+      "subgroup": "Demographics",
+      "category": "Demographics",
+      "description": "Mức độ tín ngưỡng",
+      "values": [
+        "Sùng đạo",
+        "Thỉnh thoảng đi lễ",
+        "Thiên về tâm linh",
+        "Thực tế, duy vật"
+      ],
+      "index": 13,
+      "defaultValue": "Thỉnh thoảng đi lễ"
+    },
+    {
+      "id": "highest_education",
+      "dimension": "Highest education",
+      "label": "Trình độ học vấn cao nhất",
+      "group": "Background",
+      "subgroup": "Career & Education",
+      "category": "Academic Background",
+      "description": "Trình độ học vấn cao nhất",
+      "values": [
+        "Không có",
+        "Tiểu học",
+        "Trung học cơ sở",
+        "Trung học phổ thông",
+        "Trung cấp nghề / Chứng chỉ nghề",
+        "Cao đẳng / Chương trình sau THPT ngắn hạn",
+        "Đại học / Cử nhân",
+        "Thạc sĩ",
+        "Tiến sĩ"
+      ],
+      "index": 14,
+      "defaultValue": "Không có"
+    },
+    {
+      "id": "employment_status",
+      "dimension": "Employment status",
+      "label": "Tình trạng việc làm",
+      "group": "Background",
+      "subgroup": "Career & Education",
+      "category": "Employment & Occupation",
+      "description": "Hình thức làm việc hoặc trạng thái nghề nghiệp hiện tại",
+      "values": [
+        "Làm toàn thời gian",
+        "Làm bán thời gian",
+        "Chủ doanh nghiệp",
+        "Kinh doanh tự do",
+        "Freelance",
+        "Học sinh / Sinh viên",
+        "Đang tìm việc",
+        "Đã nghỉ hưu",
+        "Nội trợ"
+      ],
+      "index": 15,
+      "defaultValue": null
+    },
+    {
+      "id": "primary_industry",
+      "dimension": "Primary industry",
+      "label": "Ngành nghề chính",
+      "group": "Background",
+      "subgroup": "Career & Education",
+      "category": "Employment & Occupation",
+      "description": "Lĩnh vực của công việc chính hiện tại. Phân loại theo nhóm ngành kinh tế.",
+      "values": [
+        "Nông nghiệp",
+        "Lâm nghiệp",
+        "Nuôi trồng thuỷ sản",
+        "Sản xuất, chế biến thực phẩm",
+        "Sản xuất đồ uống",
+        "Sản xuất trang phục",
+        "In ấn, quảng cáo",
+        "Sản xuất dược phẩm",
+        "Chế tác kim hoàn và mỹ nghệ kim loại",
+        "Sản xuất thiết bị điện tử",
+        "Sản xuất máy móc",
+        "Sản xuất ô tô, xe máy",
+        "Sản xuất nội thất",
+        "Sửa chữa máy móc và thiết bị",
+        "Xây dựng",
+        "Bán, sửa chữa ô tô, xe máy",
+        "Đại lý bán hàng hóa",
+        "Vận tải đường sắt",
+        "Vận tải đường bộ",
+        "Vận tải đường thủy",
+        "Vận tải hàng không",
+        "Kho vận",
+        "Dịch vụ chuyển phát",
+        "Dịch vụ lưu trú",
+        "Dịch vụ ăn uống",
+        "Phát thanh, truyền hình",
+        "Viễn thông",
+        "Công nghệ thông tin",
+        "Ngân hàng",
+        "Bảo hiểm",
+        "Bất động sản",
+        "Kế toán",
+        "Kiểm toán",
+        "Luật",
+        "Thiết kế kiến trúc",
+        "Marketing",
+        "Thú y",
+        "Dịch vụ lao động và việc làm",
+        "Du lịch",
+        "Bảo vệ",
+        "Giáo dục mầm non",
+        "Giáo dục tiểu học",
+        "Giáo dục trung học cơ sở",
+        "Giáo dục trung học phổ thông",
+        "Đào tạo trung cấp",
+        "Đào tạo cao đẳng",
+        "Đào tạo đại học",
+        "Y tế",
+        "Điều dưỡng",
+        "Sáng tác, nghệ thuật và giải trí",
+        "Thể thao",
+        "Giúp việc",
+        "Không có"
+      ],
+      "index": 16,
+      "defaultValue": "Không có"
+    },
+    {
+      "id": "secondary_industry",
+      "dimension": "Secondary industry",
+      "label": "Ngành nghề phụ",
+      "group": "Background",
+      "subgroup": "Career & Education",
+      "category": "Employment & Occupation",
+      "description": "Lĩnh vực của công việc phụ hiện tại. Phân loại theo nhóm ngành kinh tế.",
+      "values": [
+        "Sản xuất, chế biến thực phẩm",
+        "Sửa chữa máy móc và thiết bị",
+        "Đại lý bán hàng hóa",
+        "Bảo hiểm",
+        "Bất động sản",
+        "Marketing",
+        "Dịch vụ lao động và việc làm",
+        "Không có"
+      ],
+      "index": 17,
+      "defaultValue": "Không có"
+    },
+    {
+      "id": "career_role",
+      "dimension": "Career role",
+      "label": "Nhóm nghề nghiệp",
+      "group": "Background",
+      "subgroup": "Career & Education",
+      "category": "Employment & Occupation",
+      "description": "Nhóm vai trò công việc hiện tại.",
+      "values": [
+        "Khác",
+        "Lao động phổ thông",
+        "Công nhân sản xuất",
+        "Thợ kỹ thuật",
+        "Thợ thủ công",
+        "Thợ thi công công trình",
+        "Tài xế",
+        "Shipper",
+        "Nhân viên vận tải",
+        "Nhân viên kho vận",
+        "Nhân viên bán hàng",
+        "CSKH",
+        "Sales",
+        "Nhân viên văn phòng",
+        "Đầu bếp",
+        "Nhân viên khách sạn",
+        "Nhân viên nhà hàng",
+        "Hướng dẫn viên",
+        "Nhà sáng tạo nội dung",
+        "Thiết kế đồ họa",
+        "Kiến trúc sư",
+        "Lập trình viên",
+        "Kĩ sư CNTT",
+        "Bảo vệ",
+        "Giúp việc",
+        "Kế toán",
+        "Kiểm toán",
+        "Luật sư",
+        "Bác sĩ",
+        "Dược sĩ",
+        "Điều dưỡng",
+        "Bác sĩ thú y",
+        "Giáo viên / Giảng viên",
+        "Vận động viên",
+        "Nghệ sĩ"
+      ],
+      "index": 18,
+      "defaultValue": null
+    },
+    {
+      "id": "years_experience",
+      "dimension": "Years experience",
+      "label": "Số năm kinh nghiệm",
+      "group": "Background",
+      "subgroup": "Career & Education",
+      "category": "Employment & Occupation",
+      "description": "Số năm đã làm việc tích lũy trong lĩnh vực chuyên môn.",
+      "values": [
+        "0-2 năm",
+        "3-5 năm",
+        "6-10 năm",
+        "11-20 năm",
+        "Trên 20 năm"
+      ],
+      "index": 19,
+      "defaultValue": null
+    },
+    {
+      "id": "work_arrangement",
+      "dimension": "Work Arrangement",
+      "label": "Hình thức làm việc",
+      "group": "Background",
+      "subgroup": "Career & Education",
+      "category": "Employment & Occupation",
+      "description": "Hình thức làm việc hiện tại",
+      "values": [
+        "On-site",
+        "Hybrid",
+        "Remote",
+        "Tự do thời gian",
+        "Lưu động"
+      ],
+      "index": 20,
+      "defaultValue": null
+    },
+    {
+      "id": "travel_breadth",
+      "dimension": "Travel breadth",
+      "label": "Trải nghiệm đi xa",
+      "group": "Background",
+      "subgroup": "Life Experience",
+      "category": "Personal Journey",
+      "description": "Phạm vi những nơi từng đi, sinh sống hoặc làm việc. Phản ánh mức độ tiếp xúc với các vùng miền và nền văn hóa khác nhau.",
+      "values": [
+        "Chủ yếu quanh nơi sinh sống",
+        "Đã đi nhiều nơi trong nước",
+        "Đã đi một số nước / khu vực lân cận",
+        "Đi nhiều quốc gia",
+        "Đã sống / làm việc ở nước ngoài"
+      ],
+      "index": 21,
+      "defaultValue": "Chủ yếu quanh nơi sinh sống"
+    },
+    {
+      "id": "adversity_faced",
+      "dimension": "Adversity faced",
+      "label": "Trải nghiệm vượt khó",
+      "group": "Background",
+      "subgroup": "Life Experience",
+      "category": "Personal Journey",
+      "description": "Mức độ khó khăn hoặc biến cố lớn từng đối mặt trong cuộc sống. Các mức từ ít trải nghiệm khó khăn đến khó khăn nghiêm trọng hoặc vẫn đang tiếp diễn.",
+      "values": [
+        "Cuộc sống khá thuận lợi",
+        "Từng gặp một số khó khăn nhỏ",
+        "Từng trải qua khó khăn đáng kể",
+        "Đã vượt qua biến cố lớn",
+        "Đang đối mặt với khó khăn lớn"
+      ],
+      "index": 22,
+      "defaultValue": null
+    },
+    {
+      "id": "relationship_experience",
+      "dimension": "Relationship experience",
+      "label": "Kinh nghiệm tình cảm",
+      "group": "Background",
+      "subgroup": "Life Experience",
+      "category": "Personal Journey",
+      "description": "Kinh nghiệm tình cảm",
+      "values": [
+        "Chưa từng có mối quan hệ sâu sắc",
+        "Đã trải qua một vài mối quan hệ",
+        "Đã có mối quan hệ lâu dài",
+        "Nhiều thăng trầm trong tình cảm"
+      ],
+      "index": 23,
+      "defaultValue": null
+    },
+    {
+      "id": "public_recognition",
+      "dimension": "Public recognition",
+      "label": "Mức độ được công chúng biết đến",
+      "group": "Background",
+      "subgroup": "Life Experience",
+      "category": "Personal Journey",
+      "description": "Mức độ được công chúng biết đến",
+      "values": [
+        "Được biết đến trong cộng đồng địa phương",
+        "Được biết đến trong ngành",
+        "Nổi tiếng rộng rãi"
+      ],
+      "index": 24,
+      "defaultValue": null
+    },
+    {
+      "id": "tie_to_hometown",
+      "dimension": "Tie to hometown",
+      "label": "Mức độ gắn bó với quê hương",
+      "group": "Background",
+      "subgroup": "Life Experience",
+      "category": "Personal Journey",
+      "description": "Mức độ gắn bó với quê hương",
+      "values": [
+        "Vẫn sống tại quê",
+        "Thường xuyên về quê",
+        "Thỉnh thoảng về quê",
+        "Hiếm khi về quê",
+        "Hầu như không còn gắn kết"
+      ],
+      "index": 25,
+      "defaultValue": "Thỉnh thoảng về quê"
+    },
+    {
+      "id": "dominant_personality_trait",
+      "dimension": "Dominant personality trait",
+      "label": "Nét tính cách nổi bật",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Đặc điểm nổi bật nhất theo nhóm tính cách Big Five",
+      "values": [
+        "Cởi mở khám phá",
+        "Tận tâm chu đáo",
+        "Hướng ngoại năng động",
+        "Hòa đồng dễ mến",
+        "Nhạy cảm cảm xúc",
+        "Cân bằng hài hòa"
+      ],
+      "index": 26,
+      "defaultValue": "Cân bằng hài hòa"
+    },
+    {
+      "id": "social_orientation",
+      "dimension": "Social orientation",
+      "label": "Xu hướng xã hội",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Mức độ hướng nội hay hướng ngoại trong giao tiếp.",
+      "values": [
+        "Thiên về hướng nội",
+        "Cân bằng",
+        "Thiên về hướng ngoại"
+      ],
+      "index": 27,
+      "defaultValue": "Cân bằng"
+    },
+    {
+      "id": "social_intelligence",
+      "dimension": "Social intelligence",
+      "label": "Trí tuệ xã hội & Ứng xử",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Khả năng thấu hiểu cảm xúc và ứng xử khéo léo trong các mối quan hệ.",
+      "values": [
+        "Rất khéo léo và nhạy bén",
+        "Giao tiếp tốt và đồng cảm",
+        "Bình thường",
+        "Hơi thiếu nhạy cảm",
+        "Vụng về trong giao tiếp xã hội"
+      ],
+      "index": 28,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "leadership",
+      "dimension": "Leadership",
+      "label": "Khả năng lãnh đạo",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Mức độ có xu hướng dẫn dắt, định hướng và tạo ảnh hưởng đến người khác.",
+      "values": [
+        "Rất thích dẫn dắt và quyết đoán",
+        "Có năng lực dẫn dắt khi cần",
+        "Thích làm việc phối hợp đồng đều",
+        "Thích làm người hỗ trợ"
+      ],
+      "index": 29,
+      "defaultValue": null
+    },
+    {
+      "id": "humility",
+      "dimension": "Humility",
+      "label": "Tính khiêm tốn",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Mức độ khiêm nhường và nhìn nhận bản thân.",
+      "values": [
+        "Rất khiêm tốn",
+        "Trung bình",
+        "Đôi khi tự hào quá mức",
+        "Thích thể hiện / Phô trương bản thân"
+      ],
+      "index": 30,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "self_regulation",
+      "dimension": "Self-regulation",
+      "label": "Khả năng tự kiểm soát",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Mức độ kiểm soát cảm xúc, hành vi và những thôi thúc của bản thân.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Hầu như không có"
+      ],
+      "index": 31,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "discipline",
+      "dimension": "Discipline",
+      "label": "Tính kỷ luật",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Mức độ duy trì thói quen, nguyên tắc và làm những việc cần làm ngay cả khi thiếu động lực.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Hầu như không có"
+      ],
+      "index": 32,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "resilience_persistence",
+      "dimension": "Resilience & Persistence",
+      "label": "Kiên cường & Bền bỉ",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Mức độ vững vàng và phục hồi sau thất bại hoặc căng thẳng.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Hầu như không có"
+      ],
+      "index": 33,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "adaptability",
+      "dimension": "Adaptability",
+      "label": "Khả năng thích nghi",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Mức độ có thể điều chỉnh suy nghĩ và hành vi khi hoàn cảnh thay đổi.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Hầu như không có"
+      ],
+      "index": 34,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "ambition",
+      "dimension": "Ambition",
+      "label": "Tham vọng & Cầu tiến",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Mức độ có mong muốn mạnh mẽ đạt được thành tựu, vị trí hoặc mục tiêu cao hơn.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Hầu như không có"
+      ],
+      "index": 35,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "playfulness",
+      "dimension": "Playfulness",
+      "label": "Tính vui nhộn & Hài hước",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Mức độ thích vui đùa, tạo không khí nhẹ nhàng và không quá nghiêm trọng hóa mọi thứ.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Hầu như không có"
+      ],
+      "index": 36,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "creativity",
+      "dimension": "Creativity",
+      "label": "Mức độ sáng tạo",
+      "group": "Psychology & Cognition",
+      "subgroup": "Personality",
+      "category": "Core Personality",
+      "description": "Mức độ độc đáo trong tư duy, xu hướng nghĩ ra các ý tưởng, góc nhìn hoặc cách tiếp cận mới lạ.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Hầu như không có"
+      ],
+      "index": 37,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "thinking_focus",
+      "dimension": "Thinking focus",
+      "label": "Tư duy tổng quan hay chi tiết",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Thinking & Decision Making",
+      "description": "Xu hướng nhìn nhận bức tranh toàn cảnh hay đi sâu vào chi tiết nhỏ.",
+      "values": [
+        "Hoàn toàn nhìn tổng thể",
+        "Thiên về nhìn tổng quan",
+        "Cân bằng cả hai",
+        "Thiên về soi chi tiết",
+        "Rất tỉ mỉ / Chú trọng từng tiểu tiết"
+      ],
+      "index": 38,
+      "defaultValue": "Cân bằng cả hai"
+    },
+    {
+      "id": "open_mindedness",
+      "dimension": "Open-mindedness",
+      "label": "Mức độ cở mở trong tư duy",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Thinking & Decision Making",
+      "description": "Mức độ sẵn sàng xem xét những ý tưởng và quan điểm khác với mình.",
+      "values": [
+        "Cực kỳ cởi mở / Luôn tìm kiếm góc nhìn mới và lắng nghe phản biện",
+        "Khá cởi mở / Sẵn sàng thay đổi quan điểm nếu có lý lẽ thuyết phục",
+        "Cân bằng / Tiếp nhận có chọn lọc",
+        "Hơi bảo thủ / Thiên về định kiến và quan điểm quen thuộc",
+        "Rất bảo thủ / Khó chấp nhận ý kiến trái chiều"
+      ],
+      "index": 39,
+      "defaultValue": "Cân bằng / Tiếp nhận có chọn lọc"
+    },
+    {
+      "id": "reasoning_style",
+      "dimension": "Reasoning style",
+      "label": "Phân tích logic hay trực giác",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Thinking & Decision Making",
+      "description": "Phương thức xử lý vấn đề dựa trên số liệu logic hay linh cảm trực giác.",
+      "values": [
+        "Hoàn toàn dựa trên logic & dữ liệu",
+        "Thiên về logic",
+        "Cân bằng giữa logic và trực giác",
+        "Thiên về cảm nhận trực giác",
+        "Hoàn toàn theo cảm tính"
+      ],
+      "index": 40,
+      "defaultValue": "Cân bằng giữa logic và trực giác"
+    },
+    {
+      "id": "decision_speed",
+      "dimension": "Decision speed",
+      "label": "Tốc độ ra quyết định",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Thinking & Decision Making",
+      "description": "Cách thức và thời gian đưa ra quyết định.",
+      "values": [
+        "Quyết định chớp nhoáng",
+        "Quyết định nhanh",
+        "Cân nhắc vừa phải",
+        "Phân tích rất kỹ trước khi quyết định",
+        "Do dự / Rất khó đưa ra quyết định"
+      ],
+      "index": 41,
+      "defaultValue": null
+    },
+    {
+      "id": "speed_vs_accuracy",
+      "dimension": "Speed vs accuracy",
+      "label": "Ưu tiên tốc độ hay chuẩn xác",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Thinking & Decision Making",
+      "description": "Sự ưu tiên khi hoàn thành công việc.",
+      "values": [
+        "Tốc độ là trên hết",
+        "Thiên về nhanh gọn",
+        "Cân bằng chất lượng và tốc độ",
+        "Thiên về độ chính xác",
+        "Độ chính xác hoàn hảo là trên hết"
+      ],
+      "index": 42,
+      "defaultValue": "Cân bằng chất lượng và tốc độ"
+    },
+    {
+      "id": "risk_framing",
+      "dimension": "Risk framing",
+      "label": "Góc nhìn về rủi ro",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Thinking & Decision Making",
+      "description": "Cách phản ứng trước tình huống bất định.",
+      "values": [
+        "Thiên về cơ hội",
+        "Cân bằng giữa rủi ro và cơ hội",
+        "Thiện về rủi ro"
+      ],
+      "index": 43,
+      "defaultValue": "Cân bằng giữa rủi ro và cơ hội"
+    },
+    {
+      "id": "skepticism_verification",
+      "dimension": "Skepticism & Verification",
+      "label": "Mức độ hoài nghi & Kiểm chứng",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Thinking & Decision Making",
+      "description": "Thói quen đặt câu hỏi và đòi hỏi chứng cứ trước thông tin mới.",
+      "values": [
+        "Rất hoài nghi / Luôn kiểm chứng nguồn tin",
+        "Có phản biện tỉnh táo",
+        "Dễ tiếp nhận nhưng có chọn lọc",
+        "Dễ tin người / Tin ngay tin tức trên mạng"
+      ],
+      "index": 44,
+      "defaultValue": null
+    },
+    {
+      "id": "curiosity",
+      "dimension": "Curiosity",
+      "label": "Mức độ tò mò",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Thinking & Decision Making",
+      "description": "Mức độ muốn khám phá, đặt câu hỏi và tìm hiểu những điều mới.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Hầu như không có"
+      ],
+      "index": 45,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "learning_pace",
+      "dimension": "Learning pace",
+      "label": "Tốc độ tiếp thu",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Learning & Work Habits",
+      "description": "Khả năng nắm bắt và làm quen với kiến thức mới.",
+      "values": [
+        "Tiếp thu cực nhanh",
+        "Nhanh nhạy",
+        "Bình thường",
+        "Cần thời gian nghiền ngẫm",
+        "Hơi chậm trong học hỏi điều mới"
+      ],
+      "index": 46,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "attention_span",
+      "dimension": "Attention span",
+      "label": "Khả năng tập trung",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Learning & Work Habits",
+      "description": "Độ dài thời gian duy trì sự chú ý sâu vào một việc.",
+      "values": [
+        "Tập trung sâu và lâu dài",
+        "Tập trung tốt",
+        "Trung bình",
+        "Dễ xao nhãng",
+        "Khả năng chú ý rất thấp"
+      ],
+      "index": 47,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "perfectionism",
+      "dimension": "Perfectionism",
+      "label": "Mức độ cầu toàn",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Learning & Work Habits",
+      "description": "Mức độ muốn công việc đạt tiêu chuẩn rất cao và chú ý đến việc làm mọi thứ thật hoàn chỉnh.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Không có"
+      ],
+      "index": 48,
+      "defaultValue": "Không có"
+    },
+    {
+      "id": "procrastination_tendency",
+      "dimension": "Procrastination tendency",
+      "label": "Xu hướng trì hoãn",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Learning & Work Habits",
+      "description": "Thói quen nước đến chân mới nhảy hay làm việc ngay.",
+      "values": [
+        "Luôn làm ngay lập tức",
+        "Ít khi trì hoãn",
+        "Thỉnh thoảng trì hoãn",
+        "Thường xuyên nước đến chân mới nhảy",
+        "Trì hoãn kinh niên"
+      ],
+      "index": 49,
+      "defaultValue": "Thỉnh thoảng trì hoãn"
+    },
+    {
+      "id": "feedback_receptiveness",
+      "dimension": "Feedback receptiveness",
+      "label": "Tiếp nhận góp ý",
+      "group": "Psychology & Cognition",
+      "subgroup": "Cognitive & Work Style",
+      "category": "Learning & Work Habits",
+      "description": "Thái độ khi đón nhận nhận xét và phê bình từ người khác.",
+      "values": [
+        "Rất cầu thị / Luôn cảm ơn góp ý",
+        "Sẵn sàng lắng nghe và cải thiện",
+        "Lắng nghe có chọn lọc",
+        "Hơi tự ái / Phòng thủ",
+        "Khó chịu / Bác bỏ góp ý"
+      ],
+      "index": 50,
+      "defaultValue": null
+    },
+    {
+      "id": "value_family",
+      "dimension": "Value: Family",
+      "label": "Ưu tiên gia đình",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Life Priorities & Values",
+      "description": "Mức độ coi trọng tổ ấm và các mối quan hệ ruột thịt.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Rất thấp"
+      ],
+      "index": 51,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "value_wealth_success",
+      "dimension": "Value: Wealth & Success",
+      "label": "Ưu tiên tài chính & Thành công",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Life Priorities & Values",
+      "description": "Mức độ coi trọng sự nghiệp và tích lũy tài sản.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Rất thấp"
+      ],
+      "index": 52,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "value_health_wellness",
+      "dimension": "Value: Health & Wellness",
+      "label": "Ưu tiên sức khỏe",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Life Priorities & Values",
+      "description": "Mức độ chú trọng chăm sóc thể chất và tinh thần.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Rất thấp"
+      ],
+      "index": 53,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "value_personal_freedom",
+      "dimension": "Value: Personal freedom",
+      "label": "Ưu tiên tự do cá nhân",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Life Priorities & Values",
+      "description": "Mức độ coi trọng sự độc lập và quyền tự quyết.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Rất thấp"
+      ],
+      "index": 54,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "value_integrity_honesty",
+      "dimension": "Value: Integrity & Honesty",
+      "label": "Chính trực & Trung thực",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Life Priorities & Values",
+      "description": "Mức độ coi trọng sự thật và nguyên tắc đạo đức.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Rất thấp"
+      ],
+      "index": 55,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "value_benevolence_kindness",
+      "dimension": "Value: Benevolence & Kindness",
+      "label": "Tinh thần nhân ái & Giúp đỡ",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Life Priorities & Values",
+      "description": "Mức độ sẵn lòng sẻ chia và hỗ trợ cộng đồng.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Rất thấp"
+      ],
+      "index": 56,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "value_tradition_customs",
+      "dimension": "Value: Tradition & Customs",
+      "label": "Tôn trọng truyền thống",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Life Priorities & Values",
+      "description": "Mức độ coi trọng việc duy trì phong tục, chuẩn mực và những giá trị được truyền lại.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Rất thấp"
+      ],
+      "index": 57,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "value_privacy",
+      "dimension": "Value: Privacy",
+      "label": "Ưu tiên quyền riêng tư",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Life Priorities & Values",
+      "description": "Mức độ coi trọng việc kiểm soát thông tin cá nhân và không gian riêng của mình.",
+      "values": [
+        "Rất cao",
+        "Cao",
+        "Trung bình",
+        "Thấp",
+        "Rất thấp"
+      ],
+      "index": 58,
+      "defaultValue": "Trung bình"
+    },
+    {
+      "id": "attitude_new_technology",
+      "dimension": "Attitude: New technology",
+      "label": "Thái độ với công nghệ mới",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Social Perspectives",
+      "description": "Mức độ hào hứng hoặc dè dặt trước các công nghệ mới.",
+      "values": [
+        "Rất ủng hộ",
+        "Tích cực",
+        "Trung lập",
+        "Hoài nghi",
+        "Phản đối"
+      ],
+      "index": 59,
+      "defaultValue": "Trung lập"
+    },
+    {
+      "id": "attitude_climate_action",
+      "dimension": "Attitude: Climate action",
+      "label": "Thái độ với môi trường",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Social Perspectives",
+      "description": "Quan điểm về hành động bảo vệ môi trường và chống biến đổi khí hậu.",
+      "values": [
+        "Tích cực hành động / Sống xanh nghiêm ngặt",
+        "Ủng hộ và thực hiện các thói quen xanh",
+        "Quan tâm vừa phải",
+        "Ít quan tâm"
+      ],
+      "index": 60,
+      "defaultValue": "Quan tâm vừa phải"
+    },
+    {
+      "id": "attitude_advertising",
+      "dimension": "Attitude: Advertising",
+      "label": "Thái độ với quảng cáo",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Social Perspectives",
+      "description": "Mức độ nhìn nhận tích cực hay tiêu cực về quảng cáo trong đời sống và truyền thông.",
+      "values": [
+        "Rất ủng hộ",
+        "Tích cực",
+        "Trung lập",
+        "Hoài nghi",
+        "Phản đối"
+      ],
+      "index": 61,
+      "defaultValue": "Trung lập"
+    },
+    {
+      "id": "attitude_influencers_kocs",
+      "dimension": "Attitude: Influencers & KOCs",
+      "label": "Thái độ với KOL / Influencer",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Social Perspectives",
+      "description": "Mức độ tin tưởng và nhìn nhận tích cực đối với influencer hoặc người sáng tạo có sức ảnh hưởng.",
+      "values": [
+        "Rất ủng hộ",
+        "Tích cực",
+        "Trung lập",
+        "Hoài nghi",
+        "Phản đối"
+      ],
+      "index": 62,
+      "defaultValue": "Trung lập"
+    },
+    {
+      "id": "attitude_online_reviews",
+      "dimension": "Attitude: Online reviews",
+      "label": "Thái độ với đánh giá trên mạng",
+      "group": "Psychology & Cognition",
+      "subgroup": "Values & Worldview",
+      "category": "Social Perspectives",
+      "description": "Mức độ tham khảo review trước khi mua sắm hoặc trải nghiệm dịch vụ.",
+      "values": [
+        "Luôn đọc kỹ review trước khi quyết định",
+        "Xem review như một kênh tham khảo quan trọng",
+        "Xem lướt / Không quá phụ thuộc",
+        "Chỉ tin người quen / Không tin review mạng"
+      ],
+      "index": 63,
+      "defaultValue": null
+    },
+    {
+      "id": "language_english",
+      "dimension": "Language: English",
+      "label": "Trình độ tiếng Anh",
+      "group": "Behavior and Interaction",
+      "subgroup": "Language Profile",
+      "category": "Language Competency",
+      "description": "Trình độ tiếng Anh",
+      "values": [
+        "Tiếng mẹ đẻ",
+        "Thành thạo",
+        "Giao tiếp được",
+        "Cơ bản",
+        "Không biết"
+      ],
+      "index": 64,
+      "defaultValue": "Không biết"
+    },
+    {
+      "id": "language_chinese",
+      "dimension": "Language: Chinese",
+      "label": "Trình độ tiếng Trung",
+      "group": "Behavior and Interaction",
+      "subgroup": "Language Profile",
+      "category": "Language Competency",
+      "description": "Trình độ tiếng Trung",
+      "values": [
+        "Tiếng mẹ đẻ",
+        "Thành thạo",
+        "Giao tiếp được",
+        "Cơ bản",
+        "Không biết"
+      ],
+      "index": 65,
+      "defaultValue": "Không biết"
+    },
+    {
+      "id": "language_japanese",
+      "dimension": "Language: Japanese",
+      "label": "Trình độ tiếng Nhật",
+      "group": "Behavior and Interaction",
+      "subgroup": "Language Profile",
+      "category": "Language Competency",
+      "description": "Trình độ tiếng Nhật",
+      "values": [
+        "Tiếng mẹ đẻ",
+        "Thành thạo",
+        "Giao tiếp được",
+        "Cơ bản",
+        "Không biết"
+      ],
+      "index": 66,
+      "defaultValue": "Không biết"
+    },
+    {
+      "id": "language_korean",
+      "dimension": "Language: Korean",
+      "label": "Trình độ tiếng Hàn",
+      "group": "Behavior and Interaction",
+      "subgroup": "Language Profile",
+      "category": "Language Competency",
+      "description": "Trình độ tiếng Hàn",
+      "values": [
+        "Tiếng mẹ đẻ",
+        "Thành thạo",
+        "Giao tiếp được",
+        "Cơ bản",
+        "Không biết"
+      ],
+      "index": 67,
+      "defaultValue": "Không biết"
+    },
+    {
+      "id": "language_french",
+      "dimension": "Language: French",
+      "label": "Trình độ tiếng Pháp",
+      "group": "Behavior and Interaction",
+      "subgroup": "Language Profile",
+      "category": "Language Competency",
+      "description": "Trình độ tiếng Pháp",
+      "values": [
+        "Tiếng mẹ đẻ",
+        "Thành thạo",
+        "Giao tiếp được",
+        "Cơ bản",
+        "Không biết"
+      ],
+      "index": 68,
+      "defaultValue": "Không biết"
+    },
+    {
+      "id": "language_german",
+      "dimension": "Language: German",
+      "label": "Trình độ tiếng Đức",
+      "group": "Behavior and Interaction",
+      "subgroup": "Language Profile",
+      "category": "Language Competency",
+      "description": "Trình độ tiếng Đức",
+      "values": [
+        "Tiếng mẹ đẻ",
+        "Thành thạo",
+        "Giao tiếp được",
+        "Cơ bản",
+        "Không biết"
+      ],
+      "index": 69,
+      "defaultValue": "Không biết"
+    },
+    {
+      "id": "language_russian",
+      "dimension": "Language: Russian",
+      "label": "Trình độ tiếng Nga",
+      "group": "Behavior and Interaction",
+      "subgroup": "Language Profile",
+      "category": "Language Competency",
+      "description": "Trình độ tiếng Nga",
+      "values": [
+        "Tiếng mẹ đẻ",
+        "Thành thạo",
+        "Giao tiếp được",
+        "Cơ bản",
+        "Không biết"
+      ],
+      "index": 70,
+      "defaultValue": "Không biết"
+    },
+    {
+      "id": "multilingualism",
+      "dimension": "Multilingualism",
+      "label": "Số ngôn ngữ có thể sử dụng",
+      "group": "Behavior and Interaction",
+      "subgroup": "Language Profile",
+      "category": "Language Competency",
+      "description": "Số ngôn ngữ có thể sử dụng",
+      "values": [
+        "Một",
+        "Hai",
+        "Ba trở lên"
+      ],
+      "index": 71,
+      "defaultValue": "Một"
+    },
+    {
+      "id": "dialect_regional_accent",
+      "dimension": "Dialect & Regional accent",
+      "label": "Phương ngữ & Giọng điệu",
+      "group": "Behavior and Interaction",
+      "subgroup": "Language Profile",
+      "category": "Language Competency",
+      "description": "Đặc trưng ngôn ngữ vùng miền trong cách dùng từ.",
+      "values": [
+        "Giọng Bắc chuẩn",
+        "Giọng Bắc địa phương",
+        "Giọng Trung chuẩn",
+        "Giọng Trung địa phương",
+        "Giọng Nam chuẩn (Sài Gòn)",
+        "Giọng miền Tây",
+        "Pha trộn nhiều phương ngữ"
+      ],
+      "index": 72,
+      "defaultValue": null
+    },
+    {
+      "id": "formality",
+      "dimension": "Formality",
+      "label": "Mức độ trang trọng",
+      "group": "Behavior and Interaction",
+      "subgroup": "Communication Style",
+      "category": "Tone & Manner",
+      "description": "Văn phong giao tiếp thường ngày.",
+      "values": [
+        "Rất trang trọng / Chuẩn mực học thuật",
+        "Lịch sự / Nhã nhặn",
+        "Đời thường / Thân thiện",
+        "Rất suồng sã / Nhiều tiếng lóng",
+        "Lầy lội / Troll"
+      ],
+      "index": 73,
+      "defaultValue": null
+    },
+    {
+      "id": "directness",
+      "dimension": "Directness",
+      "label": "Mức độ thẳng thắn",
+      "group": "Behavior and Interaction",
+      "subgroup": "Communication Style",
+      "category": "Tone & Manner",
+      "description": "Cách diễn đạt ý kiến trong các cuộc thảo luận.",
+      "values": [
+        "Thẳng như ruột ngựa / Không né tránh",
+        "Thẳng thắn nhưng có chừng mực",
+        "Khéo léo / Lựa lời nói",
+        "Nói giảm nói tránh / Vòng vo",
+        "Ngại va chạm / Thường im lặng"
+      ],
+      "index": 74,
+      "defaultValue": null
+    },
+    {
+      "id": "verbosity",
+      "dimension": "Verbosity",
+      "label": "Độ dài diễn đạt",
+      "group": "Behavior and Interaction",
+      "subgroup": "Communication Style",
+      "category": "Tone & Manner",
+      "description": "Thói quen viết bài hoặc bình luận ngắn gọn hay dài dòng.",
+      "values": [
+        "Rất súc tích / Vài từ ngắn gọn",
+        "Ngắn gọn đúng trọng tâm",
+        "Độ dài vừa phải",
+        "Thích viết dài / Kể lể chi tiết",
+        "Tràng giang đại hải / Đậm chất tản văn"
+      ],
+      "index": 75,
+      "defaultValue": null
+    },
+    {
+      "id": "politeness",
+      "dimension": "Politeness",
+      "label": "Mức độ lễ phép & Lịch sự",
+      "group": "Behavior and Interaction",
+      "subgroup": "Communication Style",
+      "category": "Tone & Manner",
+      "description": "Cách xưng hô và thái độ tôn trọng đối phương.",
+      "values": [
+        "Rất lễ phép",
+        "Lịch thiệp văn minh",
+        "Bình thường",
+        "Thỉnh thoảng cộc lốc",
+        "Bất lịch sự / Hay gắt gỏng"
+      ],
+      "index": 76,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "humor_style",
+      "dimension": "Humor style",
+      "label": "Phong cách hài hước",
+      "group": "Behavior and Interaction",
+      "subgroup": "Communication Style",
+      "category": "Tone & Manner",
+      "description": "Kiểu hài hước thường sử dụng trong giao tiếp.",
+      "values": [
+        "Hài khô / Tỉnh bơ",
+        "Châm biếm",
+        "Vui nhộn / Tinh nghịch",
+        "Nhẹ nhàng / Lành mạnh",
+        "Nghiêm túc"
+      ],
+      "index": 77,
+      "defaultValue": null
+    },
+    {
+      "id": "storytelling_tendency",
+      "dimension": "Storytelling tendency",
+      "label": "Xu hướng kể chuyện",
+      "group": "Behavior and Interaction",
+      "subgroup": "Communication Style",
+      "category": "Tone & Manner",
+      "description": "Thói quen lồng ghép câu chuyện trải nghiệm vào trao đổi.",
+      "values": [
+        "Rất thích kể chuyện",
+        "Thường lấy ví dụ thực tế minh họa",
+        "Nêu quan điểm trực tiếp / Ít kể chuyện",
+        "Chỉ tập trung vào dữ kiện"
+      ],
+      "index": 78,
+      "defaultValue": null
+    },
+    {
+      "id": "emotional_expressiveness",
+      "dimension": "Emotional expressiveness",
+      "label": "Mức độ bộc lộ cảm xúc",
+      "group": "Behavior and Interaction",
+      "subgroup": "Communication Style",
+      "category": "Tone & Manner",
+      "description": "Cách thể hiện tâm trạng qua bài viết hoặc tin nhắn.",
+      "values": [
+        "Rất giàu cảm xúc",
+        "Biểu đạt cảm xúc tự nhiên",
+        "Trung tính",
+        "Kiềm chế",
+        "Kín đáo / Rất lạnh lùng"
+      ],
+      "index": 79,
+      "defaultValue": "Trung tính"
+    },
+    {
+      "id": "emoji_emoticon_usage",
+      "dimension": "Emoji & Emoticon usage",
+      "label": "Mức độ & Thói quen dùng Emoji",
+      "group": "Behavior and Interaction",
+      "subgroup": "Communication Style",
+      "category": "Tone & Manner",
+      "description": "Tần suất và kiểu cách sử dụng biểu tượng cảm xúc.",
+      "values": [
+        "Rất nhiều emoji sinh động",
+        "Dùng emoji vừa phải đúng lúc",
+        "Hiếm khi sử dụng",
+        "Không bao giờ dùng emoji"
+      ],
+      "index": 80,
+      "defaultValue": null
+    },
+    {
+      "id": "typing_text_style",
+      "dimension": "Typing & Text style",
+      "label": "Phong cách viết trên mạng",
+      "group": "Behavior and Interaction",
+      "subgroup": "Communication Style",
+      "category": "Tone & Manner",
+      "description": "Thói quen định dạng câu chữ khi viết trên mạng xã hội",
+      "values": [
+        "Chuẩn chỉnh ngữ pháp",
+        "Thường xuyên viết tắt / Dùng teencode",
+        "Hay dùng từ đệm tình cảm",
+        "Cộc lốc"
+      ],
+      "index": 81,
+      "defaultValue": null
+    },
+    {
+      "id": "primary_social_platform",
+      "dimension": "Primary social platform",
+      "label": "Nền tảng xã hội chính",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Nền tảng xã hội chính",
+      "values": [
+        "Facebook",
+        "Zalo",
+        "TikTok",
+        "YouTube",
+        "Instagram",
+        "Threads",
+        "LinkedIn",
+        "X / Twitter",
+        "Reddit",
+        "Forums",
+        "None"
+      ],
+      "index": 82,
+      "defaultValue": null
+    },
+    {
+      "id": "facebook_frequency",
+      "dimension": "Facebook frequency",
+      "label": "Tần suất sử dụng Facebook",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Tần suất sử dụng Facebook",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Hiếm khi",
+        "Không dùng"
+      ],
+      "index": 83,
+      "defaultValue": "Không dùng"
+    },
+    {
+      "id": "zalo_frequency",
+      "dimension": "Zalo frequency",
+      "label": "Tần suất sử dụng Zalo",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Tần suất sử dụng Zalo",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Hiếm khi",
+        "Không dùng"
+      ],
+      "index": 84,
+      "defaultValue": "Không dùng"
+    },
+    {
+      "id": "tiktok_frequency",
+      "dimension": "Tiktok frequency",
+      "label": "Tần suất sử dụng TikTok",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Tần suất sử dụng TikTok",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Hiếm khi",
+        "Không dùng"
+      ],
+      "index": 85,
+      "defaultValue": "Không dùng"
+    },
+    {
+      "id": "youtube_frequency",
+      "dimension": "Youtube frequency",
+      "label": "Tần suất sử dụng YouTube",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Tần suất sử dụng YouTube",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Hiếm khi",
+        "Không dùng"
+      ],
+      "index": 86,
+      "defaultValue": "Không dùng"
+    },
+    {
+      "id": "instagram_frequency",
+      "dimension": "Instagram frequency",
+      "label": "Tần suất sử dụng Instagram",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Tần suất sử dụng Instagram",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Hiếm khi",
+        "Không dùng"
+      ],
+      "index": 87,
+      "defaultValue": "Không dùng"
+    },
+    {
+      "id": "threads_frequency",
+      "dimension": "Threads frequency",
+      "label": "Tần suất sử dụng Threads",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Tần suất sử dụng Threads",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Hiếm khi",
+        "Không dùng"
+      ],
+      "index": 88,
+      "defaultValue": "Không dùng"
+    },
+    {
+      "id": "linkedin_frequency",
+      "dimension": "LinkedIn frequency",
+      "label": "Tần suất sử dụng LinkedIn",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Tần suất sử dụng LinkedIn",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Hiếm khi",
+        "Không dùng"
+      ],
+      "index": 89,
+      "defaultValue": "Không dùng"
+    },
+    {
+      "id": "x_twitter_frequency",
+      "dimension": "X / Twitter frequency",
+      "label": "Tần suất sử dụng X / Twitter",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Tần suất sử dụng X / Twitter",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Hiếm khi",
+        "Không dùng"
+      ],
+      "index": 90,
+      "defaultValue": "Không dùng"
+    },
+    {
+      "id": "reddit_frequency",
+      "dimension": "Reddit frequency",
+      "label": "Tần suất sử dụng Reddit",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Tần suất sử dụng Reddit",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Hiếm khi",
+        "Không dùng"
+      ],
+      "index": 91,
+      "defaultValue": "Không dùng"
+    },
+    {
+      "id": "forums_frequency",
+      "dimension": "Forums frequency",
+      "label": "Tần suất sử dụng diễn đàn",
+      "group": "Behavior and Interaction",
+      "subgroup": "Platform Presence",
+      "category": "Social Media Platforms",
+      "description": "Tần suất sử dụng diễn đàn",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Hiếm khi",
+        "Không dùng"
+      ],
+      "index": 92,
+      "defaultValue": "Không dùng"
+    },
+    {
+      "id": "social_engagement_style",
+      "dimension": "Social engagement style",
+      "label": "Phong cách tham gia mạng xã hội",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Cách thường tham gia và tương tác trên các nền tảng trực tuyến.",
+      "values": [
+        "Tàu ngầm (Chỉ xem và like, không post không cmt)",
+        "Chiến thần bình luận dạo (Tương tác tích cực các post)",
+        "Người thích chia sẻ (Thường share bài, clip hay)",
+        "Người sáng tạo nội dung (Thường xuyên viết bài, làm clip)",
+        "Bán hàng / Seeding / Affiliate",
+        "Người thường xuyên tham gia, kết nối cộng đồng, hội nhóm"
+      ],
+      "index": 93,
+      "defaultValue": null
+    },
+    {
+      "id": "posting_frequency",
+      "dimension": "Posting frequency",
+      "label": "Tần suất đăng bài viết",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Tần suất tự viết status hoặc đăng nội dung mới lên trang cá nhân.",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần một tuần",
+        "Vài lần một tháng",
+        "Rất hiếm khi",
+        "Không bao giờ"
+      ],
+      "index": 94,
+      "defaultValue": "Không bao giờ"
+    },
+    {
+      "id": "commenting_frequency",
+      "dimension": "Commenting frequency",
+      "label": "Tần suất bình luận",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Tần suất viết comment trên các bài đăng công khai.",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần một tuần",
+        "Vài lần một tháng",
+        "Rất hiếm khi",
+        "Không bao giờ"
+      ],
+      "index": 95,
+      "defaultValue": "Không bao giờ"
+    },
+    {
+      "id": "sharing_frequency",
+      "dimension": "Sharing frequency",
+      "label": "Tần suất chia sẻ bài",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Tần suất share lại nội dung của fanpage hoặc người khác về tường.",
+      "values": [
+        "Nhiều lần mỗi ngày",
+        "Hàng ngày",
+        "Vài lần một tuần",
+        "Vài lần một tháng",
+        "Rất hiếm khi",
+        "Không bao giờ"
+      ],
+      "index": 96,
+      "defaultValue": "Không bao giờ"
+    },
+    {
+      "id": "messaging_intensity",
+      "dimension": "Messaging intensity",
+      "label": "Cường độ nhắn tin / Chat",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Tần suất trò chuyện qua MXH",
+      "values": [
+        "Nhắn tin liên tục suốt ngày",
+        "Thường xuyên giữ liên lạc",
+        "Chỉ nhắn khi có việc cần",
+        "Ít khi check tin nhắn",
+        "Rất lười rep tin nhắn"
+      ],
+      "index": 97,
+      "defaultValue": null
+    },
+    {
+      "id": "group_community_participation",
+      "dimension": "Group community participation",
+      "label": "Tham gia hội nhóm trực tuyến",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Mức độ sinh hoạt trong các hội nhóm và cộng đồng mạng xã hội.",
+      "values": [
+        "Rất tích cực (Viết bài chia sẻ, thảo luận sôi nổi)",
+        "Thường xuyên theo dõi và đọc bài",
+        "Thỉnh thoảng đặt câu hỏi nhờ tư vấn",
+        "Chỉ nằm vùng hóng chuyện",
+        "Không tham gia nhóm nào"
+      ],
+      "index": 98,
+      "defaultValue": null
+    },
+    {
+      "id": "tech_savviness",
+      "dimension": "Tech savviness",
+      "label": "Mức độ thành thạo công nghệ",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Độ am hiểu và kỹ năng sử dụng thiết bị số và ứng dụng mạng.",
+      "values": [
+        "Rất quen thuộc",
+        "Thoải mái sử dụng",
+        "Tiếp nhận thận trọng",
+        "Ngại sử dụng",
+        "Chủ động tránh"
+      ],
+      "index": 99,
+      "defaultValue": "Tiếp nhận thận trọng"
+    },
+    {
+      "id": "content_consumption_format",
+      "dimension": "Content consumption format",
+      "label": "Định dạng nội dung ưa thích",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Loại hình nội dung yêu thích nhất",
+      "values": [
+        "Video ngắn",
+        "Bài viết dài chuyên sâu",
+        "Hình ảnh",
+        "Video dài",
+        "Âm thanh",
+        "Kết hợp nhiều hình thức"
+      ],
+      "index": 100,
+      "defaultValue": "Kết hợp nhiều hình thức"
+    },
+    {
+      "id": "media_diet",
+      "dimension": "Media diet",
+      "label": "Nguồn thông tin thường dùng",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Loại nguồn mà thường sử dụng nhất để cập nhật kiến thức và thông tin.",
+      "values": [
+        "Mạng xã hội",
+        "Báo chí chính thống",
+        "Các kênh video",
+        "Hội nhóm cộng đồng",
+        "Ít theo dõi thông tin"
+      ],
+      "index": 101,
+      "defaultValue": null
+    },
+    {
+      "id": "streaming_hours_per_week",
+      "dimension": "Streaming hours per week",
+      "label": "Thời lượng xem video mỗi tuần",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Tổng thời gian xem phim, video và livestream hàng tuần.",
+      "values": [
+        "Dưới 3 giờ/tuần",
+        "3-7 giờ/tuần",
+        "8-15 giờ/tuần",
+        "16-30 giờ/tuần",
+        "Trên 30 giờ/tuần"
+      ],
+      "index": 102,
+      "defaultValue": null
+    },
+    {
+      "id": "podcast_listening",
+      "dimension": "Podcast listening",
+      "label": "Tần suất nghe podcast",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Thói quen nghe các chương trình trò chuyện âm thanh.",
+      "values": [
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Vài lần mỗi tháng",
+        "Hiếm khi",
+        "Không bao giờ"
+      ],
+      "index": 103,
+      "defaultValue": "Không bao giờ"
+    },
+    {
+      "id": "pet_peeve_pop_up_ads",
+      "dimension": "Pet peeve: Pop-up ads",
+      "label": "Mức khó chịu với quảng cáo",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Mức khó chịu với quảng cáo",
+      "values": [
+        "Rất khó chịu",
+        "Khó chịu",
+        "Bình thường",
+        "Không phiền"
+      ],
+      "index": 104,
+      "defaultValue": "Không phiền"
+    },
+    {
+      "id": "pet_peeve_clickbait",
+      "dimension": "Pet peeve: Clickbait",
+      "label": "Mức khó chịu với nội dung Giật tít câu view",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Mức khó chịu với nội dung Giật tít câu view",
+      "values": [
+        "Rất khó chịu",
+        "Khó chịu",
+        "Bình thường",
+        "Không phiền"
+      ],
+      "index": 105,
+      "defaultValue": "Không phiền"
+    },
+    {
+      "id": "pet_peeve_toxic_content",
+      "dimension": "Pet peeve: Toxic content",
+      "label": "Mức khó chịu với nội dung toxic, cãi vã xúc phạm nhau",
+      "group": "Behavior and Interaction",
+      "subgroup": "Social Engagement",
+      "category": "Interaction Habits",
+      "description": "Mức khó chịu với nội dung toxic, cãi vã xúc phạm nhau",
+      "values": [
+        "Rất khó chịu",
+        "Khó chịu",
+        "Bình thường",
+        "Không phiền"
+      ],
+      "index": 106,
+      "defaultValue": "Không phiền"
+    },
+    {
+      "id": "emotional_state",
+      "dimension": "Emotional state",
+      "label": "Trạng thái cảm xúc tức thời",
+      "group": "Behavior and Interaction",
+      "subgroup": "Interaction State",
+      "category": "Emotional & Energy State",
+      "description": "Tâm trạng nổi bật tại thời điểm tương tác trực tuyến.",
+      "values": [
+        "Bình tĩnh / Thư thái",
+        "Vui vẻ / Hào hứng",
+        "Mệt mỏi / Căng thẳng",
+        "Tò mò / Hóng chuyện",
+        "Bức xúc / Khó chịu",
+        "Lo âu / Bồn chồn"
+      ],
+      "index": 107,
+      "defaultValue": "Bình tĩnh / Thư thái"
+    },
+    {
+      "id": "energy_level",
+      "dimension": "Energy level",
+      "label": "Mức năng lượng hiện tại",
+      "group": "Behavior and Interaction",
+      "subgroup": "Interaction State",
+      "category": "Emotional & Energy State",
+      "description": "Năng lượng thể chất và tinh thần khi trò chuyện.",
+      "values": [
+        "Rất tràn đầy năng lượng",
+        "Năng lượng tốt",
+        "Mức trung bình",
+        "Hơi uể oải",
+        "Kiệt sức / Hết pin"
+      ],
+      "index": 108,
+      "defaultValue": "Mức trung bình"
+    },
+    {
+      "id": "stress_level",
+      "dimension": "Stress level",
+      "label": "Mức độ áp lực hiện tại",
+      "group": "Behavior and Interaction",
+      "subgroup": "Interaction State",
+      "category": "Emotional & Energy State",
+      "description": "Mức độ căng thẳng tinh thần từ công việc hoặc cuộc sống.",
+      "values": [
+        "Hoàn toàn không có áp lực",
+        "Áp lực nhẹ",
+        "Áp lực trung bình",
+        "Áp lực cao",
+        "Cực kỳ căng thẳng"
+      ],
+      "index": 109,
+      "defaultValue": "Áp lực trung bình"
+    },
+    {
+      "id": "fashion_sense",
+      "dimension": "Fashion sense",
+      "label": "Phong cách thời trang",
+      "group": "Lifestyle",
+      "subgroup": "Daily Lifestyle",
+      "category": "Habits",
+      "description": "Gu ăn mặc và mức độ chú ý đến diện mạo cá nhân.",
+      "values": [
+        "Luôn đón đầu xu hướng thời trang",
+        "Ăn mặc có phong cách và chỉn chu",
+        "Đơn giản / Tối giản",
+        "Ưu tiên thoải mái / Tiện dụng",
+        "Không quan tâm nhiều đến thời trang"
+      ],
+      "index": 110,
+      "defaultValue": null
+    },
+    {
+      "id": "vacation_travel_style",
+      "dimension": "Vacation & Travel style",
+      "label": "Gu du lịch & Nghỉ dưỡng",
+      "group": "Lifestyle",
+      "subgroup": "Daily Lifestyle",
+      "category": "Habits",
+      "description": "Kiểu trải nghiệm ưa thích khi đi du lịch.",
+      "values": [
+        "Du lịch phượt / Khám phá mạo hiểm",
+        "Du lịch trải nghiệm văn hóa & Ẩm thực",
+        "Nghỉ dưỡng sang chảnh / Thư giãn nhẹ nhàng",
+        "Du lịch tiết kiệm cùng bạn bè",
+        "Thích ở nhà nghỉ ngơi"
+      ],
+      "index": 111,
+      "defaultValue": null
+    },
+    {
+      "id": "reading_frequency",
+      "dimension": "Reading frequency",
+      "label": "Tần suất đọc sách",
+      "group": "Lifestyle",
+      "subgroup": "Daily Lifestyle",
+      "category": "Habits",
+      "description": "Thói quen đọc sách giấy hoặc ebook nâng cao kiến thức.",
+      "values": [
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Vài lần mỗi tháng",
+        "Hiếm khi",
+        "Không bao giờ"
+      ],
+      "index": 112,
+      "defaultValue": "Không bao giờ"
+    },
+    {
+      "id": "gaming_frequency",
+      "dimension": "Gaming frequency",
+      "label": "Tần suất chơi game",
+      "group": "Lifestyle",
+      "subgroup": "Daily Lifestyle",
+      "category": "Habits",
+      "description": "Thói quen giải trí bằng game trên điện thoại, máy tính hoặc console.",
+      "values": [
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Vài lần mỗi tháng",
+        "Hiếm khi",
+        "Không bao giờ"
+      ],
+      "index": 113,
+      "defaultValue": "Không bao giờ"
+    },
+    {
+      "id": "music_listening",
+      "dimension": "Music listening",
+      "label": "Tần suất nghe nhạc",
+      "group": "Lifestyle",
+      "subgroup": "Daily Lifestyle",
+      "category": "Habits",
+      "description": "Thói quen thưởng thức âm nhạc trong sinh hoạt.",
+      "values": [
+        "Hàng ngày",
+        "Vài lần mỗi tuần",
+        "Vài lần mỗi tháng",
+        "Hiếm khi",
+        "Không bao giờ"
+      ],
+      "index": 114,
+      "defaultValue": "Không bao giờ"
+    },
+    {
+      "id": "interest_technology_ai",
+      "dimension": "Interest: Technology & AI",
+      "label": "Công nghệ & Trí tuệ nhân tạo",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm đến thiết bị thông minh và công nghệ mới.",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 115,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_personal_finance_investing",
+      "dimension": "Interest: Personal finance & Investing",
+      "label": "Tài chính cá nhân & Đầu tư",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm đến quản lý tiền bạc và đầu tư tài chính.",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 116,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_real_estate",
+      "dimension": "Interest: Real estate",
+      "label": "Bất động sản & Nhà cửa",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm đến thị trường địa ốc và không gian sống.",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 117,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_self_improvement",
+      "dimension": "Interest: Self-improvement",
+      "label": "Phát triển bản thân",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm đến sách kỹ năng, các khóa học và nâng cao năng lực.",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 118,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_parenting_family_life",
+      "dimension": "Interest: Parenting & Family life",
+      "label": "Nuôi dạy con & Gia đình",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm đến phương pháp nuôi dạy con và vun vén tổ ấm.",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 119,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_pets_animals",
+      "dimension": "Interest: Pets & Animals",
+      "label": "Thú cưng & Động vật",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ tình cảm và hứng thú với chó mèo và vật nuôi.",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 120,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_spirituality_mindfulness",
+      "dimension": "Interest: Spirituality & Mindfulness",
+      "label": "Tâm linh & Chữa lành",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm đến thiền định, tarot, chiêm tinh và sự an yên tinh thần.",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 121,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_environment_nature",
+      "dimension": "Interest: Environment & Nature",
+      "label": "Môi trường & Thiên nhiên",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm đến lối sống xanh và các hoạt động bảo tồn thiên nhiên.",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 122,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_social_causes_community",
+      "dimension": "Interest: Social causes & Community",
+      "label": "Hoạt động xã hội & Thiện nguyện",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm và tham gia các hoạt động đóng góp cho cộng đồng.",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 123,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_music",
+      "dimension": "Interest: Music",
+      "label": "Âm nhạc",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm, yêu thích âm nhạc",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 124,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_sport",
+      "dimension": "Interest: Sport",
+      "label": "Thể thao",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm, yêu thích thể thao",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 125,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_film",
+      "dimension": "Interest: Film",
+      "label": "Phim ảnh",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm, yêu thích phim ảnh",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 126,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_dancing",
+      "dimension": "Interest: Dancing",
+      "label": "Nhảy",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ quan tâm, yêu thích nhảy / khiêu vũ",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 127,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_travel",
+      "dimension": "Interest: Travel",
+      "label": "Du lịch",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ yêu thích du lịch",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 128,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_karaoke",
+      "dimension": "Interest: Karaoke",
+      "label": "Mức độ hát karaoke",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ hát karaoke",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 129,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_cosplay",
+      "dimension": "Interest: Cosplay",
+      "label": "Mức độ tham gia cosplay",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ tham gia cosplay",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 130,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_knitting_embroidery",
+      "dimension": "Interest: Knitting / Embroidery",
+      "label": "Mức độ tham gia đan len / thêu thùa",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ tham gia đan len / thêu thùa",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 131,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "interest_gardening",
+      "dimension": "Interest: Gardening",
+      "label": "Mức độ yêu thích làm vườn",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Areas of Interest",
+      "description": "Mức độ yêu thích làm vườn",
+      "values": [
+        "Rất đam mê",
+        "Có hứng thú tìm hiểu",
+        "Bình thường",
+        "Không quan tâm",
+        "Không thích"
+      ],
+      "index": 132,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "music_pop",
+      "dimension": "Music: Pop",
+      "label": "Mức độ yêu thích nhạc Pop",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích nhạc Pop",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 133,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "music_rock",
+      "dimension": "Music: Rock",
+      "label": "Mức độ yêu thích nhạc Rock",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích nhạc Rock",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 134,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "music_hip_hop_rap",
+      "dimension": "Music: Hip-hop / Rap",
+      "label": "Mức độ yêu thích nhạc Hip-hop / Rap",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích nhạc Hip-hop / Rap",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 135,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "music_r_b",
+      "dimension": "Music: R&B",
+      "label": "Mức độ yêu thích nhạc R&B",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích nhạc R&B",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 136,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "music_electronic",
+      "dimension": "Music: Electronic",
+      "label": "Mức độ yêu thích nhạc điện tử / EDM",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích nhạc điện tử / EDM",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 137,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "music_indie",
+      "dimension": "Music: Indie",
+      "label": "Mức độ yêu thích nhạc Indie",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích nhạc Indie",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 138,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "music_ballad",
+      "dimension": "Music: Ballad",
+      "label": "Mức độ yêu thích nhạc Ballad",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích nhạc Ballad",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 139,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "music_k_pop",
+      "dimension": "Music: K-pop",
+      "label": "Mức độ yêu thích K-pop",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích K-pop",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 140,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "music_lo_fi_classical",
+      "dimension": "Music: Lo-fi / Classical",
+      "label": "Mức độ yêu thích Lo-fi, cổ điển",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích Lo-fi, cổ điển",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 141,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "film_historical_documentary",
+      "dimension": "Film: Historical / Documentary",
+      "label": "Mức độ yêu thích phim tài liệu, lịch sử",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích phim tài liệu, lịch sử",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 142,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "film_animation",
+      "dimension": "Film: Animation",
+      "label": "Mức độ yêu thích phim hoạt hình / Anime",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích phim hoạt hình / Anime",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 143,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "film_romance",
+      "dimension": "Film: Romance",
+      "label": "Mức độ yêu thích phim tình cảm",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích phim tình cảm",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 144,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "film_action_adventure",
+      "dimension": "Film: Action / Adventure",
+      "label": "Mức độ yêu thích phim hành động / phiêu lưu",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích phim hành động / phiêu lưu",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 145,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "film_comedy",
+      "dimension": "Film: Comedy",
+      "label": "Mức độ yêu thích phim hài",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích phim hài",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 146,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "film_drama",
+      "dimension": "Film: Drama",
+      "label": "Mức độ yêu thích phim truyền hình",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích phim truyền hình",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 147,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "film_horror_thriller",
+      "dimension": "Film: Horror / Thriller",
+      "label": "Mức độ yêu thích phim kinh dị giật gân",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích phim kinh dị giật gân",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 148,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "film_sci_fi_superhero",
+      "dimension": "Film: Sci-fi / Superhero",
+      "label": "Mức độ yêu thích phim khoa học viễn tưởng / siêu anh hùng",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích phim khoa học viễn tưởng / siêu anh hùng",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 149,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_literary_fiction",
+      "dimension": "Books: Literary fiction",
+      "label": "Mức độ yêu thích tiểu thuyết văn học",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích tiểu thuyết văn học",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 150,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_science_fiction",
+      "dimension": "Books: Science fiction",
+      "label": "Mức độ yêu thích khoa học viễn tưởng",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích khoa học viễn tưởng",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 151,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_fantasy",
+      "dimension": "Books: Fantasy",
+      "label": "Mức độ yêu thích truyện kỳ ảo",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích truyện kỳ ảo",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 152,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_mystery_thriller",
+      "dimension": "Books: Mystery / Thriller",
+      "label": "Mức độ yêu thích truyện bí ẩn / giật gân",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích truyện bí ẩn / giật gân",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 153,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_romance",
+      "dimension": "Books: Romance",
+      "label": "Mức độ yêu thích truyện tình cảm",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích truyện tình cảm",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 154,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_historical_fiction",
+      "dimension": "Books: Historical fiction",
+      "label": "Mức độ yêu thích tiểu thuyết lịch sử",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích tiểu thuyết lịch sử",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 155,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_horror",
+      "dimension": "Books: Horror",
+      "label": "Mức độ yêu thích truyện kinh dị",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích truyện kinh dị",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 156,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_biography_memoir",
+      "dimension": "Books: Biography / Memoir",
+      "label": "Mức độ yêu thích tiểu sử, hồi ký",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích tiểu sử, hồi ký",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 157,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_self_help",
+      "dimension": "Books: Self-help",
+      "label": "Mức độ yêu thích sách phát triển bản thân",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích sách phát triển bản thân",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 158,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_business",
+      "dimension": "Books: Business",
+      "label": "Mức độ yêu thích sách kinh doanh",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích sách kinh doanh",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 159,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_popular_science",
+      "dimension": "Books: Popular science",
+      "label": "Mức độ yêu thích sách khoa học phổ thông",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích sách khoa học phổ thông",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 160,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_history_philosophy",
+      "dimension": "Books: History / Philosophy",
+      "label": "Mức độ yêu thích sách lịch sử, triết học",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích sách lịch sử, triết học",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 161,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "books_graphic_novels",
+      "dimension": "Books: Graphic novels",
+      "label": "Mức độ yêu thích truyện tranh",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Creative & Cultural Tastes",
+      "description": "Mức độ yêu thích truyện tranh",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 162,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "sport_football",
+      "dimension": "Sport: Football",
+      "label": "Mức độ tham gia bóng đá",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia bóng đá",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 163,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_basketball",
+      "dimension": "Sport: Basketball",
+      "label": "Mức độ tham gia bóng rổ",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia bóng rổ",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 164,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_tennis",
+      "dimension": "Sport: Tennis",
+      "label": "Mức độ tham gia quần vợt",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia quần vợt",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 165,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_pilates",
+      "dimension": "Sport: Pilates",
+      "label": "Mức độ tham gia Pilates",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia Pilates",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 166,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_esports",
+      "dimension": "Sport: Esports",
+      "label": "Mức độ tham gia Esports",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia Esports",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 167,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_yoga",
+      "dimension": "Sport: Yoga",
+      "label": "Mức độ tham gia Yoga",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia Yoga",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 168,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_martial_arts",
+      "dimension": "Sport: Martial arts",
+      "label": "Mức độ tham gia võ thuật",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia võ thuật",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 169,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_golf",
+      "dimension": "Sport: Golf",
+      "label": "Mức độ tham gia Golf",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia Golf",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 170,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_volleyball",
+      "dimension": "Sport: Volleyball",
+      "label": "Mức độ tham gia bóng chuyền",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia bóng chuyền",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 171,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_swimming",
+      "dimension": "Sport: Swimming",
+      "label": "Mức độ tham gia bơi lội",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia bơi lội",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 172,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_running",
+      "dimension": "Sport: Running",
+      "label": "Mức độ tham gia chạy bộ",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia chạy bộ",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 173,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_cycling",
+      "dimension": "Sport: Cycling",
+      "label": "Mức độ tham gia đạp xe",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia đạp xe",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 174,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_boxing",
+      "dimension": "Sport: Boxing",
+      "label": "Mức độ tham gia Boxing",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia Boxing",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 175,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_mma",
+      "dimension": "Sport: MMA",
+      "label": "Mức độ tham gia MMA",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia MMA",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 176,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_wrestling",
+      "dimension": "Sport: Wrestling",
+      "label": "Mức độ tham gia đấu vật",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia đấu vật",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 177,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_climbing",
+      "dimension": "Sport: Climbing",
+      "label": "Mức độ tham gia leo núi / leo vách",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia leo núi / leo vách",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 178,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_gym_calisthenic",
+      "dimension": "Sport: Gym & Calisthenic",
+      "label": "Mức độ tập gym & calisthenics",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tập gym & calisthenics",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 179,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_badminton",
+      "dimension": "Sport: Badminton",
+      "label": "Mức độ tham gia cầu lông",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia cầu lông",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 180,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "sport_table_tennis",
+      "dimension": "Sport: Table tennis",
+      "label": "Mức độ tham gia bóng bàn",
+      "group": "Lifestyle",
+      "subgroup": "Interest",
+      "category": "Sports",
+      "description": "Mức độ tham gia bóng bàn",
+      "values": [
+        "Thường xuyên tham gia",
+        "Chủ yếu theo dõi",
+        "Quan tâm nhẹ",
+        "Không quan tâm"
+      ],
+      "index": 181,
+      "defaultValue": "Không quan tâm"
+    },
+    {
+      "id": "cuisine_vietnamese",
+      "dimension": "Cuisine: Vietnamese",
+      "label": "Ẩm thực truyền thống Việt Nam",
+      "group": "Lifestyle",
+      "subgroup": "Food & Beverage",
+      "category": "Culinary Preferences",
+      "description": "Mức độ yêu thích Ẩm thực truyền thống Việt Nam",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 182,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "cuisine_street_food",
+      "dimension": "Cuisine: Street Food",
+      "label": "Món ăn đường phố",
+      "group": "Lifestyle",
+      "subgroup": "Food & Beverage",
+      "category": "Culinary Preferences",
+      "description": "Mức độ yêu thích Món ăn đường phố",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 183,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "cuisine_korean",
+      "dimension": "Cuisine: Korean",
+      "label": "Ẩm thực Hàn Quốc",
+      "group": "Lifestyle",
+      "subgroup": "Food & Beverage",
+      "category": "Culinary Preferences",
+      "description": "Mức độ yêu thích Ẩm thực Hàn Quốc",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 184,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "cuisine_japanese",
+      "dimension": "Cuisine: Japanese",
+      "label": "Ẩm thực Nhật Bản",
+      "group": "Lifestyle",
+      "subgroup": "Food & Beverage",
+      "category": "Culinary Preferences",
+      "description": "Mức độ yêu thích Ẩm thực Nhật Bản",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 185,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "cuisine_thai",
+      "dimension": "Cuisine: Thai",
+      "label": "Ẩm thực Thái Lan",
+      "group": "Lifestyle",
+      "subgroup": "Food & Beverage",
+      "category": "Culinary Preferences",
+      "description": "Mức độ yêu thích Ẩm thực Thái Lan",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 186,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "cuisine_european",
+      "dimension": "Cuisine: European",
+      "label": "Ẩm thực Âu",
+      "group": "Lifestyle",
+      "subgroup": "Food & Beverage",
+      "category": "Culinary Preferences",
+      "description": "Mức độ yêu thích Ẩm thực Âu",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 187,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "cuisine_vegetarian",
+      "dimension": "Cuisine: Vegetarian",
+      "label": "Món chay",
+      "group": "Lifestyle",
+      "subgroup": "Food & Beverage",
+      "category": "Culinary Preferences",
+      "description": "Mức độ yêu thích Món chay",
+      "values": [
+        "Rất thích",
+        "Thích",
+        "Bình thường",
+        "Không thích"
+      ],
+      "index": 188,
+      "defaultValue": "Bình thường"
+    },
+    {
+      "id": "coffee_tea_culture",
+      "dimension": "Coffee & Tea culture",
+      "label": "Văn hóa cà phê & Trà",
+      "group": "Lifestyle",
+      "subgroup": "Food & Beverage",
+      "category": "Culinary Preferences",
+      "description": "Thói quen và sở thích thưởng thức đồ uống.",
+      "values": [
+        "Nghiện cà phê",
+        "Thích trà sữa / Đồ uống ngọt",
+        "Thích trà mộc / Trà đạo",
+        "Thích không gian cà phê làm việc / Gặp gỡ",
+        "Không quan trọng / Chỉ uống nước lọc"
+      ],
+      "index": 189,
+      "defaultValue": "Không quan trọng / Chỉ uống nước lọc"
+    },
+    {
+      "id": "cooking_baking",
+      "dimension": "Cooking & Baking",
+      "label": "Nấu ăn & Làm bánh",
+      "group": "Lifestyle",
+      "subgroup": "Food & Beverage",
+      "category": "Culinary Preferences",
+      "description": "Mức độ tự nấu nướng và chăm sóc bữa ăn.",
+      "values": [
+        "Đam mê nấu ăn / Thường tự nấu",
+        "Nấu ăn khá tốt khi cần",
+        "Chỉ biết nấu các món cơ bản",
+        "Không biết nấu / Chủ yếu ăn ngoài hoặc gọi đồ"
+      ],
+      "index": 190,
+      "defaultValue": null
+    },
+    {
+      "id": "logical_reasoning_skill",
+      "dimension": "Logical reasoning skill",
+      "label": "Kỹ năng suy luận logic",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Mức độ thành thạo trong việc suy luận có hệ thống và xác định quan hệ logic giữa các thông tin.",
+      "values": [
+        "Chuyên gia",
+        "Nâng cao",
+        "Trung cấp",
+        "Cơ bản",
+        "Không có"
+      ],
+      "index": 191,
+      "defaultValue": "Không có"
+    },
+    {
+      "id": "critical_thinking_skill",
+      "dimension": "Critical thinking skill",
+      "label": "Kỹ năng tư duy phản biện",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Mức độ thành thạo trong việc phân tích lập luận, kiểm tra giả định và đánh giá thông tin một cách có lý trí",
+      "values": [
+        "Chuyên gia",
+        "Nâng cao",
+        "Trung cấp",
+        "Cơ bản",
+        "Không có"
+      ],
+      "index": 192,
+      "defaultValue": "Không có"
+    },
+    {
+      "id": "writing_content_skill",
+      "dimension": "Writing content skill",
+      "label": "Kỹ năng viết & Diễn đạt nội dung",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Mức độ thành thạo trong việc diễn đạt ý tưởng rõ ràng và hiệu quả bằng văn bản.",
+      "values": [
+        "Chuyên gia",
+        "Nâng cao",
+        "Trung cấp",
+        "Cơ bản",
+        "Không có"
+      ],
+      "index": 193,
+      "defaultValue": "Không có"
+    },
+    {
+      "id": "storytelling_skill",
+      "dimension": "Storytelling skill",
+      "label": "Kỹ năng kể chuyện, dẫn dắt câu chuyện",
+      "group": "Capability",
+      "subgroup": "Skills",
+      "category": "General Skills",
+      "description": "Khả năng dẫn dắt câu chuyện cuốn hút người nghe.",
+      "values": [
+        "Chuyên gia",
+        "Nâng cao",
+        "Trung cấp",
+        "Cơ bản",
+        "Không có"
+      ],
+      "index": 194,
+      "defaultValue": "Không có"
+    }
+  ]
+}

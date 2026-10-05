@@ -5,11 +5,13 @@ from typing import Iterable
 
 from .config import FRESH_BATCH_NAME_START, NUM_FRESH_BATCHES, Config
 from .pipeline import (
+    benchmark_llm_concurrency,
     compact_profiles,
     extract_personas,
     generate_persona_stats,
     find_user_history,
     ingest_posts,
+    migrate_personas,
     prepare_histories,
     select_users,
 )
@@ -21,7 +23,10 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument(
         "stage",
-        choices=("all", "ingest", "prepare", "compact", "extract", "stats", "find"),
+        choices=(
+            "all", "ingest", "prepare", "compact", "extract", "stats", "find",
+            "bench-llm", "migrate",
+        ),
         nargs="?",
         default="all",
     )
@@ -53,6 +58,8 @@ def main(argv: Iterable[str] | None = None) -> None:
         raise ValueError("min-history-days must be at least 0")
     if config.llm_workers < 1:
         raise ValueError("llm-workers must be at least 1")
+    if config.preprocess_workers < 1:
+        raise ValueError("preprocess-workers must be at least 1")
     if config.max_contents < 1:
         raise ValueError("max-contents must be at least 1")
     if not 0 <= config.timeline_content_ratio <= 1:
@@ -84,3 +91,7 @@ def main(argv: Iterable[str] | None = None) -> None:
         extract_personas(config)
     if args.stage in {"all", "stats"}:
         generate_persona_stats(config)
+    if args.stage == "bench-llm":
+        benchmark_llm_concurrency(config)
+    if args.stage == "migrate":
+        migrate_personas(config)

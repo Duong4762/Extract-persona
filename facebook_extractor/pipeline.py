@@ -10,7 +10,7 @@ import json
 import os
 import time
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -32,6 +32,30 @@ csv.field_size_limit(100_000_000)
 
 ASSIGNMENT_TYPES = {"direct", "structured_claim", "summary_inference", "unsupported"}
 NULLISH_VALUES = {"", "null", "none", "n/a", "na", "unknown", "unsupported", "not applicable"}
+
+# Populated via ProcessPoolExecutor(initializer=...) so each preprocessing worker
+# process gets its own copy once, instead of re-pickling it on every submitted task.
+_worker_config: Config | None = None
+_worker_selected: dict[str, dict[str, Any]] = {}
+_worker_profiles: dict[str, dict[str, Any]] = {}
+
+
+def _init_config_worker(config: Config) -> None:
+    global _worker_config
+    _worker_config = config
+
+
+def _init_prepare_worker(
+    config: Config,
+    selected: dict[str, dict[str, Any]],
+    profiles: dict[str, dict[str, Any]],
+) -> None:
+    global _worker_config, _worker_selected, _worker_profiles
+    _worker_config = config
+    _worker_selected = selected
+    _worker_profiles = profiles
+
+
 def capped_score(value: float, maximum: float) -> float:
     return min(max(value, 0.0) / maximum, 1.0)
 
@@ -376,6 +400,24 @@ def iter_compact_profiles(config: Config) -> Iterator[dict[str, Any]]:
         yield from iter_local_jsonl(path)
 
 
+def _reshard_batch(args: tuple[int, Path, Path]) -> int:
+    batch_number, raw_path, work_dir = args
+    config = _worker_config
+    shard_handles = [
+        shard_path_in(work_dir, index).open("w", encoding="utf-8")
+        for index in range(config.post_shards)
+    ]
+    try:
+        for record in iter_local_jsonl(raw_path):
+            shard_index = user_shard(record["user_id"], config.post_shards)
+            shard_handles[shard_index].write(json.dumps(record, ensure_ascii=False) + "\n")
+    finally:
+        for handle in shard_handles:
+            handle.close()
+    raw_path.unlink()
+    return batch_number
+
+
 def ingest_posts(config: Config) -> None:
     """Read every source batch and fan users out across NUM_FRESH_BATCHES output batches.
 
@@ -460,21 +502,20 @@ def ingest_posts(config: Config) -> None:
             handle.close()
 
     # Pass 2: reshard each output batch's raw file into config.post_shards JSONL
-    # shards, one batch at a time, then drop the raw file.
-    for number in tqdm(batch_numbers, desc="reshard output batches"):
-        raw_path = raw_paths[number]
-        shard_handles = [
-            shard_path_in(batch_dirs[number], index).open("w", encoding="utf-8")
-            for index in range(config.post_shards)
-        ]
-        try:
-            for record in iter_local_jsonl(raw_path):
-                shard_index = user_shard(record["user_id"], config.post_shards)
-                shard_handles[shard_index].write(json.dumps(record, ensure_ascii=False) + "\n")
-        finally:
-            for handle in shard_handles:
-                handle.close()
-        raw_path.unlink()
+    # shards. Each batch's raw file is independent, so batches reshard in parallel.
+    reshard_args = [
+        (number, raw_paths[number], batch_dirs[number]) for number in batch_numbers
+    ]
+    with ProcessPoolExecutor(
+        max_workers=config.preprocess_workers,
+        initializer=_init_config_worker,
+        initargs=(config,),
+    ) as executor:
+        for _ in tqdm(
+            executor.map(_reshard_batch, reshard_args),
+            total=len(reshard_args), desc="reshard output batches",
+        ):
+            pass
 
     batch_user_counts: dict[int, int] = defaultdict(int)
     for batch_number in target_user_batch.values():
@@ -485,41 +526,45 @@ def ingest_posts(config: Config) -> None:
         print(f"  {batch_dirs[number].name}: users={batch_user_counts.get(number, 0):,}")
 
 
-def select_users(config: Config) -> None:
-    if not any(iter_post_shards(config)):
-        raise FileNotFoundError(f"No post shards in {config.post_shards_dir}. Run ingest first.")
+def _select_users_shard(path: Path) -> list[tuple]:
+    """Aggregate and filter one post shard's users.
+
+    Shards are keyed by ``user_shard(user_id, ...)``, so every user's posts land
+    in exactly one shard and shards can be scored independently in parallel.
+    """
+    config = _worker_config
     aggregate: dict[str, dict[str, Any]] = {}
-    for path in tqdm(list(iter_post_shards(config)), desc="select users"):
-        seen_posts: set[tuple[str, ...]] = set()
-        for row in iter_local_jsonl(path):
-            duplicate_key = (
-                str(row.get("user_id") or ""), str(row.get("category") or ""),
-                str(row.get("timestamp") or ""), str(row.get("text") or ""),
-            )
-            if duplicate_key in seen_posts:
-                continue
-            seen_posts.add(duplicate_key)
-            user_id = row["user_id"]
-            timestamp_ms = parse_comment_date(row.get("timestamp"))
-            if timestamp_ms is None:
-                continue
-            item = aggregate.setdefault(user_id, {
-                "count": 0,
-                "text_chars": 0,
-                "total_before_ad_filter": 0,
-                "advertising_filtered_count": 0,
-                "min_ts": None,
-                "max_ts": None,
-            })
-            text = str(row.get("text") or "")
-            item["total_before_ad_filter"] += 1
-            if is_advertising(text):
-                item["advertising_filtered_count"] += 1
-                continue
-            item["count"] += 1
-            item["text_chars"] += len(text)
-            item["min_ts"] = timestamp_ms if item["min_ts"] is None else min(item["min_ts"], timestamp_ms)
-            item["max_ts"] = timestamp_ms if item["max_ts"] is None else max(item["max_ts"], timestamp_ms)
+    seen_posts: set[tuple[str, ...]] = set()
+    for row in iter_local_jsonl(path):
+        duplicate_key = (
+            str(row.get("user_id") or ""), str(row.get("category") or ""),
+            str(row.get("timestamp") or ""), str(row.get("text") or ""),
+        )
+        if duplicate_key in seen_posts:
+            continue
+        seen_posts.add(duplicate_key)
+        user_id = row["user_id"]
+        timestamp_ms = parse_comment_date(row.get("timestamp"))
+        if timestamp_ms is None:
+            continue
+        item = aggregate.setdefault(user_id, {
+            "count": 0,
+            "text_chars": 0,
+            "total_before_ad_filter": 0,
+            "advertising_filtered_count": 0,
+            "min_ts": None,
+            "max_ts": None,
+        })
+        text = str(row.get("text") or "")
+        item["total_before_ad_filter"] += 1
+        if is_advertising(text):
+            item["advertising_filtered_count"] += 1
+            continue
+        item["count"] += 1
+        item["text_chars"] += len(text)
+        item["min_ts"] = timestamp_ms if item["min_ts"] is None else min(item["min_ts"], timestamp_ms)
+        item["max_ts"] = timestamp_ms if item["max_ts"] is None else max(item["max_ts"], timestamp_ms)
+
     eligible = []
     for user_id, item in aggregate.items():
         if item["min_ts"] is None or item["max_ts"] is None:
@@ -544,6 +589,24 @@ def select_users(config: Config) -> None:
                 advertising_ratio,
                 score_factor,
             ))
+    return eligible
+
+
+def select_users(config: Config) -> None:
+    shard_files = list(iter_post_shards(config))
+    if not shard_files:
+        raise FileNotFoundError(f"No post shards in {config.post_shards_dir}. Run ingest first.")
+    eligible: list[tuple] = []
+    with ProcessPoolExecutor(
+        max_workers=config.preprocess_workers,
+        initializer=_init_config_worker,
+        initargs=(config,),
+    ) as executor:
+        for shard_eligible in tqdm(
+            executor.map(_select_users_shard, shard_files),
+            total=len(shard_files), desc="select users",
+        ):
+            eligible.extend(shard_eligible)
     scored = [(
         user_selection_score(row[1], row[2], row[3], config) * row[7],
         row,
@@ -567,6 +630,41 @@ def select_users(config: Config) -> None:
     print(f"Eligible users={len(eligible):,}; selected={min(config.top_k, len(scored)):,}")
 
 
+def _prepare_shard(path: Path) -> int:
+    config = _worker_config
+    selected = _worker_selected
+    profiles = _worker_profiles
+    shard_index = int(path.stem.rsplit("-", 1)[-1])
+    output_path = history_shard_path(config, shard_index)
+    posts_by_user: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for post in iter_local_jsonl(path):
+        user_id = str(post["user_id"])
+        if user_id in selected:
+            posts_by_user[user_id].append(post)
+    count = 0
+    with output_path.open("w", encoding="utf-8") as output:
+        for user_id, raw_posts in posts_by_user.items():
+            posts = filter_posts(
+                raw_posts, min_post_text_chars=config.min_post_text_chars
+            )
+            posts = select_contents(
+                posts,
+                max_contents=config.max_contents,
+                timeline_ratio=config.timeline_content_ratio,
+            )
+            if len(posts) < 2:
+                continue
+            for post in posts:
+                post.pop("timestamp_ms", None)
+                post.pop("source_index", None)
+            record = {"source": "facebook", "user_id": user_id,
+                "rank": selected[user_id]["rank"], "profile": profiles.get(user_id, {}),
+                "post_count": len(posts), "posts": posts}
+            output.write(json.dumps(record, ensure_ascii=False) + "\n")
+            count += 1
+    return count
+
+
 def prepare_histories(config: Config) -> None:
     require_file(config.selected_users_path, "Run the prepare selection after ingest")
     require_file(config.user_profiles_path, "Run ingest first")
@@ -580,35 +678,33 @@ def prepare_histories(config: Config) -> None:
     shard_files = list(iter_post_shards(config))
     config.history_shards_dir.mkdir(parents=True, exist_ok=True)
     total_histories = 0
-    for path in tqdm(shard_files, desc="prepare histories"):
-        shard_index = int(path.stem.rsplit("-", 1)[-1])
-        output_path = history_shard_path(config, shard_index)
-        with output_path.open("w", encoding="utf-8") as output:
-            posts_by_user: dict[str, list[dict[str, Any]]] = defaultdict(list)
-            for post in iter_local_jsonl(path):
-                user_id = str(post["user_id"])
-                if user_id in selected:
-                    posts_by_user[user_id].append(post)
-            for user_id, raw_posts in posts_by_user.items():
-                posts = filter_posts(
-                    raw_posts, min_post_text_chars=config.min_post_text_chars
-                )
-                posts = select_contents(
-                    posts,
-                    max_contents=config.max_contents,
-                    timeline_ratio=config.timeline_content_ratio,
-                )
-                if len(posts) < 2:
-                    continue
-                for post in posts:
-                    post.pop("timestamp_ms", None)
-                    post.pop("source_index", None)
-                record = {"source": "facebook", "user_id": user_id,
-                    "rank": selected[user_id]["rank"], "profile": profiles.get(user_id, {}),
-                    "post_count": len(posts), "posts": posts}
-                output.write(json.dumps(record, ensure_ascii=False) + "\n")
-                total_histories += 1
+    with ProcessPoolExecutor(
+        max_workers=config.preprocess_workers,
+        initializer=_init_prepare_worker,
+        initargs=(config, selected, profiles),
+    ) as executor:
+        for shard_count in tqdm(
+            executor.map(_prepare_shard, shard_files),
+            total=len(shard_files), desc="prepare histories",
+        ):
+            total_histories += shard_count
     print(f"Prepared histories={total_histories:,} in {config.history_shards_dir}")
+
+
+def _compact_shard(path: Path) -> int:
+    config = _worker_config
+    shard_index = int(path.stem.rsplit("-", 1)[-1])
+    output_path = compact_shard_path(config, shard_index)
+    count = 0
+    with output_path.open("w", encoding="utf-8") as output:
+        for user in iter_local_jsonl(path):
+            profile = assemble_profile(user, config.max_profile_chars)
+            record = {key: user[key] for key in ("user_id", "source", "post_count")}
+            record.update({"compact_profile_chars": len(profile), "max_profile_chars": config.max_profile_chars,
+                           "profile_text": profile})
+            output.write(json.dumps(record, ensure_ascii=False) + "\n")
+            count += 1
+    return count
 
 
 def compact_profiles(config: Config) -> None:
@@ -617,17 +713,16 @@ def compact_profiles(config: Config) -> None:
         raise FileNotFoundError(f"No history shards in {config.history_shards_dir}. Run prepare first.")
     config.compact_shards_dir.mkdir(parents=True, exist_ok=True)
     count = 0
-    for path in tqdm(history_shards, desc="compact history shards"):
-        shard_index = int(path.stem.rsplit("-", 1)[-1])
-        output_path = compact_shard_path(config, shard_index)
-        with output_path.open("w", encoding="utf-8") as output:
-            for user in iter_local_jsonl(path):
-                profile = assemble_profile(user, config.max_profile_chars, config.max_post_text_chars)
-                record = {key: user[key] for key in ("user_id", "source", "post_count")}
-                record.update({"compact_profile_chars": len(profile), "max_profile_chars": config.max_profile_chars,
-                               "max_post_text_chars": config.max_post_text_chars, "profile_text": profile})
-                output.write(json.dumps(record, ensure_ascii=False) + "\n")
-                count += 1
+    with ProcessPoolExecutor(
+        max_workers=config.preprocess_workers,
+        initializer=_init_config_worker,
+        initargs=(config,),
+    ) as executor:
+        for shard_count in tqdm(
+            executor.map(_compact_shard, history_shards),
+            total=len(history_shards), desc="compact history shards",
+        ):
+            count += shard_count
     print(f"Compact profiles={count:,} in {config.compact_shards_dir}")
 
 
@@ -652,6 +747,105 @@ def call_llm(prompt: str, config: Config) -> str:
     ))
 
 
+def _timed_llm_call(prompt: str, config: Config) -> tuple[float, str | None]:
+    started_at = time.perf_counter()
+    try:
+        call_llm(prompt, config)
+        return time.perf_counter() - started_at, None
+    except (LLMUnauthorizedError, LLMCancelledError):
+        raise
+    except Exception as error:
+        return time.perf_counter() - started_at, str(error)
+
+
+def benchmark_llm_concurrency(config: Config) -> None:
+    """Probe how many concurrent requests the LLM endpoint sustains.
+
+    Replays the real extraction prompt (schema chunk + an actual compact profile when
+    one is available) at increasing concurrency levels, so ``llm_workers`` can be sized
+    from measured latency/error behavior instead of guesswork.
+    """
+    if config.llm_bench_prompt_index:
+        prompt_path = config.prompt_log_dir / f"prompt-{config.llm_bench_prompt_index:04d}.txt"
+        require_file(prompt_path, "Run extract first so prompt_log has files, or pick a valid index")
+        prompt = prompt_path.read_text(encoding="utf-8")
+        print(f"Benchmarking {config.llm_endpoint} with {prompt_path.name} ({len(prompt):,} chars)")
+    else:
+        schema = load_schema(config)
+        chunks = cat_chunks(_group_by_category(schema), config.max_dims_per_chunk)
+        if not chunks:
+            raise ValueError(f"Schema at {config.schema_path} produced no dimension chunks")
+
+        profile_text = next(
+            (record["profile_text"] for record in iter_compact_profiles(config)), None
+        )
+        if profile_text is None:
+            profile_text = "Sample profile text. " * (config.max_profile_chars // 21)
+            print("No compact profiles found; benchmarking with a synthetic profile instead.")
+
+        prompt = build_post_prompt(profile_text, chunks[0])
+        print(f"Benchmarking {config.llm_endpoint} with a {len(prompt):,}-char prompt")
+
+    results: list[dict[str, Any]] = []
+    for concurrency in config.llm_bench_concurrency_levels:
+        total_requests = concurrency * config.llm_bench_requests_per_worker
+        latencies: list[float] = []
+        errors = 0
+        wall_started_at = time.perf_counter()
+        executor = ThreadPoolExecutor(max_workers=concurrency)
+        try:
+            futures = [
+                executor.submit(_timed_llm_call, prompt, config)
+                for _ in range(total_requests)
+            ]
+            for future in as_completed(futures):
+                elapsed_seconds, error = future.result()
+                if error is not None:
+                    errors += 1
+                    tqdm.write(f"concurrency={concurrency} error={error}")
+                else:
+                    latencies.append(elapsed_seconds)
+        finally:
+            executor.shutdown(wait=True, cancel_futures=True)
+        wall_elapsed_seconds = time.perf_counter() - wall_started_at
+        ok = len(latencies)
+        row = {
+            "concurrency": concurrency,
+            "requests": total_requests,
+            "ok": ok,
+            "errors": errors,
+            "avg_latency_seconds": round(sum(latencies) / ok, 2) if ok else None,
+            "max_latency_seconds": round(max(latencies), 2) if ok else None,
+            "throughput_requests_per_second": round(ok / wall_elapsed_seconds, 3)
+            if wall_elapsed_seconds else 0.0,
+        }
+        results.append(row)
+        print(
+            f"concurrency={concurrency:>3} ok={ok}/{total_requests} "
+            f"avg={row['avg_latency_seconds']}s max={row['max_latency_seconds']}s "
+            f"throughput={row['throughput_requests_per_second']}req/s"
+        )
+        if errors * 2 > total_requests:
+            print(f"Stopping: concurrency={concurrency} failed more than half its requests")
+            break
+
+    config.llm_bench_path.write_text(
+        json.dumps(results, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    baseline_latency = results[0]["avg_latency_seconds"] if results else None
+    recommended = results[0]["concurrency"] if results else 1
+    for row in results:
+        latency_ok = (
+            baseline_latency is None
+            or row["avg_latency_seconds"] is None
+            or row["avg_latency_seconds"] <= baseline_latency * 2.5
+        )
+        if row["errors"] == 0 and latency_ok:
+            recommended = row["concurrency"]
+    print(f"Recommended llm_workers: {recommended}")
+    print("Benchmark results:", config.llm_bench_path)
+
+
 def reset_prompt_log(config: Config) -> None:
     """Keep prompt logs for the currently processed user only."""
     config.prompt_log_dir.mkdir(parents=True, exist_ok=True)
@@ -666,15 +860,78 @@ def save_prompt_log(config: Config, chunk_index: int, prompt: str) -> Path:
     return path
 
 
+def _group_by_category(dimensions: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for dimension in dimensions:
+        grouped[dimension.get("category", "Uncategorized")].append(dimension)
+    return grouped
+
+
+def _run_dimension_chunks(
+    user_id: str,
+    profile_text: str,
+    chunks: list[list[dict[str, Any]]],
+    config: Config,
+) -> list[dict[str, Any]]:
+    """Call the LLM for every dimension chunk of one user; return flat sanitized fields."""
+    reset_prompt_log(config)
+    chunk_results: dict[int, list[dict[str, Any]]] = {}
+    futures = {}
+    executor = ThreadPoolExecutor(max_workers=config.llm_workers)
+    for chunk_index, dimensions in enumerate(chunks, start=1):
+        prompt = build_post_prompt(profile_text, dimensions)
+        prompt_path = save_prompt_log(config, chunk_index, prompt)
+        future = executor.submit(call_llm, prompt, config)
+        futures[future] = (chunk_index, dimensions, prompt_path, time.perf_counter())
+    try:
+        for future in as_completed(futures):
+            chunk_index, dimensions, prompt_path, started_at = futures[future]
+            try:
+                response = future.result()
+                chunk_fields = sanitize_fields(
+                    parse_fields(response), dimensions, profile_text
+                )
+            except (LLMUnauthorizedError, LLMCancelledError):
+                for pending in futures:
+                    pending.cancel()
+                raise
+            except Exception as error:
+                chunk_fields = sanitize_fields([], dimensions, profile_text)
+                tqdm.write(
+                    f"user={user_id} chunk={chunk_index}/{len(chunks)} "
+                    f"LLM retries exhausted; marking {len(dimensions)} dimensions "
+                    f"unsupported; error={error}"
+                )
+            chunk_results[chunk_index] = chunk_fields
+            categories = sorted({
+                str(dimension.get("category") or "Uncategorized")
+                for dimension in dimensions
+            })
+            supported_count = sum(
+                field["value"] is not None for field in chunk_fields
+            )
+            elapsed_seconds = time.perf_counter() - started_at
+            tqdm.write(
+                f"user={user_id} chunk={chunk_index}/{len(chunks)} "
+                f"category={','.join(categories)} dimensions={len(dimensions)} "
+                f"supported={supported_count} elapsed={elapsed_seconds:.2f}s "
+                f"prompt_log={prompt_path.name}"
+            )
+    finally:
+        executor.shutdown(wait=True, cancel_futures=True)
+    return [
+        field
+        for chunk_index in range(1, len(chunks) + 1)
+        for field in chunk_results[chunk_index]
+    ]
+
+
 def extract_personas(config: Config) -> None:
     compact_shards = list(iter_compact_shards(config))
     if not compact_shards:
         raise FileNotFoundError(f"No compact shards in {config.compact_shards_dir}. Run compact first.")
     schema = load_schema(config)
-    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for dimension in schema:
-        grouped[dimension.get("category", "Uncategorized")].append(dimension)
-    chunks = cat_chunks(grouped, config.max_dims_per_chunk)
+    chunks = cat_chunks(_group_by_category(schema), config.max_dims_per_chunk)
     done = set()
     if config.personas_path.exists():
         with config.personas_path.open(encoding="utf-8") as existing:
@@ -687,58 +944,7 @@ def extract_personas(config: Config) -> None:
                 continue
             if config.max_llm_users and processed >= config.max_llm_users:
                 break
-            reset_prompt_log(config)
-            chunk_results: dict[int, list[dict[str, Any]]] = {}
-            futures = {}
-            executor = ThreadPoolExecutor(max_workers=config.llm_workers)
-            for chunk_index, dimensions in enumerate(chunks, start=1):
-                prompt = build_post_prompt(record["profile_text"], dimensions)
-                prompt_path = save_prompt_log(config, chunk_index, prompt)
-                future = executor.submit(call_llm, prompt, config)
-                futures[future] = (
-                    chunk_index, dimensions, prompt_path, time.perf_counter()
-                )
-            try:
-                for future in as_completed(futures):
-                    chunk_index, dimensions, prompt_path, started_at = futures[future]
-                    try:
-                        response = future.result()
-                        chunk_fields = sanitize_fields(
-                            parse_fields(response), dimensions, record["profile_text"]
-                        )
-                    except (LLMUnauthorizedError, LLMCancelledError):
-                        for pending in futures:
-                            pending.cancel()
-                        raise
-                    except Exception as error:
-                        chunk_fields = sanitize_fields([], dimensions, record["profile_text"])
-                        tqdm.write(
-                            f"user={user_id} chunk={chunk_index}/{len(chunks)} "
-                            f"LLM retries exhausted; marking {len(dimensions)} dimensions "
-                            f"unsupported; error={error}"
-                        )
-                    chunk_results[chunk_index] = chunk_fields
-                    categories = sorted({
-                        str(dimension.get("category") or "Uncategorized")
-                        for dimension in dimensions
-                    })
-                    supported_count = sum(
-                        field["value"] is not None for field in chunk_fields
-                    )
-                    elapsed_seconds = time.perf_counter() - started_at
-                    tqdm.write(
-                        f"user={user_id} chunk={chunk_index}/{len(chunks)} "
-                        f"category={','.join(categories)} dimensions={len(dimensions)} "
-                        f"supported={supported_count} elapsed={elapsed_seconds:.2f}s "
-                        f"prompt_log={prompt_path.name}"
-                    )
-            finally:
-                executor.shutdown(wait=True, cancel_futures=True)
-            fields = [
-                field
-                for chunk_index in range(1, len(chunks) + 1)
-                for field in chunk_results[chunk_index]
-            ]
+            fields = _run_dimension_chunks(user_id, record["profile_text"], chunks, config)
             if len(fields) != len(schema):
                 raise RuntimeError(f"Expected {len(schema)} fields, got {len(fields)} for {user_id}")
             result = {key: record[key] for key in (
@@ -748,6 +954,176 @@ def extract_personas(config: Config) -> None:
             output.write(json.dumps(result, ensure_ascii=False) + "\n"); output.flush(); os.fsync(output.fileno())
             done.add(user_id); processed += 1
     print(f"New personas={processed}; output={config.personas_path}")
+
+
+def _legacy_schema_dimensions(path: Path) -> list[dict[str, Any]]:
+    require_file(path, "Check Config.legacy_schema_paths")
+    document = json.loads(path.read_text(encoding="utf-8"))
+    dimensions = document.get("dimensions")
+    if not isinstance(dimensions, list) or not dimensions:
+        raise ValueError(f"Invalid schema: {path}")
+    return dimensions
+
+
+def _build_legacy_migration(
+    final_schema: list[dict[str, Any]], legacy_dimensions: list[dict[str, Any]]
+) -> dict[str, tuple[list[str], list[str]]]:
+    """Map final_id -> (legacy_values, final_values) for every dimension whose id and
+    allowed-value count are unchanged, so an old value can be translated positionally."""
+    legacy_by_id = {str(d["id"]): d for d in legacy_dimensions}
+    migration: dict[str, tuple[list[str], list[str]]] = {}
+    for dimension in final_schema:
+        final_id = str(dimension["id"])
+        legacy = legacy_by_id.get(final_id)
+        if legacy is None:
+            continue
+        legacy_values = [str(v) for v in legacy.get("values", [])]
+        final_values = [str(v) for v in dimension.get("values", [])]
+        if legacy_values and len(legacy_values) == len(final_values):
+            migration[final_id] = (legacy_values, final_values)
+    return migration
+
+
+def _detect_legacy_format(field_ids: set[str], distinctive_ids_by_format: list[set[str]]) -> int | None:
+    """Return the legacy schema index whose distinctive ids this persona's fields match
+    best, or None when it matches none (already on the final schema, or unrecognized)."""
+    best_index, best_hits = None, 0
+    for index, distinctive_ids in enumerate(distinctive_ids_by_format):
+        hits = len(field_ids & distinctive_ids)
+        if hits > best_hits:
+            best_index, best_hits = index, hits
+    return best_index
+
+
+def migrate_personas(config: Config) -> None:
+    """Carry personas extracted under an older schema onto the current (final) schema.
+
+    A dimension whose id and allowed-value count are unchanged is translated in place,
+    reusing the old evidence/confidence/description and only mapping ``value`` onto its
+    new-schema wording. Every other dimension has no safe old counterpart (new dimension,
+    or its allowed values were restructured) and is re-extracted via the LLM, exactly like
+    the extract stage but scoped to only that missing subset.
+    """
+    require_file(config.personas_path, "Run the extract stage first")
+    compact_shards = list(iter_compact_shards(config))
+    if not compact_shards:
+        raise FileNotFoundError(f"No compact shards in {config.compact_shards_dir}. Run compact first.")
+
+    final_schema = load_schema(config)
+    legacy_dimensions_by_format = [
+        _legacy_schema_dimensions(path) for path in config.legacy_schema_paths
+    ]
+    legacy_ids_by_format = [{str(d["id"]) for d in dims} for dims in legacy_dimensions_by_format]
+    distinctive_ids_by_format = [
+        ids - set().union(*(other for j, other in enumerate(legacy_ids_by_format) if j != i), set())
+        for i, ids in enumerate(legacy_ids_by_format)
+    ]
+    migration_by_format = [
+        _build_legacy_migration(final_schema, dims) for dims in legacy_dimensions_by_format
+    ]
+    missing_chunks_by_format = [
+        cat_chunks(
+            _group_by_category([d for d in final_schema if str(d["id"]) not in migration]),
+            config.max_dims_per_chunk,
+        )
+        for migration in migration_by_format
+    ]
+    for index, migration in enumerate(migration_by_format):
+        migratable = len(migration)
+        print(
+            f"Legacy format #{index} ({config.legacy_schema_paths[index].name}): "
+            f"{migratable}/{len(final_schema)} dimensions migratable, "
+            f"{len(final_schema) - migratable} need fresh LLM extraction"
+        )
+
+    old_personas: dict[str, dict[str, Any]] = {}
+    with config.personas_path.open(encoding="utf-8") as source:
+        for line in source:
+            if line.strip():
+                persona = json.loads(line)
+                old_personas[str(persona["user_id"])] = persona
+
+    done = set()
+    if config.migrated_personas_path.exists():
+        with config.migrated_personas_path.open(encoding="utf-8") as existing:
+            done = {str(json.loads(line)["user_id"]) for line in existing if line.strip()}
+
+    migrated = 0
+    skipped_no_old_persona = 0
+    with config.migrated_personas_path.open("a", encoding="utf-8") as output:
+        for record in tqdm(iter_compact_profiles(config), desc="migrate personas"):
+            user_id = str(record["user_id"])
+            if user_id in done:
+                continue
+            old_persona = old_personas.get(user_id)
+            if old_persona is None:
+                skipped_no_old_persona += 1
+                continue
+            old_fields_by_id = {
+                str(field.get("field_id")): field
+                for field in old_persona.get("fields", [])
+                if isinstance(field, dict)
+            }
+            field_ids = set(old_fields_by_id)
+            format_index = _detect_legacy_format(field_ids, distinctive_ids_by_format)
+            if format_index is None:
+                # Not a recognized legacy format: pass through any field whose id already
+                # matches the final schema verbatim (e.g. already-migrated personas).
+                migration = {
+                    str(d["id"]): ([], [])
+                    for d in final_schema if str(d["id"]) in field_ids
+                }
+                missing_chunks = cat_chunks(
+                    _group_by_category([d for d in final_schema if str(d["id"]) not in migration]),
+                    config.max_dims_per_chunk,
+                )
+            else:
+                migration = migration_by_format[format_index]
+                missing_chunks = missing_chunks_by_format[format_index]
+
+            migrated_fields: dict[str, dict[str, Any]] = {}
+            for final_id, (legacy_values, final_values) in migration.items():
+                old_field = old_fields_by_id.get(final_id)
+                if old_field is None:
+                    continue
+                old_value = old_field.get("value")
+                if old_value is None or not legacy_values:
+                    new_value = old_value
+                else:
+                    try:
+                        new_value = final_values[legacy_values.index(str(old_value))]
+                    except ValueError:
+                        new_value = None
+                migrated_fields[final_id] = {
+                    "field_id": final_id,
+                    "value": new_value,
+                    "confidence": old_field.get("confidence", 0.0),
+                    "evidence": old_field.get("evidence", ""),
+                    "description": old_field.get("description", ""),
+                    "assignment_type": old_field.get("assignment_type", "unsupported"),
+                }
+
+            if missing_chunks:
+                fresh_fields = _run_dimension_chunks(
+                    user_id, record["profile_text"], missing_chunks, config
+                )
+                for field in fresh_fields:
+                    migrated_fields[str(field["field_id"])] = field
+
+            fields = [
+                migrated_fields.get(str(d["id"])) or unsupported_field(d)
+                for d in final_schema
+            ]
+            result = {key: record[key] for key in (
+                "user_id", "source", "post_count", "compact_profile_chars"
+            )}
+            result["fields"] = fields
+            output.write(json.dumps(result, ensure_ascii=False) + "\n"); output.flush(); os.fsync(output.fileno())
+            done.add(user_id); migrated += 1
+    print(
+        f"Migrated personas={migrated}; skipped (no old persona)={skipped_no_old_persona}; "
+        f"output={config.migrated_personas_path}"
+    )
 
 
 def generate_persona_stats(config: Config) -> None:
@@ -810,6 +1186,13 @@ def generate_persona_stats(config: Config) -> None:
             for user_id, count in sorted(
                 supported_dimensions_by_user.items(),
                 key=lambda item: (-item[1], item[0]),
+            )[:100]
+        ],
+        "bottom_100_users_by_supported_dimension_count": [
+            {"user_id": user_id, "supported_dimension_count": count}
+            for user_id, count in sorted(
+                supported_dimensions_by_user.items(),
+                key=lambda item: (item[1], item[0]),
             )[:100]
         ],
     }

@@ -87,17 +87,23 @@ def filter_posts(
     return kept
 
 
-def render_post(post: dict[str, Any], index: int, max_post_text_chars: int) -> str:
+def render_post(post: dict[str, Any], index: int, max_post_chars: int) -> str:
     lines = [
         f"[content {index}]",
         f"timestamp: {post.get('timestamp') or 'unknown'}",
         f"type: {post.get('category') or 'unknown'}",
-        f"text: {compact_text(post_text(post), max_post_text_chars)}",
+        f"text: {compact_text(post_text(post), max_post_chars)}",
     ]
     return "\n".join(lines)
 
 
-def assemble_profile(row: dict[str, Any], max_chars: int, max_post_text_chars: int) -> str:
+def assemble_profile(row: dict[str, Any], max_chars: int) -> str:
+    """Render the declared profile plus every selected post into one text blob.
+
+    Each post's text share of ``max_chars`` is derived from how many posts were
+    selected, rather than a separate fixed per-post limit, so the per-post budget
+    shrinks or grows with the actual number of posts the content-selection step kept.
+    """
     posts = row.get("posts") or []
     profile = row.get("profile") or {}
     parts = ["Vietnamese Facebook user profile."]
@@ -112,5 +118,11 @@ def assemble_profile(row: dict[str, Any], max_chars: int, max_post_text_chars: i
             profile_lines.append(f"{key}: {compact_text(value, 3000)}")
     if profile_lines:
         parts.append("[declared profile]\n" + "\n".join(profile_lines))
-    parts.extend(render_post(post, index, max_post_text_chars) for index, post in enumerate(posts, 1))
+    header = "\n\n".join(parts)
+    if posts:
+        remaining_chars = max(0, max_chars - len(header))
+        max_post_chars = max(30, remaining_chars // len(posts))
+    else:
+        max_post_chars = 0
+    parts.extend(render_post(post, index, max_post_chars) for index, post in enumerate(posts, 1))
     return "\n\n".join(parts)[:max_chars]
