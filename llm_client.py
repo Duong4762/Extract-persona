@@ -10,8 +10,8 @@ import requests
 
 
 OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
-MAX_RETRIES = 10
-MAX_RETRY_DELAY_SECONDS = 60.0
+MAX_RETRIES = 3
+MAX_RETRY_DELAY_SECONDS = 10
 _cancel_event = Event()
 
 

@@ -52,8 +52,8 @@ class Config:
     max_character_score_at: float = 40_000
     max_history_score_at: float = 365
     max_profile_chars: int = 20_000
-    max_dims_per_chunk: int = 10
-    max_llm_users: int = 500
+    max_dims_per_chunk: int = 30
+    max_llm_users: int = 5000
     llm_workers: int = 10
     preprocess_workers: int = int(
         os.environ.get("PREPROCESS_WORKERS", str(os.cpu_count()-2 or 4))

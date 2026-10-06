@@ -965,22 +965,38 @@ def _legacy_schema_dimensions(path: Path) -> list[dict[str, Any]]:
     return dimensions
 
 
+def _normalized_label(value: Any) -> str:
+    return " ".join(str(value or "").strip().lower().split())
+
+
 def _build_legacy_migration(
     final_schema: list[dict[str, Any]], legacy_dimensions: list[dict[str, Any]]
-) -> dict[str, tuple[list[str], list[str]]]:
-    """Map final_id -> (legacy_values, final_values) for every dimension whose id and
-    allowed-value count are unchanged, so an old value can be translated positionally."""
+) -> dict[str, tuple[str, list[str], list[str]]]:
+    """Map final_id -> (legacy_id, legacy_values, final_values) for every dimension that
+    still has a safe source: the same id, or -- when the id itself was renamed -- a
+    uniquely matching label against the legacy schema's own English ``label`` (matched
+    against ``final``'s English ``dimension`` name, since ``final``'s own ``label`` is
+    Vietnamese). Either way, only when the allowed-value count is unchanged, so an old
+    value can be translated positionally.
+    """
     legacy_by_id = {str(d["id"]): d for d in legacy_dimensions}
-    migration: dict[str, tuple[list[str], list[str]]] = {}
+    legacy_by_label: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for dimension in legacy_dimensions:
+        legacy_by_label[_normalized_label(dimension.get("label"))].append(dimension)
+
+    migration: dict[str, tuple[str, list[str], list[str]]] = {}
     for dimension in final_schema:
         final_id = str(dimension["id"])
         legacy = legacy_by_id.get(final_id)
+        if legacy is None:
+            candidates = legacy_by_label.get(_normalized_label(dimension.get("dimension")), [])
+            legacy = candidates[0] if len(candidates) == 1 else None
         if legacy is None:
             continue
         legacy_values = [str(v) for v in legacy.get("values", [])]
         final_values = [str(v) for v in dimension.get("values", [])]
         if legacy_values and len(legacy_values) == len(final_values):
-            migration[final_id] = (legacy_values, final_values)
+            migration[final_id] = (str(legacy["id"]), legacy_values, final_values)
     return migration
 
 
@@ -1010,12 +1026,18 @@ def migrate_personas(config: Config) -> None:
         raise FileNotFoundError(f"No compact shards in {config.compact_shards_dir}. Run compact first.")
 
     final_schema = load_schema(config)
+    final_ids = {str(d["id"]) for d in final_schema}
     legacy_dimensions_by_format = [
         _legacy_schema_dimensions(path) for path in config.legacy_schema_paths
     ]
     legacy_ids_by_format = [{str(d["id"]) for d in dims} for dims in legacy_dimensions_by_format]
+    # Ids this legacy format uses that neither another legacy format nor the final schema
+    # itself also uses -- i.e. a reliable fingerprint that a persona's fields predate the
+    # final schema. Excluding final's own ids matters because the final schema reuses many
+    # of dimensions.json's original ids verbatim, so an already-final persona would
+    # otherwise look like it matches that legacy format too.
     distinctive_ids_by_format = [
-        ids - set().union(*(other for j, other in enumerate(legacy_ids_by_format) if j != i), set())
+        ids - final_ids - set().union(*(other for j, other in enumerate(legacy_ids_by_format) if j != i), set())
         for i, ids in enumerate(legacy_ids_by_format)
     ]
     migration_by_format = [
@@ -1070,7 +1092,7 @@ def migrate_personas(config: Config) -> None:
                 # Not a recognized legacy format: pass through any field whose id already
                 # matches the final schema verbatim (e.g. already-migrated personas).
                 migration = {
-                    str(d["id"]): ([], [])
+                    str(d["id"]): (str(d["id"]), [], [])
                     for d in final_schema if str(d["id"]) in field_ids
                 }
                 missing_chunks = cat_chunks(
@@ -1082,8 +1104,8 @@ def migrate_personas(config: Config) -> None:
                 missing_chunks = missing_chunks_by_format[format_index]
 
             migrated_fields: dict[str, dict[str, Any]] = {}
-            for final_id, (legacy_values, final_values) in migration.items():
-                old_field = old_fields_by_id.get(final_id)
+            for final_id, (legacy_id, legacy_values, final_values) in migration.items():
+                old_field = old_fields_by_id.get(legacy_id)
                 if old_field is None:
                     continue
                 old_value = old_field.get("value")
