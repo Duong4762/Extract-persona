@@ -5,6 +5,7 @@ from typing import Iterable
 
 from .config import FRESH_BATCH_NAME_START, NUM_FRESH_BATCHES, Config
 from .pipeline import (
+    analyze_user_thresholds,
     benchmark_llm_concurrency,
     compact_profiles,
     extract_personas,
@@ -25,7 +26,7 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
         "stage",
         choices=(
             "all", "ingest", "prepare", "compact", "extract", "stats", "find",
-            "bench-llm", "migrate",
+            "bench-llm", "migrate", "analyze-users",
         ),
         nargs="?",
         default="all",
@@ -95,3 +96,5 @@ def main(argv: Iterable[str] | None = None) -> None:
         benchmark_llm_concurrency(config)
     if args.stage == "migrate":
         migrate_personas(config)
+    if args.stage == "analyze-users":
+        analyze_user_thresholds(config)

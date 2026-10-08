@@ -4,8 +4,6 @@ import re
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from .filters import is_advertising
-
 VIETNAM_TIMEZONE = timezone(timedelta(hours=7))
 
 
@@ -70,12 +68,16 @@ def post_key(post: dict[str, Any]) -> tuple[str, ...]:
 def filter_posts(
     posts: list[dict[str, Any]], *, min_post_text_chars: int
 ) -> list[dict[str, Any]]:
+    """Keep advertising/commercial posts here -- a user whose own posting behavior is
+    mostly selling/affiliate content is still a real persona to capture (see the
+    social_engagement_style "Seller / affiliate" value), not noise to drop at this stage.
+    ``build_post_prompt`` is responsible for restricting what that content may be used
+    as evidence for, not this function.
+    """
     kept, seen = [], set()
     for raw_post in posts:
         post = normalize_post_record(raw_post)
         if post.get("timestamp_ms") is None:
-            continue
-        if is_advertising(post_text(post)):
             continue
         if len(post_text(post)) < min_post_text_chars:
             continue

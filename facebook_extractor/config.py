@@ -40,14 +40,27 @@ class Config:
         PROJECT_ROOT / "schema/dimensions.json",
         PROJECT_ROOT / "schema/dimension.json",
     )
-    max_rows_per_file: int = 0
-    top_k: int = 50000
     min_posts: int = 50
     min_text_chars: int = 1_000
     min_post_text_chars: int = 20
     max_contents: int = 100
     timeline_content_ratio: float = 0.4
     min_history_days: float = 356
+    user_threshold_grid_posts: tuple[int, ...] = (
+        1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200,
+    )
+    user_threshold_grid_chars: tuple[int, ...] = (
+        50, 100, 200, 300, 500, 800, 1000, 1500, 2000, 3000, 5000, 10000,
+    )
+    user_threshold_grid_days: tuple[float, ...] = (
+        0, 30, 60, 90, 120, 180, 270, 356, 450,
+    )
+    user_threshold_scenarios: tuple[tuple[str, int, int, float], ...] = (
+        ("Rat long", 5, 200, 90),
+        ("De xuat", 10, 300, 180),
+        ("Trung binh", 15, 500, 180),
+        ("Nguong cu", 50, 1000, 356),
+    )
     max_content_score_at: float = 150
     max_character_score_at: float = 40_000
     max_history_score_at: float = 365
@@ -56,7 +69,7 @@ class Config:
     max_llm_users: int = 5000
     llm_workers: int = 10
     preprocess_workers: int = int(
-        os.environ.get("PREPROCESS_WORKERS", str(os.cpu_count()-2 or 4))
+        os.environ.get("PREPROCESS_WORKERS", str(os.cpu_count()-8 or 4))
     )
     post_shards: int = 50
     llm_provider: str = os.environ.get("LLM_PROVIDER", "local")
@@ -91,6 +104,15 @@ class Config:
     @property
     def selected_users_path(self) -> Path:
         return self.work_dir / "selected_users.jsonl"
+
+    @property
+    def user_threshold_report_path(self) -> Path:
+        # Dataset-wide (aggregates every ingested batch), not scoped to one FRESH_BATCH.
+        return self.fresh_root / "user_threshold_report.json"
+
+    @property
+    def user_threshold_chart_path(self) -> Path:
+        return self.fresh_root / "user_threshold_chart.png"
 
     @property
     def user_profiles_path(self) -> Path:

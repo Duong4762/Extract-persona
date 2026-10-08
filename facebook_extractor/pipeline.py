@@ -4,6 +4,7 @@ The pipeline is split into five resumable stages: ingest, prepare, compact,
 extract and stats. Run ``python facebook_extractor.py --help`` for usage.
 """
 
+import bisect
 import csv
 import hashlib
 import json
@@ -17,6 +18,7 @@ from typing import Any, Iterator
 from tqdm.auto import tqdm
 from llm_client import LLMCancelledError, LLMSettings, LLMUnauthorizedError, complete_prompt
 from persona_coverage_chart import render_category_coverage_chart
+from user_threshold_chart import render_user_threshold_charts
 from .config import FRESH_BATCH_NAME_START, NUM_FRESH_BATCHES, Config
 from .content_selection import select_contents
 from .filters import is_advertising
@@ -70,21 +72,6 @@ def user_selection_score(
     )
 
 
-def advertising_score_factor(advertising_ratio: float) -> float:
-    ratio = max(float(advertising_ratio), 0.0)
-    if ratio == 0:
-        return 1.0
-    if ratio < 0.05:
-        return 0.90
-    if ratio < 0.15:
-        return 0.75
-    if ratio < 0.30:
-        return 0.55
-    if ratio < 0.50:
-        return 0.30
-    return 0.0
-
-
 def build_post_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> str:
     """Build a schema-constrained prompt for a Vietnamese Facebook user."""
     lines = [
@@ -122,9 +109,18 @@ def build_post_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> st
         "- Commercial content must not be used as evidence for occupation, employment, "
         "income, expertise, interests, preferences, lifestyle, location, personality, "
         "communication style, or any other dimension.",
+        "- Exception: if the social_engagement_style dimension is present below and the "
+        "user's OWN posts repeatedly sell, seed, or affiliate-market products/services, "
+        "that pattern alone may support its seller/affiliate value. This is the only "
+        "dimension commercial content may ever support; every other dimension must still "
+        "ignore it completely, per the rule above.",
         "- Never quote advertising or sales content in evidence or descriptions. Ignore "
         "calls to contact/inbox, prices, phone numbers, promotions, ordering, shipping, "
-        "stock availability, shop links, and invitations to purchase goods or services.",
+        "stock availability, shop links, and invitations to purchase goods or services. "
+        "This still applies to the social_engagement_style exception: describe the "
+        "selling pattern in your own words rather than quoting prices, phone numbers, or "
+        "shop links; evidence may be a short non-sensitive phrase (e.g. a product name or "
+        "generic selling phrase) copied from one of the user's posts.",
         "- For age, gender, health, disability, ethnicity, religion, politics, "
         "income, family/household status, occupation, location, employment, and "
         "parenthood: assign a non-null value only from an explicit self-statement. "
@@ -236,10 +232,15 @@ def cat_chunks(by_category: dict[str, list[dict[str, Any]]], per_chunk: int) -> 
     return chunks
 
 def iter_local_jsonl(path: Path) -> Iterator[dict[str, Any]]:
-    with path.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            if line.strip():
-                yield json.loads(line)
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                if line.strip():
+                    yield json.loads(line)
+    except Exception as e:
+        print(f"ERROR READING FILE: {path}")
+        print(f"ERROR: {type(e).__name__}: {e}")
+        raise
 
 
 def iter_json_array(path: Path, chunk_size: int = 1_048_576) -> Iterator[dict[str, Any]]:
@@ -447,8 +448,6 @@ def ingest_posts(config: Config) -> None:
             scanned = kept = 0
             for row in tqdm(iter_json_records(path), desc=f"users:{path.name}"):
                 scanned += 1
-                if config.max_rows_per_file and scanned > config.max_rows_per_file:
-                    break
                 user_id = compact_text(row.get("id"))
                 if not user_id or user_id in target_user_batch:
                     continue
@@ -474,8 +473,6 @@ def ingest_posts(config: Config) -> None:
             scanned = kept = 0
             for row in tqdm(iter_json_records(path), desc=f"content:{path.name}"):
                 scanned += 1
-                if config.max_rows_per_file and scanned > config.max_rows_per_file:
-                    break
                 user_id = compact_text(row.get("author_id"))
                 timestamp = parse_comment_date(row.get("published_time"))
                 batch_number = target_user_batch.get(user_id)
@@ -559,7 +556,11 @@ def _select_users_shard(path: Path) -> list[tuple]:
         item["total_before_ad_filter"] += 1
         if is_advertising(text):
             item["advertising_filtered_count"] += 1
-            continue
+        # Advertising posts still count toward eligibility (post_count/text_chars/
+        # history span): a user whose own activity is mostly selling/affiliate content
+        # is a real persona to capture (social_engagement_style's "Seller / affiliate"
+        # value), not noise to exclude outright. advertising_ratio is kept purely as
+        # reported metadata, not as a selection or scoring factor.
         item["count"] += 1
         item["text_chars"] += len(text)
         item["min_ts"] = timestamp_ms if item["min_ts"] is None else min(item["min_ts"], timestamp_ms)
@@ -574,11 +575,9 @@ def _select_users_shard(path: Path) -> list[tuple]:
             item["advertising_filtered_count"] / item["total_before_ad_filter"]
             if item["total_before_ad_filter"] else 0.0
         )
-        score_factor = advertising_score_factor(advertising_ratio)
         if (item["count"] >= config.min_posts
                 and item["text_chars"] >= config.min_text_chars
-                and history_days >= config.min_history_days
-                and score_factor > 0):
+                and history_days >= config.min_history_days):
             eligible.append((
                 user_id,
                 item["count"],
@@ -587,7 +586,6 @@ def _select_users_shard(path: Path) -> list[tuple]:
                 item["advertising_filtered_count"],
                 item["total_before_ad_filter"],
                 advertising_ratio,
-                score_factor,
             ))
     return eligible
 
@@ -608,12 +606,12 @@ def select_users(config: Config) -> None:
         ):
             eligible.extend(shard_eligible)
     scored = [(
-        user_selection_score(row[1], row[2], row[3], config) * row[7],
+        user_selection_score(row[1], row[2], row[3], config),
         row,
     ) for row in eligible]
     scored.sort(key=lambda item: (-item[0], -item[1][2], -item[1][3], -item[1][1], item[1][0]))
     with config.selected_users_path.open("w", encoding="utf-8") as output:
-        for rank, (score, row) in enumerate(scored[:config.top_k], 1):
+        for rank, (score, row) in enumerate(scored, 1):
             keys = (
                 "user_id",
                 "post_count",
@@ -622,12 +620,177 @@ def select_users(config: Config) -> None:
                 "advertising_filtered_count",
                 "total_posts_before_ad_filter",
                 "advertising_ratio",
-                "advertising_score_factor",
             )
             record = {key: value for key, value in zip(keys, row)}
             record.update({"rank": rank, "score": score})
             output.write(json.dumps(record, ensure_ascii=False) + "\n")
-    print(f"Eligible users={len(eligible):,}; selected={min(config.top_k, len(scored)):,}")
+    print(f"Eligible users={len(eligible):,}; selected={len(scored):,}")
+
+
+def _user_distribution_shard(path: Path) -> list[tuple[int, int, float]]:
+    """Per-user (post_count, text_chars, history_days) for every user in one post
+    shard, ads excluded but with NO eligibility threshold applied -- the full
+    candidate population ``analyze_user_thresholds`` needs to choose thresholds from.
+    """
+    aggregate: dict[str, dict[str, Any]] = {}
+    seen_posts: set[tuple[str, ...]] = set()
+    for row in iter_local_jsonl(path):
+        duplicate_key = (
+            str(row.get("user_id") or ""), str(row.get("category") or ""),
+            str(row.get("timestamp") or ""), str(row.get("text") or ""),
+        )
+        if duplicate_key in seen_posts:
+            continue
+        seen_posts.add(duplicate_key)
+        user_id = row["user_id"]
+        timestamp_ms = parse_comment_date(row.get("timestamp"))
+        if timestamp_ms is None:
+            continue
+        text = str(row.get("text") or "")
+        if is_advertising(text):
+            continue
+        item = aggregate.setdefault(user_id, {"count": 0, "chars": 0, "min_ts": None, "max_ts": None})
+        item["count"] += 1
+        item["chars"] += len(text)
+        item["min_ts"] = timestamp_ms if item["min_ts"] is None else min(item["min_ts"], timestamp_ms)
+        item["max_ts"] = timestamp_ms if item["max_ts"] is None else max(item["max_ts"], timestamp_ms)
+    rows = []
+    for item in aggregate.values():
+        if item["min_ts"] is None:
+            continue
+        days = (item["max_ts"] - item["min_ts"]) / 86_400_000
+        rows.append((item["count"], item["chars"], days))
+    return rows
+
+
+def _retention_curve(sorted_values: list[float], grid: tuple) -> list[dict[str, Any]]:
+    """For each threshold in ``grid``, the % of ``sorted_values`` that are >= it."""
+    total = len(sorted_values)
+    points = []
+    for threshold in grid:
+        kept = total - bisect.bisect_left(sorted_values, threshold)
+        points.append({"threshold": threshold, "retained_pct": round(100 * kept / total, 2)})
+    return points
+
+
+def _percentile(sorted_values: list[float], p: float) -> float:
+    index = min(len(sorted_values) - 1, int(p / 100 * len(sorted_values)))
+    return sorted_values[index]
+
+
+def _discover_ingested_batch_dirs(config: Config) -> list[Path]:
+    """Every ``facebook_persona_fresh/batchN`` directory that has ingested post
+    shards, across the whole project -- not just the currently selected FRESH_BATCH.
+    """
+    if not config.fresh_root.exists():
+        return []
+    return sorted(
+        path for path in config.fresh_root.glob("batch*")
+        if (path / "post_shards").is_dir()
+        and any((path / "post_shards").glob("posts-*.jsonl"))
+    )
+
+
+def analyze_user_thresholds(config: Config) -> None:
+    """Report the full candidate population's post_count/text_chars/history_days
+    distribution (before any eligibility filter), plus retention curves and named
+    scenario comparisons, so min_posts/min_text_chars/min_history_days can be chosen
+    from real percentiles instead of guesswork.
+
+    Aggregates across every ingested batch under ``fresh_root`` (not just the
+    currently selected FRESH_BATCH), since the goal is the dataset-wide distribution.
+    """
+    batch_dirs = _discover_ingested_batch_dirs(config)
+    if not batch_dirs:
+        raise FileNotFoundError(f"No ingested batches (with post_shards) found under {config.fresh_root}. Run ingest first.")
+
+    shard_files: list[Path] = []
+    shard_batch_names: list[str] = []
+    for batch_dir in batch_dirs:
+        for index in range(config.post_shards):
+            path = shard_path_in(batch_dir, index)
+            if path.is_file():
+                shard_files.append(path)
+                shard_batch_names.append(batch_dir.name)
+    print(f"Analyzing {len(shard_files):,} post shards across {len(batch_dirs)} batches: "
+          f"{', '.join(path.name for path in batch_dirs)}")
+
+    rows: list[tuple[int, int, float]] = []
+    per_batch_user_counts: dict[str, int] = defaultdict(int)
+    with ProcessPoolExecutor(max_workers=config.preprocess_workers) as executor:
+        for batch_name, shard_rows in zip(
+            shard_batch_names,
+            tqdm(
+                executor.map(_user_distribution_shard, shard_files),
+                total=len(shard_files), desc="analyze user thresholds (all batches)",
+            ),
+        ):
+            rows.extend(shard_rows)
+            per_batch_user_counts[batch_name] += len(shard_rows)
+
+    total = len(rows)
+    if total == 0:
+        raise ValueError(f"No users with >=1 non-ad post found across {len(batch_dirs)} ingested batches")
+
+    counts = sorted(row[0] for row in rows)
+    chars = sorted(row[1] for row in rows)
+    days = sorted(row[2] for row in rows)
+
+    percentile_points = (10, 25, 50, 75, 90, 95, 99)
+    percentiles = {
+        "post_count": {p: _percentile(counts, p) for p in percentile_points},
+        "text_chars": {p: _percentile(chars, p) for p in percentile_points},
+        "history_days": {p: round(_percentile(days, p), 1) for p in percentile_points},
+    }
+    curves = {
+        "post_count": _retention_curve(counts, config.user_threshold_grid_posts),
+        "text_chars": _retention_curve(chars, config.user_threshold_grid_chars),
+        "history_days": _retention_curve(days, config.user_threshold_grid_days),
+    }
+
+    scenarios = list(config.user_threshold_scenarios)
+    scenarios.append(("Hien tai (config)", config.min_posts, config.min_text_chars, config.min_history_days))
+    scenario_results = []
+    for label, min_posts, min_chars, min_days in scenarios:
+        kept = sum(
+            1 for count, char_count, day_count in rows
+            if count >= min_posts and char_count >= min_chars and day_count >= min_days
+        )
+        scenario_results.append({
+            "label": label, "min_posts": min_posts, "min_text_chars": min_chars,
+            "min_history_days": min_days, "users_kept": kept,
+            "pct_kept": round(100 * kept / total, 2),
+        })
+
+    report = {
+        "batches_analyzed": [path.name for path in batch_dirs],
+        "total_candidate_users": total,
+        "users_per_batch": dict(per_batch_user_counts),
+        "percentiles": percentiles,
+        "retention_curves": curves,
+        "scenarios": scenario_results,
+    }
+    config.user_threshold_report_path.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    render_user_threshold_charts(
+        curves, scenario_results, config.user_threshold_chart_path,
+        f"User Eligibility Threshold Analysis ({total:,} candidate users across {len(batch_dirs)} batches)",
+    )
+
+    print(f"Total candidate users (>=1 non-ad post) across {len(batch_dirs)} batches: {total:,}")
+    print("Users per batch:", ", ".join(f"{name}={count:,}" for name, count in sorted(per_batch_user_counts.items())))
+    print("Percentiles:")
+    for metric, values in percentiles.items():
+        print(f"  {metric}: " + ", ".join(f"p{p}={v}" for p, v in values.items()))
+    print("Scenarios:")
+    for row in scenario_results:
+        print(
+            f"  {row['label']}: min_posts={row['min_posts']} min_text_chars={row['min_text_chars']} "
+            f"min_history_days={row['min_history_days']:g} -> {row['users_kept']:,} users ({row['pct_kept']}%)"
+        )
+    print("Report:", config.user_threshold_report_path)
+    print("Chart:", config.user_threshold_chart_path)
 
 
 def _prepare_shard(path: Path) -> int:
