@@ -65,13 +65,6 @@ def main(argv: Iterable[str] | None = None) -> None:
         raise ValueError("max-contents must be at least 1")
     if not 0 <= config.timeline_content_ratio <= 1:
         raise ValueError("timeline-content-ratio must be between 0 and 1")
-    if min(
-        config.max_content_score_at,
-        config.max_character_score_at,
-        config.max_history_score_at,
-    ) <= 0:
-        raise ValueError("user score caps must be greater than 0")
-
     print("Work directory:", config.work_dir.resolve(), f"(FRESH_BATCH={config.fresh_batch})")
     config.work_dir.mkdir(parents=True, exist_ok=True)
     if args.stage in {"all", "ingest"}:

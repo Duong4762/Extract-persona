@@ -61,9 +61,6 @@ class Config:
         ("Trung binh", 15, 500, 180),
         ("Nguong cu", 50, 1000, 356),
     )
-    max_content_score_at: float = 150
-    max_character_score_at: float = 40_000
-    max_history_score_at: float = 365
     max_profile_chars: int = 20_000
     max_dims_per_chunk: int = 30
     max_llm_users: int = 5000

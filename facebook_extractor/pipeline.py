@@ -21,7 +21,7 @@ from persona_coverage_chart import render_category_coverage_chart
 from user_threshold_chart import render_user_threshold_charts
 from .config import FRESH_BATCH_NAME_START, NUM_FRESH_BATCHES, Config
 from .content_selection import select_contents
-from .filters import is_advertising
+from .filters import is_advertising, normalize_text
 from .records import (
     assemble_profile,
     compact_text,
@@ -56,20 +56,6 @@ def _init_prepare_worker(
     _worker_config = config
     _worker_selected = selected
     _worker_profiles = profiles
-
-
-def capped_score(value: float, maximum: float) -> float:
-    return min(max(value, 0.0) / maximum, 1.0)
-
-
-def user_selection_score(
-    post_count: float, text_chars: float, history_days: float, config: Config
-) -> float:
-    return (
-        0.4375 * capped_score(text_chars, config.max_character_score_at)
-        + 0.1875 * capped_score(history_days, config.max_history_score_at)
-        + 0.375 * capped_score(post_count, config.max_content_score_at)
-    )
 
 
 def build_post_prompt(profile_text: str, dimensions: list[dict[str, Any]]) -> str:
@@ -205,7 +191,13 @@ def confidence_value(value: Any) -> float:
     except (TypeError, ValueError): return 0.0
 
 def quote_is_in_profile(evidence: str, profile_text: str) -> bool:
-    return bool(evidence) and (evidence in profile_text or " ".join(evidence.split()) in " ".join(profile_text.split()))
+    if not evidence:
+        return False
+    if evidence in profile_text or " ".join(evidence.split()) in " ".join(profile_text.split()):
+        return True
+    # Fall back to an accent/case-insensitive match so minor rewriting (capitalization,
+    # Vietnamese diacritics, whitespace) does not reject an otherwise-genuine quote.
+    return normalize_text(evidence) in normalize_text(profile_text)
 
 def sanitize_fields(fields: list[dict[str, Any]], dimensions: list[dict[str, Any]], profile_text: str) -> list[dict[str, Any]]:
     dimensions_by_id = {str(dimension["id"]): dimension for dimension in dimensions}
@@ -605,13 +597,10 @@ def select_users(config: Config) -> None:
             total=len(shard_files), desc="select users",
         ):
             eligible.extend(shard_eligible)
-    scored = [(
-        user_selection_score(row[1], row[2], row[3], config),
-        row,
-    ) for row in eligible]
-    scored.sort(key=lambda item: (-item[0], -item[1][2], -item[1][3], -item[1][1], item[1][0]))
+    # Eligibility thresholds decide who proceeds. Keep the resulting order as
+    # discovered from the shards; extraction does not need a user ranking.
     with config.selected_users_path.open("w", encoding="utf-8") as output:
-        for rank, (score, row) in enumerate(scored, 1):
+        for row in eligible:
             keys = (
                 "user_id",
                 "post_count",
@@ -622,9 +611,8 @@ def select_users(config: Config) -> None:
                 "advertising_ratio",
             )
             record = {key: value for key, value in zip(keys, row)}
-            record.update({"rank": rank, "score": score})
             output.write(json.dumps(record, ensure_ascii=False) + "\n")
-    print(f"Eligible users={len(eligible):,}; selected={len(scored):,}")
+    print(f"Eligible users selected={len(eligible):,}")
 
 
 def _user_distribution_shard(path: Path) -> list[tuple[int, int, float]]:
@@ -821,7 +809,7 @@ def _prepare_shard(path: Path) -> int:
                 post.pop("timestamp_ms", None)
                 post.pop("source_index", None)
             record = {"source": "facebook", "user_id": user_id,
-                "rank": selected[user_id]["rank"], "profile": profiles.get(user_id, {}),
+                "profile": profiles.get(user_id, {}),
                 "post_count": len(posts), "posts": posts}
             output.write(json.dumps(record, ensure_ascii=False) + "\n")
             count += 1
