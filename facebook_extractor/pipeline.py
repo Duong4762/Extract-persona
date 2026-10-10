@@ -1229,17 +1229,29 @@ def migrate_personas(config: Config) -> None:
         with config.migrated_personas_path.open(encoding="utf-8") as existing:
             done = {str(json.loads(line)["user_id"]) for line in existing if line.strip()}
 
+    # Only the users in personas_path can be migrated, so only fetch their compact
+    # profiles -- by the same shard hash every other stage uses -- instead of streaming
+    # the whole (usually much larger) compact_shards population looking for them.
+    to_migrate = [user_id for user_id in old_personas if user_id not in done]
+    wanted_by_shard: dict[int, set[str]] = defaultdict(set)
+    for user_id in to_migrate:
+        wanted_by_shard[user_shard(user_id, config.post_shards)].add(user_id)
+    compact_records: dict[str, dict[str, Any]] = {}
+    for shard_index, wanted in wanted_by_shard.items():
+        for record in iter_local_jsonl(compact_shard_path(config, shard_index)):
+            record_user_id = str(record.get("user_id") or "")
+            if record_user_id in wanted:
+                compact_records[record_user_id] = record
+
     migrated = 0
-    skipped_no_old_persona = 0
+    skipped_no_compact_profile = 0
     with config.migrated_personas_path.open("a", encoding="utf-8") as output:
-        for record in tqdm(iter_compact_profiles(config), desc="migrate personas"):
-            user_id = str(record["user_id"])
-            if user_id in done:
+        for user_id in tqdm(to_migrate, desc="migrate personas"):
+            record = compact_records.get(user_id)
+            if record is None:
+                skipped_no_compact_profile += 1
                 continue
-            old_persona = old_personas.get(user_id)
-            if old_persona is None:
-                skipped_no_old_persona += 1
-                continue
+            old_persona = old_personas[user_id]
             old_fields_by_id = {
                 str(field.get("field_id")): field
                 for field in old_persona.get("fields", [])
@@ -1302,7 +1314,7 @@ def migrate_personas(config: Config) -> None:
             output.write(json.dumps(result, ensure_ascii=False) + "\n"); output.flush(); os.fsync(output.fileno())
             done.add(user_id); migrated += 1
     print(
-        f"Migrated personas={migrated}; skipped (no old persona)={skipped_no_old_persona}; "
+        f"Migrated personas={migrated}; skipped (no compact profile)={skipped_no_compact_profile}; "
         f"output={config.migrated_personas_path}"
     )
 
