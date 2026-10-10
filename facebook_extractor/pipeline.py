@@ -1088,6 +1088,7 @@ def extract_personas(config: Config) -> None:
         with config.personas_path.open(encoding="utf-8") as existing:
             done = {str(json.loads(line)["user_id"]) for line in existing if line.strip()}
     processed = 0
+    total_extraction_seconds = 0.0
     with config.personas_path.open("a", encoding="utf-8") as output:
         for record in tqdm(iter_compact_profiles(config), desc="extract personas"):
             user_id = str(record["user_id"])
@@ -1095,16 +1096,23 @@ def extract_personas(config: Config) -> None:
                 continue
             if config.max_llm_users and processed >= config.max_llm_users:
                 break
+            started_at = time.perf_counter()
             fields = _run_dimension_chunks(user_id, record["profile_text"], chunks, config)
+            extraction_seconds = round(time.perf_counter() - started_at, 2)
             if len(fields) != len(schema):
                 raise RuntimeError(f"Expected {len(schema)} fields, got {len(fields)} for {user_id}")
             result = {key: record[key] for key in (
                 "user_id", "source", "post_count", "compact_profile_chars"
             )}
             result["fields"] = fields
+            result["extraction_seconds"] = extraction_seconds
             output.write(json.dumps(result, ensure_ascii=False) + "\n"); output.flush(); os.fsync(output.fileno())
             done.add(user_id); processed += 1
-    print(f"New personas={processed}; output={config.personas_path}")
+            total_extraction_seconds += extraction_seconds
+    print(
+        f"New personas={processed}; total extraction time={total_extraction_seconds:,.2f}s "
+        f"({total_extraction_seconds / 60:,.1f}min); output={config.personas_path}"
+    )
 
 
 def _legacy_schema_dimensions(path: Path) -> list[dict[str, Any]]:
