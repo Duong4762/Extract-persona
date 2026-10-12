@@ -64,7 +64,7 @@ class Config:
     max_profile_chars: int = 20_000
     max_dims_per_chunk: int = 30
     max_llm_users: int = 0
-    llm_workers: int = 10
+    llm_workers: int = 2
     preprocess_workers: int = int(
         os.environ.get("PREPROCESS_WORKERS", str(os.cpu_count()-8 or 4))
     )
