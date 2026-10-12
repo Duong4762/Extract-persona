@@ -1087,12 +1087,23 @@ def extract_personas(config: Config) -> None:
     if config.personas_path.exists():
         with config.personas_path.open(encoding="utf-8") as existing:
             done = {str(json.loads(line)["user_id"]) for line in existing if line.strip()}
+    # Plain text line count (no JSON parsing) just to give tqdm a real total, so progress
+    # shows e.g. "1165/5779" with an ETA instead of an unbounded, unexplained counter.
+    total_compact_profiles = sum(
+        1 for path in compact_shards for line in path.open(encoding="utf-8") if line.strip()
+    )
     processed = 0
+    skipped = 0
     total_extraction_seconds = 0.0
-    with config.personas_path.open("a", encoding="utf-8") as output:
-        for record in tqdm(iter_compact_profiles(config), desc="extract personas"):
+    with config.personas_path.open("a", encoding="utf-8") as output, tqdm(
+        total=total_compact_profiles, desc="extract personas"
+    ) as progress:
+        for record in iter_compact_profiles(config):
+            progress.update(1)
             user_id = str(record["user_id"])
             if user_id in done:
+                skipped += 1
+                progress.set_postfix(new=processed, skip=skipped, refresh=False)
                 continue
             if config.max_llm_users and processed >= config.max_llm_users:
                 break
@@ -1109,8 +1120,10 @@ def extract_personas(config: Config) -> None:
             output.write(json.dumps(result, ensure_ascii=False) + "\n"); output.flush(); os.fsync(output.fileno())
             done.add(user_id); processed += 1
             total_extraction_seconds += extraction_seconds
+            progress.set_postfix(new=processed, skip=skipped, refresh=False)
     print(
-        f"New personas={processed}; total extraction time={total_extraction_seconds:,.2f}s "
+        f"New personas={processed}; skipped (already done)={skipped}; "
+        f"total extraction time={total_extraction_seconds:,.2f}s "
         f"({total_extraction_seconds / 60:,.1f}min); output={config.personas_path}"
     )
 
