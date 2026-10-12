@@ -14,6 +14,7 @@ from .pipeline import (
     ingest_posts,
     migrate_personas,
     prepare_histories,
+    repair_trailing_jsonl,
     select_users,
 )
 
@@ -67,6 +68,8 @@ def main(argv: Iterable[str] | None = None) -> None:
         raise ValueError("timeline-content-ratio must be between 0 and 1")
     print("Work directory:", config.work_dir.resolve(), f"(FRESH_BATCH={config.fresh_batch})")
     config.work_dir.mkdir(parents=True, exist_ok=True)
+    repair_trailing_jsonl(config.personas_path)
+    repair_trailing_jsonl(config.migrated_personas_path)
     if args.stage in {"all", "ingest"}:
         print(
             f"Ingest reads {tuple(d.parent.name for d in config.content_dirs)} and writes "

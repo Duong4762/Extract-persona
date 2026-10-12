@@ -1433,3 +1433,27 @@ def require_file(path: Path, hint: str) -> None:
         raise FileNotFoundError(f"Missing file: {path}. {hint}.")
 
 
+def repair_trailing_jsonl(path: Path) -> None:
+    if not path.is_file():
+        return
+    size = path.stat().st_size
+    if size == 0:
+        return
+    with path.open("rb") as handle:
+        handle.seek(max(0, size - 4_194_304))
+        tail = handle.read()
+    newline_index = tail.rstrip(b"\n").rfind(b"\n")
+    last_line = tail[newline_index + 1:] if newline_index != -1 else tail
+    if not last_line.strip():
+        return
+    try:
+        json.loads(last_line.decode("utf-8"))
+        return
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        pass
+    truncate_at = size - len(last_line)
+    with path.open("r+b") as handle:
+        handle.truncate(truncate_at)
+    print(f"Repaired {path}: dropped {len(last_line)}-byte truncated/corrupt trailing line")
+
+

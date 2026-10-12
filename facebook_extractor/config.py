@@ -104,7 +104,6 @@ class Config:
 
     @property
     def user_threshold_report_path(self) -> Path:
-        # Dataset-wide (aggregates every ingested batch), not scoped to one FRESH_BATCH.
         return self.fresh_root / "user_threshold_report.json"
 
     @property
@@ -125,7 +124,7 @@ class Config:
 
     @property
     def personas_path(self) -> Path:
-        return self.work_dir / "personas_1290.jsonl"
+        return self.work_dir / "personas_extracted.jsonl"
 
     @property
     def migrated_personas_path(self) -> Path:
