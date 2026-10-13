@@ -763,7 +763,7 @@ def analyze_user_thresholds(config: Config) -> None:
     )
     render_user_threshold_charts(
         curves, scenario_results, config.user_threshold_chart_path,
-        f"User Eligibility Threshold Analysis ({total:,} candidate users across {len(batch_dirs)} batches)",
+        f"Phân tích ngưỡng lọc user ({total:,} user ứng viên từ {len(batch_dirs)} batch)",
     )
 
     print(f"Total candidate users (>=1 non-ad post) across {len(batch_dirs)} batches: {total:,}")
